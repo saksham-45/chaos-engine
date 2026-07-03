@@ -14,24 +14,58 @@ interface TimelineItem {
 
 const timelineItems: TimelineItem[] = [
   {
-    title: 'Bachelor of Science in Computer Engineering',
-    organization: 'University of South Florida, Bellini College of AI',
-    period: 'Expected May 2027',
+    title: 'Undergraduate Research Assistant',
+    organization: 'USF Bellini College of AI',
+    period: 'May 2026 – Present',
     description: [
-      'Minor in Mathematics',
-      'Relevant Coursework: Data Structures, Algorithms, OS, Digital Logic, Python & C Program Design',
-    ],
-    type: 'education',
-  },
-  {
-    title: 'Project Intern',
-    organization: 'Greenpeace India',
-    period: 'Sep 2020 – Feb 2021',
-    description: [
-      'Generated 50,000+ petition signatures contributing to environmental policy changes',
-      'Developed analytics workflows increasing campaign engagement by 35%',
+      'Designed REST APIs and relational MySQL schemas serving on-demand course summaries and contextual help as JSON APIs for interactive mind-maps.',
+      'Built full-stack AI Course Companion features in C++, PHP, JavaScript and HTML/CSS, integrating the Gemini API for automated content summarization.',
+      'Shipped features via Git/GitHub code review and Agile; documented API behavior and test procedures for maintainability and handoff.',
     ],
     type: 'experience',
+  },
+  {
+    title: 'Undergraduate Research Assistant',
+    organization: 'USF Mathematics & Statistics',
+    period: 'Apr 2025 – Mar 2026',
+    description: [
+      'Developed Python (NumPy, SymPy) algorithms replacing brute-force enumeration with efficient counting, letting graph-isomorphism analysis scale to arbitrary input sizes.',
+      'Shipped a reproducible analysis pipeline with unit tests and Git version control for repeatable experiments.',
+      'Modularized code and documented test cases to accelerate follow-on research.',
+    ],
+    type: 'experience',
+  },
+  {
+    title: 'Open-Source Software Engineer',
+    organization: 'Independent Contributor',
+    period: 'Apr 2024 – Present',
+    description: [
+      'Authored and merged 21 pull requests into 12+ production repositories — 8 bug fixes, 3 security hardenings, 10 features — via GitHub review and CI/CD.',
+      'Built an LMMS voice/text agent in C++ (OOP) that normalizes noisy speech into reliable DAW commands via regex normalization, intent mapping, and unit-tested core modules.',
+      'Contributed container-security improvements and automated test integrations across Python libraries and voice agents.',
+    ],
+    type: 'experience',
+  },
+  {
+    title: 'Founder & Lead Developer',
+    organization: 'COVID-HELP · India',
+    period: 'Feb 2021 – Aug 2023',
+    description: [
+      'Founded and led a real-time full-stack platform (HTML/CSS/JS, REST APIs, SQL) connecting 40,000+ users to live ICU-bed and oxygen availability during India’s second COVID wave.',
+      'Led a volunteer engineering team using Agile and Git, sustaining ~99.9% uptime through extreme traffic spikes and coordinating incident response.',
+      'Implemented monitoring, scaling and real-time data collection; documented operational runbooks for volunteers.',
+    ],
+    type: 'experience',
+  },
+  {
+    title: 'B.S. Computer Engineering, Minor in Mathematics',
+    organization: 'University of South Florida',
+    period: 'Aug 2023 – May 2027',
+    description: [
+      'GPA 3.89 · Green & Gold Presidential Scholar.',
+      'Coursework across systems, embedded software, algorithms, and applied mathematics.',
+    ],
+    type: 'education',
   },
 ];
 
@@ -67,12 +101,12 @@ export function Timeline() {
 
             {/* Content card */}
             <motion.div
-              className="border border-green-700/50 rounded-lg p-6 bg-black/40 backdrop-blur-sm"
+              className="border border-green-700/50 rounded-lg p-6 bg-black/55 backdrop-blur-md"
               whileHover={{ borderColor: '#00ff00', boxShadow: '0 0 20px rgba(0, 255, 0, 0.2)' }}
             >
               <div className="flex items-start justify-between mb-3">
                 <div>
-                  <h3 className="text-xl font-bold text-green-300 matrix-font mb-1">
+                  <h3 className="text-xl font-bold text-green-200 mb-1">
                     {item.title}
                   </h3>
                   <p className="text-green-400 font-mono text-sm">{item.organization}</p>

@@ -1,1210 +1,553 @@
 "use client";
 
-import React, { useRef, useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { MatrixBackground } from '@/components/MatrixEffects';
+import React, { useRef, useEffect, useState, useCallback } from "react";
+import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
 
-const MysteryPage: React.FC = () => {
-  const [currentSection, setCurrentSection] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(true);
-  const [speed, setSpeed] = useState(1);
-  const [showControls, setShowControls] = useState(false);
-  const sectionRefs = useRef<(HTMLDivElement | null)[]>([]);
+/* =========================================================================
+   THE MATHEMATICS UNDERNEATH
+   A cinematic gallery of eight equations, drawn live. Reached via the "???"
+   on the home page. Each curve: curated 2-stop gradient, a glowing draw-head,
+   mouse-parallax 3D rotation, and a caption tying the math to real work.
+   ========================================================================= */
 
-  const sections = [
-    { 
-      id: 'lorenz', 
-      name: 'Lorenz Attractor', 
-      description: 'Chaotic system',
-      equation: 'ẋ = σ(y - x)\nẏ = x(ρ - z) - y\nż = xy - βz'
-    },
-    { 
-      id: 'lissajous', 
-      name: 'Lissajous Curves', 
-      description: 'Parametric oscillations',
-      equation: 'x = A·sin(a·t + δ)\ny = B·sin(b·t)'
-    },
-    { 
-      id: 'epicycloid', 
-      name: 'Epicycloid', 
-      description: 'Rolling circle on circle',
-      equation: 'x = (R+r)·cos(t) - r·cos((R+r)/r·t)\ny = (R+r)·sin(t) - r·sin((R+r)/r·t)'
-    },
-    { 
-      id: 'butterfly', 
-      name: 'Butterfly Curve', 
-      description: 'Polar equation',
-      equation: 'r = e^cos(θ) - 2·cos(4θ) + sin⁵(θ/12)'
-    },
-    { 
-      id: 'heart', 
-      name: 'Heart Curve', 
-      description: 'Parametric heart',
-      equation: 'x = 16·sin³(t)\ny = 13·cos(t) - 5·cos(2t) - 2·cos(3t) - cos(4t)'
-    },
-    { 
-      id: 'rose', 
-      name: 'Rose Curves', 
-      description: 'Polar roses',
-      equation: 'r = a·cos(k·θ) or r = a·sin(k·θ)'
-    },
-    { 
-      id: 'spiral', 
-      name: 'Archimedean Spiral', 
-      description: 'Classic spiral',
-      equation: 'r = a + b·θ\nx = r·cos(θ), y = r·sin(θ)'
-    },
-    { 
-      id: 'fourier', 
-      name: 'Fourier Series', 
-      description: 'Sum of sine waves',
-      equation: 'f(x) = Σ(aₙ·sin(nx) + bₙ·cos(nx))'
-    },
-  ];
+type Vec3 = [number, number, number];
+
+interface SubCurve {
+  // u ∈ [0,1] along the path, phase drifts with time so the figure breathes
+  sample: (u: number, phase: number) => Vec3;
+  points: number;
+  palette: [string, string];
+  worldScale: number; // multiplied by the responsive fit scale
+}
+
+interface Spec {
+  id: string;
+  name: string;
+  equation: string;
+  caption: string;
+  accent: string; // HUD accent
+  kind: "parametric" | "lorenz";
+  curves?: SubCurve[];
+  fit: number; // fraction of min(viewport) the figure should span
+}
+
+/* ---------------- color helpers ---------------- */
+function hexRgb(hex: string): [number, number, number] {
+  const h = hex.replace("#", "");
+  const n = parseInt(h.length === 3 ? h.split("").map((c) => c + c).join("") : h, 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
+function lerpHex(a: string, b: string, t: number) {
+  const ca = hexRgb(a), cb = hexRgb(b);
+  const r = Math.round(ca[0] + (cb[0] - ca[0]) * t);
+  const g = Math.round(ca[1] + (cb[1] - ca[1]) * t);
+  const bl = Math.round(ca[2] + (cb[2] - ca[2]) * t);
+  return `rgb(${r},${g},${bl})`;
+}
+
+/* ---------------- the eight specs ---------------- */
+const SPECS: Spec[] = [
+  {
+    id: "lorenz",
+    name: "Lorenz Attractor",
+    equation: "ẋ = σ(y − x)\nẏ = x(ρ − z) − y\nż = xy − βz",
+    caption: "Deterministic chaos — a system with no randomness that never repeats. Tiny changes in where you start diverge into wildly different futures. It's why long-range weather is fundamentally hard.",
+    accent: "#22e0ff",
+    kind: "lorenz",
+    fit: 0.62,
+  },
+  {
+    id: "lissajous",
+    name: "Lissajous Figures",
+    equation: "x = A·sin(a·t + δ)\ny = B·sin(b·t)",
+    caption: "Two perpendicular oscillations, one closed figure. The exact shape an oscilloscope traces when you feed it two out-of-phase signals — frequency ratios you can see.",
+    accent: "#38bdf8",
+    kind: "parametric",
+    fit: 0.5,
+    curves: [
+      { points: 1400, palette: ["#22d3ee", "#3b82f6"], worldScale: 1.0, sample: (u, ph) => { const t = u * Math.PI * 2; return [Math.sin(3 * t + ph), Math.sin(2 * t + ph * 0.5), 0.3 * Math.cos(5 * t)]; } },
+      { points: 1400, palette: ["#818cf8", "#22d3ee"], worldScale: 0.72, sample: (u, ph) => { const t = u * Math.PI * 2; return [Math.sin(5 * t + ph), Math.sin(4 * t + ph * 0.5), 0.3 * Math.cos(9 * t)]; } },
+    ],
+  },
+  {
+    id: "epicycloid",
+    name: "Epicycloid",
+    equation: "x = (R+r)cos t − r·cos((R+r)/r · t)\ny = (R+r)sin t − r·sin((R+r)/r · t)",
+    caption: "The path traced by a point on a circle rolling around another circle. The same geometry behind gears, planetary orbits, and every Spirograph you ever drew.",
+    accent: "#34d399",
+    kind: "parametric",
+    fit: 0.62,
+    curves: [
+      {
+        points: 1600, palette: ["#34d399", "#a3e635"], worldScale: 1.0,
+        sample: (u, ph) => {
+          const R = 100, r = 30, s = 1 / 260, t = u * Math.PI * 4 + ph * 0.2;
+          return [s * ((R + r) * Math.cos(t) - r * Math.cos(((R + r) / r) * t)), s * ((R + r) * Math.sin(t) - r * Math.sin(((R + r) / r) * t)), s * 50 * Math.sin(t * 2)];
+        },
+      },
+    ],
+  },
+  {
+    id: "butterfly",
+    name: "Butterfly Curve",
+    equation: "r = e^{cos θ} − 2cos 4θ + sin⁵(θ/12)",
+    caption: "Six wings from a single transcendental equation, swept over twelve full turns. Proof that one line of math can hold a surprising amount of structure.",
+    accent: "#c084fc",
+    kind: "parametric",
+    fit: 0.5,
+    curves: [
+      {
+        points: 2600, palette: ["#c084fc", "#f472b6"], worldScale: 1.0,
+        sample: (u, ph) => {
+          const th = u * Math.PI * 12 + ph * 0.1;
+          const r = Math.exp(Math.cos(th)) - 2 * Math.cos(4 * th) + Math.pow(Math.sin(th / 12), 5);
+          return [0.16 * r * Math.cos(th), 0.16 * r * Math.sin(th), 0.08 * Math.sin(th * 3)];
+        },
+      },
+    ],
+  },
+  {
+    id: "heart",
+    name: "Heart Curve",
+    equation: "x = 16 sin³ t\ny = 13 cos t − 5 cos 2t − 2 cos 3t − cos 4t",
+    caption: "Yes — affection has a closed form. A parametric curve that resolves, exactly, into a heart. My favorite reminder that math has a sense of humor.",
+    accent: "#fb7185",
+    kind: "parametric",
+    fit: 0.5,
+    curves: [
+      {
+        points: 1400, palette: ["#fb7185", "#fbbf24"], worldScale: 1.0,
+        sample: (u, ph) => {
+          const t = u * Math.PI * 2 + ph * 0.15;
+          return [0.052 * 16 * Math.pow(Math.sin(t), 3), -0.052 * (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)), 0.052 * 5 * Math.sin(t * 4)];
+        },
+      },
+    ],
+  },
+  {
+    id: "rose",
+    name: "Rose Curves",
+    equation: "r = a·cos(k·θ)",
+    caption: "A single integer k sets the petal count — odd k gives k petals, even k gives 2k. Dial one number, redesign the whole flower. Symmetry as a parameter.",
+    accent: "#e879f9",
+    kind: "parametric",
+    fit: 0.62,
+    curves: [
+      { points: 1200, palette: ["#e879f9", "#fbbf24"], worldScale: 1.0, sample: (u, ph) => { const th = u * Math.PI * 2; const r = Math.cos(5 * th) * (1 + 0.25 * Math.sin(ph)); return [r * Math.cos(th), r * Math.sin(th), 0.2 * Math.sin(th * 5)]; } },
+      { points: 1200, palette: ["#f472b6", "#a78bfa"], worldScale: 0.66, sample: (u, ph) => { const th = u * Math.PI * 2; const r = Math.cos(4 * th) * (1 + 0.25 * Math.sin(ph)); return [r * Math.cos(th), r * Math.sin(th), 0.2 * Math.sin(th * 4)]; } },
+      { points: 1200, palette: ["#c084fc", "#22d3ee"], worldScale: 0.36, sample: (u, ph) => { const th = u * Math.PI * 2; const r = Math.cos(3 * th) * (1 + 0.25 * Math.sin(ph)); return [r * Math.cos(th), r * Math.sin(th), 0.2 * Math.sin(th * 3)]; } },
+    ],
+  },
+  {
+    id: "spiral",
+    name: "Archimedean Spiral",
+    equation: "r = a + b·θ\nx = r·cos θ,  y = r·sin θ",
+    caption: "Radius grows in step with angle, so every turn is evenly spaced. The shape of grooves on a record, coiled rope, and the arms of a galaxy.",
+    accent: "#fbbf24",
+    kind: "parametric",
+    fit: 0.62,
+    curves: [
+      {
+        points: 2200, palette: ["#fbbf24", "#f43f5e"], worldScale: 1.0,
+        sample: (u, ph) => {
+          const turns = 6, t = u * Math.PI * 2 * turns;
+          const r = u; // normalized 0..1 → even spacing
+          return [r * Math.cos(t + ph * 0.1), r * Math.sin(t + ph * 0.1), 0.12 * Math.sin(t)];
+        },
+      },
+    ],
+  },
+  {
+    id: "fourier",
+    name: "Fourier Series",
+    equation: "f(x) = Σ aₙ·sin(nx) + bₙ·cos(nx)",
+    caption: "Any signal is a sum of sines. Add enough harmonics and you can build any waveform — the exact idea powering the audio-feature engine inside my AutoMix project.",
+    accent: "#4ade80",
+    kind: "parametric",
+    fit: 0.72,
+    curves: [
+      {
+        points: 1600, palette: ["#4ade80", "#22d3ee"], worldScale: 1.0,
+        sample: (u, ph) => {
+          const x = (u - 0.5) * 4; // spread across
+          let y = 0;
+          for (let n = 1; n <= 15; n++) y += (0.32 / n) * Math.sin(n * x * 3 + ph * n * 0.5);
+          return [x, y, 0.25 * Math.sin(x * 2)];
+        },
+      },
+    ],
+  },
+];
+
+/* 3D projection */
+function project(x: number, y: number, z: number, ax: number, ay: number, scale: number, ox: number, oy: number): [number, number] {
+  const cx = Math.cos(ax), sx = Math.sin(ax), cy = Math.cos(ay), sy = Math.sin(ay);
+  const y1 = y * cx - z * sx, z1 = y * sx + z * cx;
+  const x2 = x * cy + z1 * sy, y2 = y1;
+  return [ox + x2 * scale, oy + y2 * scale];
+}
+
+/* ---------------- one live canvas per curve ---------------- */
+function CurveStage({ spec, isActive, speed, playing, mouse }: {
+  spec: Spec; isActive: boolean; speed: number; playing: boolean; mouse: React.RefObject<{ x: number; y: number }>;
+}) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    const handleScroll = () => {
-      const scrollPosition = window.scrollY + window.innerHeight / 2;
-      const current = sectionRefs.current.findIndex((ref) => {
-        if (!ref) return false;
-        const rect = ref.getBoundingClientRect();
-        return rect.top <= window.innerHeight / 2 && rect.bottom >= window.innerHeight / 2;
-      });
-      if (current !== -1 && current !== currentSection) {
-        setCurrentSection(current);
+    const canvas = canvasRef.current;
+    if (!canvas || !isActive) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    let W = 0, H = 0;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const resize = () => {
+      W = canvas.clientWidth; H = canvas.clientHeight;
+      canvas.width = W * dpr; canvas.height = H * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    };
+    resize();
+    window.addEventListener("resize", resize);
+
+    let raf = 0, t = 0;
+    let reveal = 0; // 0..1 draw progress
+    // Lorenz live state
+    const lz = [0, 1, 2].map((i) => ({
+      trail: [] as Vec3[],
+      s: { x: -20 + 20 * i, y: -10 + 8 * i, z: 12 + 8 * i } as { x: number; y: number; z: number },
+      palette: [["#22e0ff", "#c084fc"], ["#38bdf8", "#4ade80"], ["#e879f9", "#22d3ee"]][i] as [string, string],
+    }));
+
+    const drawPath = (pts: [number, number][], palette: [string, string], head: number) => {
+      const chunks = 9;
+      for (let c = 0; c < chunks; c++) {
+        const a = Math.floor((c / chunks) * (pts.length - 1));
+        const b = Math.floor(((c + 1) / chunks) * (pts.length - 1));
+        if (b <= a) continue;
+        ctx.beginPath();
+        ctx.moveTo(pts[a][0], pts[a][1]);
+        for (let i = a + 1; i <= b; i++) ctx.lineTo(pts[i][0], pts[i][1]);
+        const col = lerpHex(palette[0], palette[1], c / (chunks - 1));
+        ctx.strokeStyle = col;
+        ctx.shadowColor = col;
+        ctx.stroke();
+      }
+      // glowing draw-head
+      if (head >= 0 && head < pts.length) {
+        const [hx, hy] = pts[head];
+        const g = ctx.createRadialGradient(hx, hy, 0, hx, hy, 16);
+        g.addColorStop(0, "rgba(255,255,255,0.95)");
+        g.addColorStop(0.4, palette[1] + "cc");
+        g.addColorStop(1, "rgba(0,0,0,0)");
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.arc(hx, hy, 16, 0, Math.PI * 2);
+        ctx.fill();
       }
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [currentSection]);
+    const frame = () => {
+      raf = requestAnimationFrame(frame);
+      if (!playing) return;
 
-  const scrollToSection = (index: number) => {
-    sectionRefs.current[index]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    setCurrentSection(index);
-  };
+      // Lorenz keeps a motion-blur trail; the fully-redrawn parametric curves
+      // clear to solid black each frame so additive glow can't haze up.
+      ctx.globalCompositeOperation = "source-over";
+      ctx.fillStyle = spec.kind === "lorenz" ? "rgba(0,0,0,0.16)" : "#000";
+      ctx.fillRect(0, 0, W, H);
+      ctx.globalCompositeOperation = "lighter";
+
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      ctx.lineWidth = 2;
+      ctx.shadowBlur = 14;
+
+      const mx = mouse.current?.x ?? 0.5, my = mouse.current?.y ?? 0.5;
+      const ax = t * 0.16 * speed + (my - 0.5) * 1.2;
+      const ay = t * 0.12 * speed + (mx - 0.5) * 1.6;
+      const ox = W / 2, oy = H / 2;
+
+      if (spec.kind === "lorenz") {
+        const scale = Math.min(W, H) / 62;
+        const dt = 0.007 * speed, sigma = 10, rho = 28, beta = 8 / 3;
+        lz.forEach((a) => {
+          const pts: [number, number][] = a.trail.map((p) => project(p[0], p[1], p[2] - 25, ax, ay, scale, ox, oy));
+          if (pts.length > 2) drawPath(pts, a.palette, pts.length - 1);
+          for (let step = 0; step < 3; step++) {
+            const { x, y, z } = a.s;
+            a.s = { x: x + sigma * (y - x) * dt, y: y + (x * (rho - z) - y) * dt, z: z + (x * y - beta * z) * dt };
+            a.trail.push([a.s.x, a.s.y, a.s.z]);
+          }
+          if (a.trail.length > 620) a.trail.splice(0, a.trail.length - 620);
+        });
+      } else if (spec.curves) {
+        reveal = Math.min(1, reveal + 0.02 * speed);
+        const scale = Math.min(W, H) * spec.fit * 0.5;
+        for (const sc of spec.curves) {
+          const n = sc.points;
+          const count = Math.floor(reveal * n);
+          const pts: [number, number][] = [];
+          for (let i = 0; i <= count; i++) {
+            const [x, y, z] = sc.sample(i / n, t * speed);
+            pts.push(project(x * sc.worldScale, y * sc.worldScale, z * sc.worldScale, ax, ay, scale, ox, oy));
+          }
+          if (pts.length > 2) drawPath(pts, sc.palette, pts.length - 1);
+        }
+      }
+
+      t += 0.016 * speed;
+    };
+
+    // clear once so switching sections doesn't ghost the previous curve
+    ctx.globalCompositeOperation = "source-over";
+    ctx.fillStyle = "#000";
+    ctx.fillRect(0, 0, W, H);
+    raf = requestAnimationFrame(frame);
+
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("resize", resize);
+    };
+  }, [isActive, speed, playing, spec, mouse]);
+
+  return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />;
+}
+
+/* ---------------- decrypting text (matrix reveal) ---------------- */
+function Decrypt({ text, className, delay = 0 }: { text: string; className?: string; delay?: number }) {
+  const [out, setOut] = useState("");
+  useEffect(() => {
+    const chars = "01<>/\\{}[]#$%&*+=";
+    let frame = 0;
+    let started = false;
+    const startTimer = setTimeout(() => { started = true; }, delay);
+    const id = setInterval(() => {
+      if (!started) return;
+      frame++;
+      const revealed = Math.floor(frame / 2);
+      let s = "";
+      for (let i = 0; i < text.length; i++) {
+        if (i < revealed || text[i] === " ") s += text[i];
+        else s += chars[Math.floor(Math.random() * chars.length)];
+      }
+      setOut(s);
+      if (revealed >= text.length) clearInterval(id);
+    }, 40);
+    return () => { clearInterval(id); clearTimeout(startTimer); };
+  }, [text, delay]);
+  return <span className={className}>{out || " "}</span>;
+}
+
+/* ============================ page ============================ */
+export default function MysteryPage() {
+  const [entered, setEntered] = useState(false);
+  const [current, setCurrent] = useState(0);
+  const [playing, setPlaying] = useState(true);
+  const [speed, setSpeed] = useState(1);
+  const sectionRefs = useRef<(HTMLElement | null)[]>([]);
+  const mouse = useRef({ x: 0.5, y: 0.5 });
+
+  const TOTAL = SPECS.length;
+
+  useEffect(() => {
+    const onMove = (e: PointerEvent) => {
+      mouse.current.x = e.clientX / window.innerWidth;
+      mouse.current.y = e.clientY / window.innerHeight;
+    };
+    window.addEventListener("pointermove", onMove);
+    return () => window.removeEventListener("pointermove", onMove);
+  }, []);
+
+  useEffect(() => {
+    const onScroll = () => {
+      const mid = window.innerHeight / 2;
+      const idx = sectionRefs.current.findIndex((ref) => {
+        if (!ref) return false;
+        const r = ref.getBoundingClientRect();
+        return r.top <= mid && r.bottom >= mid;
+      });
+      if (idx !== -1 && idx !== current) setCurrent(idx);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [current]);
+
+  const goTo = useCallback((i: number) => {
+    const clamped = Math.max(0, Math.min(TOTAL - 1, i));
+    sectionRefs.current[clamped]?.scrollIntoView({ behavior: "smooth", block: "center" });
+    setCurrent(clamped);
+  }, [TOTAL]);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (!entered) return;
+      if (e.key === "ArrowDown" || e.key === "ArrowRight") { e.preventDefault(); goTo(current + 1); }
+      else if (e.key === "ArrowUp" || e.key === "ArrowLeft") { e.preventDefault(); goTo(current - 1); }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [entered, current, goTo]);
+
+  const active = SPECS[current];
 
   return (
-    <>
-      <MatrixBackground />
-      <div className="relative z-10 min-h-screen bg-black">
-        {/* Navigation Sidebar */}
-        <motion.div
-          className="fixed left-4 top-1/2 -translate-y-1/2 z-50 hidden lg:block"
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-        >
-          <div className="bg-black/80 backdrop-blur-sm border border-green-700/50 rounded-lg p-4 space-y-2">
-            {sections.map((section, index) => (
+    <div className="relative bg-black">
+      {/* ===== Entry portal ===== */}
+      <AnimatePresence>
+        {!entered && (
+          <motion.div
+            key="portal"
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.6 }}
+            className="fixed inset-0 z-[70] flex flex-col items-center justify-center bg-black cursor-pointer px-6 text-center"
+            onClick={() => setEntered(true)}
+          >
+            <p className="font-mono text-[11px] tracking-[0.4em] uppercase text-green-500/50 mb-6">
+              you found the ???
+            </p>
+            <h1 className="matrix-font text-4xl md:text-6xl text-green-300 mb-5" style={{ textShadow: "0 0 24px rgba(0,255,100,0.4)" }}>
+              <Decrypt text="THE MATHEMATICS UNDERNEATH" />
+            </h1>
+            <p className="max-w-lg text-green-100/60 leading-relaxed mb-10">
+              <Decrypt text="Everything I build starts as an equation. Here are eight of them — alive, drawing themselves, one line of math at a time." delay={600} />
+            </p>
+            <motion.span
+              animate={{ y: [0, 6, 0] }}
+              transition={{ repeat: Infinity, duration: 1.6 }}
+              className="font-mono text-sm tracking-[0.3em] uppercase text-green-400"
+            >
+              click to descend ↓
+            </motion.span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ===== HUD ===== */}
+      {entered && (
+        <>
+          {/* progress bar */}
+          <div className="fixed top-0 left-0 right-0 z-50 h-0.5 bg-white/5">
+            <motion.div
+              className="h-full"
+              style={{ background: active.accent, boxShadow: `0 0 10px ${active.accent}` }}
+              animate={{ width: `${((current + 1) / TOTAL) * 100}%` }}
+              transition={{ duration: 0.4 }}
+            />
+          </div>
+
+          {/* index rail */}
+          <motion.nav
+            initial={{ opacity: 0, x: -16 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="fixed left-4 top-1/2 -translate-y-1/2 z-50 hidden lg:flex flex-col gap-1 bg-black/50 backdrop-blur-md border border-white/10 rounded-xl p-3"
+          >
+            {SPECS.map((s, i) => (
               <button
-                key={section.id}
-                onClick={() => scrollToSection(index)}
-                className={`block w-full text-left px-3 py-2 rounded text-sm font-mono transition-all ${
-                  currentSection === index
-                    ? 'bg-green-500/30 text-green-400 border border-green-500'
-                    : 'text-green-300/70 hover:text-green-400 hover:bg-green-500/10'
-                }`}
+                key={s.id}
+                onClick={() => goTo(i)}
+                className="group flex items-center gap-3 px-2 py-1.5 rounded-lg text-left transition-colors"
+                style={{ color: current === i ? s.accent : "rgba(255,255,255,0.4)" }}
               >
-                {section.name}
+                <span className="font-mono text-[10px] tabular-nums opacity-70">{String(i + 1).padStart(2, "0")}</span>
+                <span className="text-xs font-mono whitespace-nowrap transition-transform group-hover:translate-x-0.5">{s.name}</span>
               </button>
             ))}
-          </div>
-        </motion.div>
+          </motion.nav>
 
-        {/* Controls Panel */}
-        <motion.div
-          className="fixed top-4 right-4 z-50"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
-          <button
-            onClick={() => setShowControls(!showControls)}
-            className="px-4 py-2 bg-green-500/20 border border-green-500 text-green-400 rounded-lg hover:bg-green-500/30 transition-colors matrix-font text-sm"
+          {/* controls */}
+          <motion.div
+            initial={{ opacity: 0, y: -16 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="fixed top-20 right-4 z-50 flex items-center gap-2 bg-black/50 backdrop-blur-md border border-white/10 rounded-xl px-3 py-2"
           >
-            {showControls ? 'Hide' : 'Show'} Controls
-          </button>
-          <AnimatePresence>
-            {showControls && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className="mt-2 bg-black/90 backdrop-blur-sm border border-green-700/50 rounded-lg p-4 space-y-4 min-w-[200px]"
-              >
-                <div>
-                  <label className="block text-xs text-green-400 mb-2 font-mono">Speed</label>
-                  <input
-                    type="range"
-                    min="0.5"
-                    max="3"
-                    step="0.1"
-                    value={speed}
-                    onChange={(e) => setSpeed(parseFloat(e.target.value))}
-                    className="w-full"
-                  />
-                  <span className="text-xs text-green-300 font-mono">{speed.toFixed(1)}x</span>
-                </div>
-                <button
-                  onClick={() => setIsPlaying(!isPlaying)}
-                  className="w-full px-4 py-2 bg-green-500/20 border border-green-500 text-green-400 rounded hover:bg-green-500/30 transition-colors matrix-font text-sm"
-                >
-                  {isPlaying ? 'Pause' : 'Play'}
-                </button>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </motion.div>
+            <button
+              onClick={() => setPlaying((p) => !p)}
+              className="w-8 h-8 flex items-center justify-center rounded-lg border text-sm transition-colors"
+              style={{ borderColor: active.accent + "66", color: active.accent }}
+              aria-label={playing ? "Pause" : "Play"}
+            >
+              {playing ? "❚❚" : "▶"}
+            </button>
+            <input
+              type="range" min="0.4" max="2.5" step="0.1" value={speed}
+              onChange={(e) => setSpeed(parseFloat(e.target.value))}
+              className="w-24 accent-current" style={{ color: active.accent }}
+              aria-label="Speed"
+            />
+            <span className="text-[10px] font-mono w-8 text-right" style={{ color: active.accent }}>{speed.toFixed(1)}×</span>
+          </motion.div>
 
-        {/* Section Indicator */}
-        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
-          <div className="flex gap-2 bg-black/80 backdrop-blur-sm border border-green-700/50 rounded-lg p-2">
-            {sections.map((_, index) => (
+          {/* dot indicator */}
+          <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 flex gap-2 bg-black/50 backdrop-blur-md border border-white/10 rounded-full px-3 py-2">
+            {SPECS.map((s, i) => (
               <button
-                key={index}
-                onClick={() => scrollToSection(index)}
-                className={`w-2 h-2 rounded-full transition-all ${
-                  currentSection === index
-                    ? 'bg-green-400 w-8'
-                    : 'bg-green-700 hover:bg-green-500'
-                }`}
+                key={s.id}
+                onClick={() => goTo(i)}
+                aria-label={s.name}
+                className="h-2 rounded-full transition-all"
+                style={{ width: current === i ? 28 : 8, background: current === i ? s.accent : "rgba(255,255,255,0.25)" }}
               />
             ))}
           </div>
-        </div>
-
-        {/* Visualizations */}
-        <div ref={(el) => { sectionRefs.current[0] = el; }}>
-          <LorenzVisualization
-            isActive={currentSection === 0}
-            speed={speed}
-            isPlaying={isPlaying}
-            equation={sections[0].equation}
-          />
-        </div>
-        <div ref={(el) => { sectionRefs.current[1] = el; }}>
-          <LissajousVisualization
-            isActive={currentSection === 1}
-            speed={speed}
-            isPlaying={isPlaying}
-            equation={sections[1].equation}
-          />
-        </div>
-        <div ref={(el) => { sectionRefs.current[2] = el; }}>
-          <EpicycloidVisualization
-            isActive={currentSection === 2}
-            speed={speed}
-            isPlaying={isPlaying}
-            equation={sections[2].equation}
-          />
-        </div>
-        <div ref={(el) => { sectionRefs.current[3] = el; }}>
-          <ButterflyVisualization
-            isActive={currentSection === 3}
-            speed={speed}
-            isPlaying={isPlaying}
-            equation={sections[3].equation}
-          />
-        </div>
-        <div ref={(el) => { sectionRefs.current[4] = el; }}>
-          <HeartVisualization
-            isActive={currentSection === 4}
-            speed={speed}
-            isPlaying={isPlaying}
-            equation={sections[4].equation}
-          />
-        </div>
-        <div ref={(el) => { sectionRefs.current[5] = el; }}>
-          <RoseVisualization
-            isActive={currentSection === 5}
-            speed={speed}
-            isPlaying={isPlaying}
-            equation={sections[5].equation}
-          />
-        </div>
-        <div ref={(el) => { sectionRefs.current[6] = el; }}>
-          <SpiralVisualization
-            isActive={currentSection === 6}
-            speed={speed}
-            isPlaying={isPlaying}
-            equation={sections[6].equation}
-          />
-        </div>
-        <div ref={(el) => { sectionRefs.current[7] = el; }}>
-          <FourierVisualization
-            isActive={currentSection === 7}
-            speed={speed}
-            isPlaying={isPlaying}
-            equation={sections[7].equation}
-          />
-        </div>
-      </div>
-    </>
-  );
-};
-
-// Shared component for equation display
-const EquationDisplay: React.FC<{ equation: string; isActive: boolean }> = ({ equation, isActive }) => (
-  <motion.div
-    className="absolute top-4 left-4 z-10 bg-black/80 backdrop-blur-sm border border-green-700/50 rounded-lg p-4 max-w-md"
-    initial={{ opacity: 0, x: -20 }}
-    animate={{ opacity: isActive ? 1 : 0.5, x: 0 }}
-  >
-    <div className="text-green-400 font-mono text-sm whitespace-pre-line leading-relaxed">
-      {equation}
-    </div>
-  </motion.div>
-);
-
-// 3D projection helper
-function project3D(x: number, y: number, z: number, angleX: number, angleY: number, scale: number, offsetX: number, offsetY: number): [number, number] {
-  const cosX = Math.cos(angleX);
-  const sinX = Math.sin(angleX);
-  const cosY = Math.cos(angleY);
-  const sinY = Math.sin(angleY);
-  
-  const x1 = x;
-  const y1 = y * cosX - z * sinX;
-  const z1 = y * sinX + z * cosX;
-  
-  const x2 = x1 * cosY + z1 * sinY;
-  const y2 = y1;
-  const z2 = -x1 * sinY + z1 * cosY;
-  
-  const px = offsetX + x2 * scale;
-  const py = offsetY + y2 * scale;
-  
-  return [px, py];
-}
-
-// Lorenz Attractor - 3D with real-time drawing
-const LorenzVisualization: React.FC<{ isActive: boolean; speed: number; isPlaying: boolean; equation: string }> = ({ isActive, speed, isPlaying, equation }) => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const animationRef = useRef<number | undefined>(undefined);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas || !isActive) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    let width = window.innerWidth;
-    let height = window.innerHeight;
-    canvas.width = width;
-    canvas.height = height;
-
-    let time = 0;
-    const sigma = 10;
-    const rho = 28;
-    const beta = 8 / 3;
-    const trailLength = 600;
-    const dt = 0.008;
-
-    const attractorCount = 3;
-    type Attractor = {
-      trail: { x: number; y: number; z: number }[];
-      state: { x: number; y: number; z: number };
-    };
-    let attractors: Attractor[] = [];
-
-    for (let i = 0; i < attractorCount; i++) {
-      const x0 = -20 + 40 * (i / (attractorCount - 1));
-      const y0 = -20 + 40 * ((i * 2) % attractorCount) / (attractorCount - 1);
-      const z0 = 10 + 10 * i;
-      const state = { x: x0, y: y0, z: z0 };
-      attractors.push({
-        trail: [],
-        state: { ...state }
-      });
-    }
-  
-    function resize() {
-      const currentCanvas = canvasRef.current;
-      if (!currentCanvas) return;
-      width = window.innerWidth;
-      height = window.innerHeight;
-      currentCanvas.width = width;
-      currentCanvas.height = height;
-    }
-
-    window.addEventListener('resize', resize);
-
-    function draw() {
-      if (!ctx || !isPlaying) {
-        if (animationRef.current) {
-          cancelAnimationFrame(animationRef.current);
-        }
-        return;
-      }
-
-      ctx.fillStyle = 'black';
-      ctx.fillRect(0, 0, width, height);
-
-      const margin = 0.08;
-      const w = width * (1 - 2 * margin);
-      const h = height * (1 - 2 * margin);
-      const scale = Math.min(w / 60, h / 60);
-      const offsetX = width / 2;
-      const offsetY = height / 2;
-
-      const angleX = time * 0.18 * speed;
-      const angleY = time * 0.12 * speed;
-
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
-      ctx.shadowBlur = 20;
-      ctx.lineWidth = 2.2;
-
-      attractors.forEach((attractor, index) => {
-        if (attractor.trail.length > 1) {
-          ctx.beginPath();
-          for (let i = 0; i < attractor.trail.length - 1; i++) {
-            let p = attractor.trail[i];
-            let [px, py] = project3D(p.x, p.y, p.z, angleX, angleY, scale, offsetX, offsetY);
-            if (i === 0) ctx.moveTo(px, py);
-            else ctx.lineTo(px, py);
-          }
-          const hue = (time * 90 * speed + index * 360 / attractorCount) % 360;
-          ctx.strokeStyle = `hsl(${hue}, 100%, 60%)`;
-          ctx.shadowColor = `hsl(${hue}, 100%, 80%)`;
-          ctx.stroke();
-        }
-
-        let { x, y, z } = attractor.state;
-        const dx = sigma * (y - x);
-        const dy = x * (rho - z) - y;
-        const dz = x * y - beta * z;
-        attractor.state = {
-          x: x + dx * dt * speed,
-          y: y + dy * dt * speed,
-          z: z + dz * dt * speed
-        };
-        attractor.trail.push({ ...attractor.state });
-        if (attractor.trail.length > trailLength) {
-          attractor.trail.shift();
-        }
-      });
-
-      time += 0.012 * speed;
-      animationRef.current = requestAnimationFrame(draw);
-    }
-
-    if (isPlaying) draw();
-
-    return () => {
-      window.removeEventListener('resize', resize);
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
-    };
-  }, [isActive, speed, isPlaying]);
-
-  return (
-    <section className="h-screen relative flex items-center justify-center">
-      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
-      <EquationDisplay equation={equation} isActive={isActive} />
-      <motion.div
-        className="absolute top-20 left-1/2 -translate-x-1/2 z-10"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: isActive ? 1 : 0.3 }}
-      >
-        <h2 className="text-2xl font-bold matrix-font text-green-400" style={{
-          textShadow: '0 0 10px #00ff00',
-        }}>
-          Lorenz Attractor
-        </h2>
-      </motion.div>
-    </section>
-  );
-};
-
-// Lissajous Curves - 3D with real-time drawing
-const LissajousVisualization: React.FC<{ isActive: boolean; speed: number; isPlaying: boolean; equation: string }> = ({ isActive, speed, isPlaying, equation }) => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const animationRef = useRef<number | undefined>(undefined);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas || !isActive) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    let width = window.innerWidth;
-    let height = window.innerHeight;
-      canvas.width = width;
-      canvas.height = height;
-
-    const centerX = width / 2;
-    const centerY = height / 2;
-    let time = 0;
-    let currentPoint = 0;
-
-    function resize() {
-      const currentCanvas = canvasRef.current;
-      if (!currentCanvas) return;
-      width = window.innerWidth;
-      height = window.innerHeight;
-      currentCanvas.width = width;
-      currentCanvas.height = height;
-    }
-
-    window.addEventListener('resize', resize);
-
-    function draw() {
-      if (!ctx || !isPlaying) {
-        if (animationRef.current) {
-          cancelAnimationFrame(animationRef.current);
-        }
-        return;
-      }
-
-      ctx.fillStyle = 'black';
-      ctx.fillRect(0, 0, width, height);
-
-      const scale = Math.min(width, height) / 3;
-      const angleX = time * 0.15 * speed;
-      const angleY = time * 0.1 * speed;
-
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
-      ctx.shadowBlur = 15;
-      ctx.lineWidth = 2;
-
-      const curves = [
-        { a: 3, b: 2, hue: 0 },
-        { a: 5, b: 4, hue: 120 },
-        { a: 4, b: 3, hue: 240 },
-      ];
-
-      curves.forEach(({ a, b, hue }) => {
-        ctx.beginPath();
-        const maxPoints = 1000;
-        const pointsToDraw = Math.min(currentPoint, maxPoints);
-        
-        for (let i = 0; i <= pointsToDraw; i++) {
-          const t = (i / maxPoints) * Math.PI * 2 + time * speed;
-          const x = scale * Math.sin(a * t);
-          const y = scale * Math.sin(b * t + time * speed * 0.5);
-          const z = scale * 0.3 * Math.cos((a + b) * t);
-          
-          const [px, py] = project3D(x, y, z, angleX, angleY, 1, centerX, centerY);
-          if (i === 0) ctx.moveTo(px, py);
-          else ctx.lineTo(px, py);
-        }
-        
-        const currentHue = (hue + time * speed * 30) % 360;
-        ctx.strokeStyle = `hsl(${currentHue}, 100%, 60%)`;
-        ctx.shadowColor = `hsl(${currentHue}, 100%, 70%)`;
-        ctx.stroke();
-      });
-
-      currentPoint += 3 * speed;
-      if (currentPoint > 1000) currentPoint = 1000;
-      time += 0.02 * speed;
-      animationRef.current = requestAnimationFrame(draw);
-    }
-
-    if (isPlaying) {
-      currentPoint = 0;
-    draw();
-    }
-
-    return () => {
-      window.removeEventListener('resize', resize);
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
-    };
-  }, [isActive, speed, isPlaying]);
-
-  return (
-    <section className="h-screen relative flex items-center justify-center">
-      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
-      <EquationDisplay equation={equation} isActive={isActive} />
-      <motion.div
-        className="absolute top-20 left-1/2 -translate-x-1/2 z-10"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: isActive ? 1 : 0.3 }}
-      >
-        <h2 className="text-2xl font-bold matrix-font text-green-400" style={{
-          textShadow: '0 0 10px #00ff00',
-        }}>
-          Lissajous Curves
-        </h2>
-      </motion.div>
-    </section>
-  );
-};
-
-// Epicycloid - 3D with real-time drawing
-const EpicycloidVisualization: React.FC<{ isActive: boolean; speed: number; isPlaying: boolean; equation: string }> = ({ isActive, speed, isPlaying, equation }) => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const animationRef = useRef<number | undefined>(undefined);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas || !isActive) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    let width = window.innerWidth;
-    let height = window.innerHeight;
-    canvas.width = width;
-    canvas.height = height;
-
-    const centerX = width / 2;
-    const centerY = height / 2;
-    let time = 0;
-    let currentPoint = 0;
-
-    function resize() {
-      const currentCanvas = canvasRef.current;
-      if (!currentCanvas) return;
-      width = window.innerWidth;
-      height = window.innerHeight;
-      currentCanvas.width = width;
-      currentCanvas.height = height;
-    }
-
-    window.addEventListener('resize', resize);
-
-    function draw() {
-      if (!ctx || !isPlaying) {
-        if (animationRef.current) {
-          cancelAnimationFrame(animationRef.current);
-        }
-        return;
-      }
-
-      ctx.fillStyle = 'black';
-      ctx.fillRect(0, 0, width, height);
-
-      const R = 100;
-      const r = 30;
-      const scale = Math.min(width, height) / 400;
-      const angleX = time * 0.2 * speed;
-      const angleY = time * 0.15 * speed;
-
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
-      ctx.shadowBlur = 15;
-      ctx.lineWidth = 2;
-
-      ctx.beginPath();
-      const maxPoints = 1000;
-      const pointsToDraw = Math.min(currentPoint, maxPoints);
-      
-      for (let i = 0; i <= pointsToDraw; i++) {
-        const t = (i / maxPoints) * Math.PI * 4 + time * speed;
-        const x = scale * ((R + r) * Math.cos(t) - r * Math.cos((R + r) / r * t));
-        const y = scale * ((R + r) * Math.sin(t) - r * Math.sin((R + r) / r * t));
-        const z = scale * 50 * Math.sin(t * 2);
-        
-        const [px, py] = project3D(x, y, z, angleX, angleY, 1, centerX, centerY);
-        if (i === 0) ctx.moveTo(px, py);
-        else ctx.lineTo(px, py);
-      }
-
-      const hue = (time * speed * 50) % 360;
-      ctx.strokeStyle = `hsl(${hue}, 100%, 60%)`;
-      ctx.shadowColor = `hsl(${hue}, 100%, 70%)`;
-      ctx.stroke();
-
-      currentPoint += 4 * speed;
-      if (currentPoint > maxPoints) currentPoint = maxPoints;
-      time += 0.01 * speed;
-      animationRef.current = requestAnimationFrame(draw);
-    }
-
-    if (isPlaying) {
-      currentPoint = 0;
-    draw();
-    }
-
-    return () => {
-      window.removeEventListener('resize', resize);
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
-    };
-  }, [isActive, speed, isPlaying]);
-
-  return (
-    <section className="h-screen relative flex items-center justify-center">
-      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
-      <EquationDisplay equation={equation} isActive={isActive} />
-      <motion.div
-        className="absolute top-20 left-1/2 -translate-x-1/2 z-10"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: isActive ? 1 : 0.3 }}
-      >
-        <h2 className="text-2xl font-bold matrix-font text-green-400" style={{
-          textShadow: '0 0 10px #00ff00',
-        }}>
-          Epicycloid
-        </h2>
-      </motion.div>
-    </section>
-  );
-};
-
-// Butterfly Curve - 3D with real-time drawing
-const ButterflyVisualization: React.FC<{ isActive: boolean; speed: number; isPlaying: boolean; equation: string }> = ({ isActive, speed, isPlaying, equation }) => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const animationRef = useRef<number | undefined>(undefined);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas || !isActive) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    let width = window.innerWidth;
-    let height = window.innerHeight;
-    canvas.width = width;
-    canvas.height = height;
-
-    const centerX = width / 2;
-    const centerY = height / 2;
-    let time = 0;
-    let currentPoint = 0;
-
-    function resize() {
-      const currentCanvas = canvasRef.current;
-      if (!currentCanvas) return;
-      width = window.innerWidth;
-      height = window.innerHeight;
-      currentCanvas.width = width;
-      currentCanvas.height = height;
-    }
-
-    window.addEventListener('resize', resize);
-
-    function draw() {
-      if (!ctx || !isPlaying) {
-        if (animationRef.current) {
-          cancelAnimationFrame(animationRef.current);
-        }
-        return;
-      }
-
-      ctx.fillStyle = 'black';
-      ctx.fillRect(0, 0, width, height);
-
-      const scale = Math.min(width, height) / 6;
-      const angleX = time * 0.18 * speed;
-      const angleY = time * 0.12 * speed;
-
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
-      ctx.shadowBlur = 15;
-      ctx.lineWidth = 2;
-
-      ctx.beginPath();
-      const maxPoints = 2000;
-      const pointsToDraw = Math.min(currentPoint, maxPoints);
-      
-      for (let i = 0; i <= pointsToDraw; i++) {
-        const theta = (i / maxPoints) * Math.PI * 12 + time * speed * 0.1;
-        const r = Math.exp(Math.cos(theta)) - 2 * Math.cos(4 * theta) + Math.pow(Math.sin(theta / 12), 5);
-        const x = scale * r * Math.cos(theta);
-        const y = scale * r * Math.sin(theta);
-        const z = scale * 0.5 * Math.sin(theta * 3);
-        
-        const [px, py] = project3D(x, y, z, angleX, angleY, 1, centerX, centerY);
-        if (i === 0) ctx.moveTo(px, py);
-        else ctx.lineTo(px, py);
-      }
-
-      const hue = (time * speed * 40) % 360;
-      ctx.strokeStyle = `hsl(${hue}, 100%, 60%)`;
-      ctx.shadowColor = `hsl(${hue}, 100%, 70%)`;
-      ctx.stroke();
-
-      currentPoint += 5 * speed;
-      if (currentPoint > maxPoints) currentPoint = maxPoints;
-      time += 0.01 * speed;
-      animationRef.current = requestAnimationFrame(draw);
-    }
-
-    if (isPlaying) {
-      currentPoint = 0;
-      draw();
-    }
-
-    return () => {
-      window.removeEventListener('resize', resize);
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
-    };
-  }, [isActive, speed, isPlaying]);
-
-  return (
-    <section className="h-screen relative flex items-center justify-center">
-      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
-      <EquationDisplay equation={equation} isActive={isActive} />
-      <motion.div
-        className="absolute top-20 left-1/2 -translate-x-1/2 z-10"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: isActive ? 1 : 0.3 }}
-      >
-        <h2 className="text-2xl font-bold matrix-font text-green-400" style={{
-          textShadow: '0 0 10px #00ff00',
-        }}>
-          Butterfly Curve
-        </h2>
-      </motion.div>
-    </section>
-  );
-};
-
-// Heart Curve - 3D with real-time drawing
-const HeartVisualization: React.FC<{ isActive: boolean; speed: number; isPlaying: boolean; equation: string }> = ({ isActive, speed, isPlaying, equation }) => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const animationRef = useRef<number | undefined>(undefined);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas || !isActive) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    let width = window.innerWidth;
-    let height = window.innerHeight;
-    canvas.width = width;
-    canvas.height = height;
-
-    const centerX = width / 2;
-    const centerY = height / 2;
-    let time = 0;
-    let currentPoint = 0;
-
-    function resize() {
-      const currentCanvas = canvasRef.current;
-      if (!currentCanvas) return;
-      width = window.innerWidth;
-      height = window.innerHeight;
-      currentCanvas.width = width;
-      currentCanvas.height = height;
-    }
-
-    window.addEventListener('resize', resize);
-
-    function draw() {
-      if (!ctx || !isPlaying) {
-        if (animationRef.current) {
-          cancelAnimationFrame(animationRef.current);
-        }
-        return;
-      }
-
-      ctx.fillStyle = 'black';
-      ctx.fillRect(0, 0, width, height);
-
-      const scale = Math.min(width, height) / 40;
-      const angleX = time * 0.2 * speed;
-      const angleY = time * 0.15 * speed;
-      
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
-      ctx.shadowBlur = 15;
-      ctx.lineWidth = 2;
-
-      ctx.beginPath();
-      const maxPoints = 1000;
-      const pointsToDraw = Math.min(currentPoint, maxPoints);
-      
-      for (let i = 0; i <= pointsToDraw; i++) {
-        const t = (i / maxPoints) * Math.PI * 2 + time * speed;
-        const x = scale * 16 * Math.pow(Math.sin(t), 3);
-        const y = -scale * (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
-        const z = scale * 5 * Math.sin(t * 4);
-        
-        const [px, py] = project3D(x, y, z, angleX, angleY, 1, centerX, centerY);
-        if (i === 0) ctx.moveTo(px, py);
-        else ctx.lineTo(px, py);
-      }
-
-      const hue = (time * speed * 50) % 360;
-      ctx.strokeStyle = `hsl(${hue}, 100%, 60%)`;
-      ctx.shadowColor = `hsl(${hue}, 100%, 70%)`;
-      ctx.stroke();
-
-      currentPoint += 4 * speed;
-      if (currentPoint > maxPoints) currentPoint = maxPoints;
-      time += 0.01 * speed;
-      animationRef.current = requestAnimationFrame(draw);
-    }
-
-    if (isPlaying) {
-      currentPoint = 0;
-    draw();
-    }
-
-    return () => {
-      window.removeEventListener('resize', resize);
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
-    };
-  }, [isActive, speed, isPlaying]);
-
-  return (
-    <section className="h-screen relative flex items-center justify-center">
-      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
-      <EquationDisplay equation={equation} isActive={isActive} />
-      <motion.div
-        className="absolute top-20 left-1/2 -translate-x-1/2 z-10"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: isActive ? 1 : 0.3 }}
-      >
-        <h2 className="text-2xl font-bold matrix-font text-green-400" style={{
-          textShadow: '0 0 10px #00ff00',
-        }}>
-          Heart Curve
-        </h2>
-      </motion.div>
-    </section>
-  );
-};
-
-// Rose Curves - 3D with real-time drawing
-const RoseVisualization: React.FC<{ isActive: boolean; speed: number; isPlaying: boolean; equation: string }> = ({ isActive, speed, isPlaying, equation }) => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const animationRef = useRef<number | undefined>(undefined);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas || !isActive) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    let width = window.innerWidth;
-    let height = window.innerHeight;
-    canvas.width = width;
-    canvas.height = height;
-
-    const centerX = width / 2;
-    const centerY = height / 2;
-    let time = 0;
-    let currentPoint = 0;
-
-    function resize() {
-      const currentCanvas = canvasRef.current;
-      if (!currentCanvas) return;
-      width = window.innerWidth;
-      height = window.innerHeight;
-      currentCanvas.width = width;
-      currentCanvas.height = height;
-    }
-
-    window.addEventListener('resize', resize);
-
-    function draw() {
-      if (!ctx || !isPlaying) {
-        if (animationRef.current) {
-          cancelAnimationFrame(animationRef.current);
-        }
-        return;
-      }
-
-      ctx.fillStyle = 'black';
-      ctx.fillRect(0, 0, width, height);
-
-      const scale = Math.min(width, height) / 4;
-      const angleX = time * 0.18 * speed;
-      const angleY = time * 0.12 * speed;
-      
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
-      ctx.shadowBlur = 15;
-      ctx.lineWidth = 2;
-
-      const roses = [
-        { k: 5, hue: 0 },
-        { k: 4, hue: 120 },
-        { k: 3, hue: 240 },
-      ];
-
-      roses.forEach(({ k, hue }) => {
-        ctx.beginPath();
-        const maxPoints = 1000;
-        const pointsToDraw = Math.min(currentPoint, maxPoints);
-        
-        for (let i = 0; i <= pointsToDraw; i++) {
-          const theta = (i / maxPoints) * Math.PI * 2 + time * speed * 0.1;
-          const r = scale * Math.cos(k * theta) * (1 + 0.3 * Math.sin(time * speed));
-          const x = r * Math.cos(theta);
-          const y = r * Math.sin(theta);
-          const z = scale * 0.2 * Math.sin(theta * k);
-          
-          const [px, py] = project3D(x, y, z, angleX, angleY, 1, centerX, centerY);
-          if (i === 0) ctx.moveTo(px, py);
-          else ctx.lineTo(px, py);
-        }
-        
-        const currentHue = (hue + time * speed * 30) % 360;
-        ctx.strokeStyle = `hsl(${currentHue}, 100%, 60%)`;
-        ctx.shadowColor = `hsl(${currentHue}, 100%, 70%)`;
-        ctx.stroke();
-      });
-
-      currentPoint += 3 * speed;
-      if (currentPoint > 1000) currentPoint = 1000;
-      time += 0.02 * speed;
-      animationRef.current = requestAnimationFrame(draw);
-    }
-
-    if (isPlaying) {
-      currentPoint = 0;
-      draw();
-    }
-
-    return () => {
-      window.removeEventListener('resize', resize);
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
-    };
-  }, [isActive, speed, isPlaying]);
-
-  return (
-    <section className="h-screen relative flex items-center justify-center">
-      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
-      <EquationDisplay equation={equation} isActive={isActive} />
-      <motion.div
-        className="absolute top-20 left-1/2 -translate-x-1/2 z-10"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: isActive ? 1 : 0.3 }}
-      >
-        <h2 className="text-2xl font-bold matrix-font text-green-400" style={{
-          textShadow: '0 0 10px #00ff00',
-        }}>
-          Rose Curves
-        </h2>
-      </motion.div>
-    </section>
-  );
-};
-
-// Spiral Visualization - 3D with real-time drawing
-const SpiralVisualization: React.FC<{ isActive: boolean; speed: number; isPlaying: boolean; equation: string }> = ({ isActive, speed, isPlaying, equation }) => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const animationRef = useRef<number | undefined>(undefined);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas || !isActive) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    let width = window.innerWidth;
-    let height = window.innerHeight;
-    canvas.width = width;
-    canvas.height = height;
-
-    const centerX = width / 2;
-    const centerY = height / 2;
-    let time = 0;
-    let theta = 0;
-    const a = 5;
-    const b = 5;
-
-    function resize() {
-      const currentCanvas = canvasRef.current;
-      if (!currentCanvas) return;
-      width = window.innerWidth;
-      height = window.innerHeight;
-      currentCanvas.width = width;
-      currentCanvas.height = height;
-    }
-
-    window.addEventListener('resize', resize);
-
-    function draw() {
-      if (!ctx || !isPlaying) {
-        if (animationRef.current) {
-          cancelAnimationFrame(animationRef.current);
-        }
-        return;
-      }
-
-      ctx.fillStyle = 'black';
-      ctx.fillRect(0, 0, width, height);
-
-      const angleX = time * 0.15 * speed;
-      const angleY = time * 0.1 * speed;
-      
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
-      ctx.shadowBlur = 20;
-      ctx.lineWidth = 3;
-
-      const hue = (time * 60 * speed) % 360;
-      ctx.strokeStyle = `hsl(${hue}, 100%, 60%)`;
-      ctx.shadowColor = `hsl(${hue}, 100%, 70%)`;
-
-        ctx.beginPath();
-      const radiusLimit = 0.45 * Math.min(width, height);
-      const rMax = a + b * theta;
-      const scale = radiusLimit / rMax;
-
-      for (let t = 0; t <= theta; t += 0.1) {
-        const r = a + b * t;
-        const x = scale * r * Math.cos(t);
-        const y = scale * r * Math.sin(t);
-        const z = scale * 20 * Math.sin(t * 2);
-        
-        const [px, py] = project3D(x, y, z, angleX, angleY, 1, centerX, centerY);
-        if (t === 0) ctx.moveTo(px, py);
-          else ctx.lineTo(px, py);
-        }
-
-        ctx.stroke();
-      theta += 0.05 * speed;
-      time += 0.02 * speed;
-      animationRef.current = requestAnimationFrame(draw);
-    }
-
-    if (isPlaying) draw();
-
-    return () => {
-      window.removeEventListener('resize', resize);
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
-    };
-  }, [isActive, speed, isPlaying]);
-
-  return (
-    <section className="h-screen relative flex items-center justify-center">
-      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
-      <EquationDisplay equation={equation} isActive={isActive} />
-      <motion.div
-        className="absolute top-20 left-1/2 -translate-x-1/2 z-10"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: isActive ? 1 : 0.3 }}
-      >
-        <h2 className="text-2xl font-bold matrix-font text-green-400" style={{
-          textShadow: '0 0 10px #00ff00',
-        }}>
-          Archimedean Spiral
-        </h2>
-      </motion.div>
-    </section>
-  );
-};
-
-// Fourier Series - 3D with real-time drawing
-const FourierVisualization: React.FC<{ isActive: boolean; speed: number; isPlaying: boolean; equation: string }> = ({ isActive, speed, isPlaying, equation }) => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const animationRef = useRef<number | undefined>(undefined);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas || !isActive) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    let width = window.innerWidth;
-    let height = window.innerHeight;
-    canvas.width = width;
-    canvas.height = height;
-
-    let time = 0;
-    let currentPoint = 0;
-
-    function resize() {
-      const currentCanvas = canvasRef.current;
-      if (!currentCanvas) return;
-      width = window.innerWidth;
-      height = window.innerHeight;
-      currentCanvas.width = width;
-      currentCanvas.height = height;
-    }
-
-    window.addEventListener('resize', resize);
-
-    function draw() {
-      if (!ctx || !isPlaying) {
-        if (animationRef.current) {
-          cancelAnimationFrame(animationRef.current);
-        }
-        return;
-      }
-
-      ctx.fillStyle = 'black';
-      ctx.fillRect(0, 0, width, height);
-
-      const centerY = height / 2;
-      const centerX = width / 2;
-      const frequencies = 15;
-      const angleX = time * 0.1 * speed;
-      const angleY = time * 0.08 * speed;
-
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
-      ctx.shadowBlur = 10;
-      ctx.lineWidth = 2;
-
-      ctx.beginPath();
-      const maxPoints = width;
-      const pointsToDraw = Math.min(currentPoint, maxPoints);
-      
-      for (let x = 0; x <= pointsToDraw; x += 2) {
-        let y = 0;
-        for (let n = 1; n <= frequencies; n++) {
-          const amplitude = 50 / n;
-          const frequency = n * 0.02;
-          y += amplitude * Math.sin(frequency * x + time * speed * n);
-        }
-        const z = 30 * Math.sin(x * 0.01);
-        const [px, py] = project3D(x - centerX, y, z, angleX, angleY, 1, centerX, centerY);
-        if (x === 0) ctx.moveTo(px, py);
-        else ctx.lineTo(px, py);
-      }
-
-      const hue = (time * speed * 30) % 360;
-      ctx.strokeStyle = `hsl(${hue}, 100%, 60%)`;
-      ctx.shadowColor = `hsl(${hue}, 100%, 70%)`;
-      ctx.stroke();
-
-      currentPoint += 3 * speed;
-      if (currentPoint > maxPoints) currentPoint = maxPoints;
-      time += 0.02 * speed;
-      animationRef.current = requestAnimationFrame(draw);
-    }
-
-    if (isPlaying) {
-      currentPoint = 0;
-    draw();
-    }
-
-    return () => {
-      window.removeEventListener('resize', resize);
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
-    };
-  }, [isActive, speed, isPlaying]);
-
-  return (
-    <section className="h-screen relative flex items-center justify-center">
-      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
-      <EquationDisplay equation={equation} isActive={isActive} />
-      <motion.div
-        className="absolute top-20 left-1/2 -translate-x-1/2 z-10"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: isActive ? 1 : 0.3 }}
-      >
-        <h2 className="text-2xl font-bold matrix-font text-green-400" style={{
-          textShadow: '0 0 10px #00ff00',
-        }}>
-          Fourier Series
-        </h2>
-      </motion.div>
+        </>
+      )}
+
+      {/* ===== curve sections ===== */}
+      {SPECS.map((spec, i) => (
+        <section
+          key={spec.id}
+          ref={(el) => { sectionRefs.current[i] = el; }}
+          className="relative h-screen w-full overflow-hidden"
+        >
+          <CurveStage spec={spec} isActive={entered && current === i} speed={speed} playing={playing} mouse={mouse} />
+
+          {/* caption block */}
+          <motion.div
+            className="absolute left-6 md:left-24 bottom-24 md:bottom-28 z-10 max-w-md"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: current === i ? 1 : 0.25, y: current === i ? 0 : 20 }}
+            transition={{ duration: 0.5 }}
+          >
+            <div className="font-mono text-[11px] tracking-[0.3em] uppercase mb-2" style={{ color: spec.accent }}>
+              {String(i + 1).padStart(2, "0")} / {String(TOTAL).padStart(2, "0")}
+            </div>
+            <h2 className="matrix-font text-3xl md:text-4xl mb-3 text-white" style={{ textShadow: `0 0 18px ${spec.accent}66` }}>
+              {spec.name}
+            </h2>
+            <pre className="font-mono text-xs md:text-sm whitespace-pre-line leading-relaxed mb-4 border-l-2 pl-3" style={{ color: spec.accent, borderColor: spec.accent + "66" }}>
+              {spec.equation}
+            </pre>
+            <p className="text-white/60 text-sm leading-relaxed">{spec.caption}</p>
+          </motion.div>
+        </section>
+      ))}
+
+      {/* ===== outro ===== */}
+      <section className="relative min-h-screen w-full flex flex-col items-center justify-center bg-black text-center px-6">
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+        >
+          <p className="font-mono text-[11px] tracking-[0.4em] uppercase text-green-500/50 mb-5">end of gallery</p>
+          <h2 className="matrix-font text-4xl md:text-6xl text-green-200 mb-5" style={{ textShadow: "0 0 24px rgba(0,255,100,0.35)" }}>
+            Math, all the way down.
+          </h2>
+          <p className="max-w-lg mx-auto text-green-100/60 leading-relaxed mb-10">
+            It&rsquo;s the substrate. The same equations that drew these curves quantize my ML models,
+            score audio features, and shape a 25,000-node planet on the home page.
+          </p>
+          <div className="flex flex-wrap gap-4 justify-center">
+            <Link href="/projects" className="px-7 py-3 rounded-full bg-green-400 text-black font-semibold transition-all hover:bg-green-300 hover:shadow-[0_0_24px_rgba(0,255,100,0.45)]">
+              See where it&rsquo;s used →
+            </Link>
+            <Link href="/" className="px-6 py-3 rounded-full border border-green-400/30 text-green-100/90 transition-all hover:border-green-400/70 hover:text-white">
+              Back to the planet
+            </Link>
+          </div>
+        </motion.div>
       </section>
+    </div>
   );
-};
-
-export default MysteryPage;
+}

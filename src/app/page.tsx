@@ -1,129 +1,124 @@
 "use client";
 
-import React from "react";
-import Image from "next/image";
+import React, { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { MatrixBackground } from "@/components/MatrixEffects";
+import { NeuralEarth, type EarthMode, type StoryBeat } from "@/components/NeuralEarth";
 import { useTypingEffect } from "@/hooks/useTypingEffect";
 
-function StyledButton({
-  children,
-  href,
-  gradient,
-}: {
-  children: React.ReactNode;
-  href: string;
-  gradient: string;
-}) {
-  return (
-    <Link href={href}>
-      <motion.button
-        whileHover={{ scale: 1.05, y: -2 }}
-        whileTap={{ scale: 0.95 }}
-        className="px-8 py-3 rounded-full font-bold matrix-font text-white relative overflow-hidden"
-        style={{
-          background: gradient,
-          boxShadow: "0 4px 0 0 rgba(0,0,0,0.25), 0 2px 12px 0 rgba(0,0,0,0.12)",
-          textShadow: "0 0 10px #fff, 0 0 18px #fff, 0 0 12px #00ff00, 0 0 2px #fff",
-        }}
-    >
-      {children}
-      </motion.button>
-    </Link>
-  );
-}
+// The 8 beats revealed after the globe shatters — my story, one card at a time.
+const STORY: StoryBeat[] = [
+  { t: "That planet was 25,000 particles", d: "Continents sampled from satellite data. Tectonic plates from spherical Voronoi. A molten core underneath. All placed by code." },
+  { t: "And you just shattered it", d: "A shockwave rippled node-to-node from the exact point you clicked. I can't help building details like that." },
+  { t: "I'm Saksham", d: "Computer Engineering @ USF, Math minor, 3.89 GPA, Presidential Scholar. Full-stack by habit, embedded by curiosity." },
+  { t: "I've shipped to 40,000+ people", d: "During India's second COVID wave I founded a platform routing 40K+ users to live ICU beds and oxygen — at ~99.9% uptime." },
+  { t: "And squeezed ML onto a $35 board", d: "MoodScope reads emotion from a face at ~30 ms/frame, entirely on a Raspberry Pi — no data ever leaves the device." },
+  { t: "Math isn't decoration here", d: "Lorenz attractors, Fourier series, rose curves — there's a hidden page where I animate them all from raw equations. Go find the ???." },
+  { t: "Proof over promises", d: "21 merged open-source PRs. A live GitHub feed on the projects page. No templates — every pixel of this site is hand-written." },
+  { t: "Let's build something", d: "If any of this made you curious, the work is one click away — and so am I." },
+];
 
 export default function Home() {
-  const nameText = "Hi, I'm Saksham Srivastava";
-  const { displayedText: displayedName, isTyping: isTypingName } = useTypingEffect(nameText, 100);
-  
-  const taglineText = "Computer Engineering Major & Math Minor | Building for Fun & Impact";
-  const { displayedText: displayedTagline } = useTypingEffect(taglineText, 50, !isTypingName);
+  const [mode, setMode] = useState<EarthMode>("globe");
+  const nameText = "Saksham Srivastava";
+  const { displayedText: displayedName, isTyping: isTypingName } = useTypingEffect(nameText, 90);
+
+  const heroHidden = mode !== "globe";
 
   return (
     <>
-      <MatrixBackground />
-      <main className="relative z-10 min-h-screen flex flex-col items-center justify-center text-white px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="text-center max-w-4xl"
-        >
-          {/* Typing Name */}
-          <h1 
-            className="matrix-font text-5xl md:text-7xl mb-6"
-        style={{
-              textShadow: "0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #00ff00",
-            }}
-          >
-            {displayedName}
-            {isTypingName && <span className="animate-pulse">|</span>}
-        </h1>
+      <NeuralEarth story={STORY} ctaHref="/projects" ctaLabel="See my work →" onModeChange={setMode} />
 
-          {/* Typing Tagline */}
-          <p 
-            className="matrix-font text-xl md:text-2xl mb-8 text-green-200"
-            style={{
-              textShadow: "0 0 5px #00ff00",
-            }}
-          >
-            {displayedTagline}
+      <main
+        className={`relative z-10 min-h-screen flex flex-col items-center justify-between text-white px-4 transition-opacity duration-700 ${
+          heroHidden ? "opacity-0 pointer-events-none" : "opacity-100"
+        }`}
+      >
+        {/* Soft vignette so the hero copy stays readable over the planet */}
+        <div
+          className="fixed inset-0 pointer-events-none -z-[1]"
+          style={{
+            background:
+              "radial-gradient(ellipse 60% 42% at 50% 48%, rgba(0,0,0,0.62) 0%, rgba(0,0,0,0.3) 55%, rgba(0,0,0,0) 100%)",
+          }}
+        />
+        {/* Top spacer (nav lives above) */}
+        <div className="h-24" />
+
+        {/* Hero */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="text-center max-w-3xl select-none"
+        >
+          <p className="font-mono text-[11px] md:text-xs tracking-[0.35em] uppercase text-green-400/70 mb-5">
+            computer engineering · math · usf
           </p>
 
-          {/* Profile Image */}
+          <h1 className="matrix-font text-5xl md:text-7xl mb-5 text-green-50" style={{ textShadow: "0 0 24px rgba(0,255,100,0.35)" }}>
+            {displayedName}
+            {isTypingName && <span className="animate-pulse text-green-400">|</span>}
+          </h1>
+
+          <p className="text-base md:text-lg text-green-100/70 max-w-xl mx-auto mb-10 leading-relaxed">
+            Computer engineer building where math meets the machine — from
+            on-device ML to full-stack platforms that have served 40,000+ users.
+          </p>
+
+          {/* Actions — one primary, two quiet, socials as a whisper */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 1, duration: 0.5 }}
-            className="mb-8 relative"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.9, duration: 0.5 }}
+            className="flex flex-col items-center gap-5"
           >
-            <div className="relative w-48 h-48 md:w-64 md:h-64 mx-auto">
-              <div className="absolute inset-0 rounded-full border-2 border-green-400 animate-pulse" style={{
-                boxShadow: "0 0 20px rgba(0, 255, 0, 0.5)",
-              }} />
-              <div className="w-48 h-48 md:w-64 md:h-64 rounded-full border-4 border-green-500/50 relative z-10 bg-green-500/20 flex items-center justify-center" style={{
-                boxShadow: "0 0 30px rgba(0, 255, 0, 0.3)",
-              }}>
-                <span className="text-6xl md:text-8xl text-green-400 matrix-font">S</span>
-              </div>
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              <Link
+                href="/projects"
+                className="px-7 py-3 rounded-full bg-green-400 text-black font-semibold text-sm md:text-base transition-all hover:bg-green-300 hover:shadow-[0_0_28px_rgba(0,255,100,0.45)]"
+              >
+                View Projects →
+              </Link>
+              <Link
+                href="/about"
+                className="px-6 py-3 rounded-full border border-green-400/30 text-green-100/90 text-sm md:text-base backdrop-blur-sm transition-all hover:border-green-400/70 hover:text-white hover:shadow-[0_0_18px_rgba(0,255,100,0.2)]"
+              >
+                About
+              </Link>
+              <Link
+                href="/contact"
+                className="px-6 py-3 rounded-full border border-green-400/30 text-green-100/90 text-sm md:text-base backdrop-blur-sm transition-all hover:border-green-400/70 hover:text-white hover:shadow-[0_0_18px_rgba(0,255,100,0.2)]"
+              >
+                Contact
+              </Link>
+            </div>
+
+            <div className="flex items-center gap-5 text-xs font-mono text-green-200/50">
+              <a href="https://github.com/saksham-45" target="_blank" rel="noopener noreferrer" className="hover:text-green-300 transition-colors">
+                github
+              </a>
+              <span className="text-green-500/30">/</span>
+              <a href="https://linkedin.com/in/sakshamsriv" target="_blank" rel="noopener noreferrer" className="hover:text-green-300 transition-colors">
+                linkedin
+              </a>
+              <span className="text-green-500/30">/</span>
+              <Link href="/mystery" className="hover:text-green-300 transition-colors">
+                ???
+              </Link>
             </div>
           </motion.div>
-
-          {/* Action Buttons */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.2, duration: 0.5 }}
-            className="flex flex-wrap gap-4 justify-center"
-          >
-            <StyledButton
-              href="/about"
-              gradient="linear-gradient(145deg, #1a6fff 0%, #00b7ff 100%)"
-            >
-              About Me
-            </StyledButton>
-            <StyledButton
-              href="/projects"
-              gradient="linear-gradient(145deg, #1a6fff 0%, #00b7ff 100%)"
-            >
-              Projects
-            </StyledButton>
-            <StyledButton
-              href="/contact"
-              gradient="linear-gradient(145deg, #ff3434 0%, #ff0000 100%)"
-            >
-              Contact
-            </StyledButton>
-            <StyledButton
-              href="/mystery"
-              gradient="linear-gradient(145deg, #ff3434 0%, #ff0000 100%)"
-            >
-              Mystery
-            </StyledButton>
-          </motion.div>
         </motion.div>
+
+        {/* Bottom hint */}
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 2.2, duration: 1 }}
+          className="pb-8 font-mono text-[11px] tracking-[0.25em] uppercase text-green-200/40"
+        >
+          drag to spin · click the planet
+        </motion.p>
       </main>
     </>
   );
