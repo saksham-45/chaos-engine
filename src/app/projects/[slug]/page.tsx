@@ -43,7 +43,7 @@ export default function ProjectDetailPage() {
   if (loading) {
     return (
       <>
-        <PlasmaBackground />
+        <PlasmaBackground theme="teal" />
         <main className="relative z-10 min-h-screen bg-black text-green-400 flex items-center justify-center">
           <div className="text-center">
             <div className="inline-block animate-spin text-green-400 text-4xl mb-4">⟳</div>
@@ -57,7 +57,7 @@ export default function ProjectDetailPage() {
   if (error || !project) {
     return (
       <>
-        <PlasmaBackground />
+        <PlasmaBackground theme="teal" />
         <main className="relative z-10 min-h-screen bg-black text-green-400 flex items-center justify-center">
           <div className="text-center">
             <p className="text-red-400 mb-4">{error || 'Project not found'}</p>
@@ -78,7 +78,7 @@ export default function ProjectDetailPage() {
 
   return (
     <>
-      <PlasmaBackground />
+      <PlasmaBackground theme="teal" />
       <main className="relative z-10 min-h-screen bg-black text-green-400">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
           {/* Breadcrumbs */}
