@@ -35,16 +35,16 @@ void main(){
   vec2 r = vec2(fbm(p + 3.5 * q + vec2(1.7, 9.2) + t * 1.1), fbm(p + 3.5 * q + vec2(8.3, 2.8) - t * 0.9));
   float f = fbm(p + 3.5 * r);
 
-  vec3 navy   = vec3(0.020, 0.078, 0.141); // #051424
-  vec3 violet = vec3(0.486, 0.227, 0.929); // #7c3aed
-  vec3 cyan   = vec3(0.200, 0.698, 0.902); // #33b2e6
+  vec3 navy = vec3(0.024, 0.086, 0.169); // #06162b  deep blue base
+  vec3 blue = vec3(0.086, 0.376, 0.808); // #1560ce  dark electric blue
+  vec3 cyan = vec3(0.325, 0.804, 0.925); // #53cdec  bright cyan veins
 
   vec3 col = navy;
-  col = mix(col, violet, clamp(f * 1.15, 0.0, 1.0));
+  col = mix(col, blue, clamp(f * 1.15, 0.0, 1.0));
   col = mix(col, cyan, clamp(pow(max(r.x, 0.0), 1.5) * 1.2 * (0.35 + 0.65 * uv.x), 0.0, 1.0));
-  col += violet * 0.10 * pow(clamp(f, 0.0, 1.0), 3.0);
+  col += cyan * 0.10 * pow(clamp(f, 0.0, 1.0), 3.0);
   col *= 1.0 - 0.34 * length(uv - vec2(0.5)); // soft vignette
-  col *= 0.55;                                // darken — content sits directly on it
+  col *= 0.62;                                // slightly lighter than the violet mix
 
   gl_FragColor = vec4(col, 1.0);
 }`;
