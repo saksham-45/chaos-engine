@@ -47,7 +47,7 @@ export default function BlogPostPage() {
   if (!post) {
     return (
       <>
-        <PlasmaBackground />
+        <PlasmaBackground theme="rose" />
         <main className="relative z-10 min-h-screen bg-black text-green-400 flex items-center justify-center">
           <div className="text-center">
             <p className="text-red-400 mb-4">Blog post not found</p>
@@ -65,7 +65,7 @@ export default function BlogPostPage() {
 
   return (
     <>
-      <PlasmaBackground />
+      <PlasmaBackground theme="rose" />
       <main className="relative z-10 min-h-screen bg-black text-green-400">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
           {/* Breadcrumbs */}

@@ -16,7 +16,7 @@ const STATS = [
 const AboutPage = () => {
   return (
     <>
-      <PlasmaBackground />
+      <PlasmaBackground theme="azure" />
       <main className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-green-400 min-h-screen">
         {/* Header */}
         <motion.header

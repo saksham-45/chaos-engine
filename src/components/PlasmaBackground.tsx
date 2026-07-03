@@ -15,6 +15,9 @@ const VERT = `attribute vec2 a; void main(){ gl_Position = vec4(a, 0.0, 1.0); }`
 const FRAG = `precision highp float;
 uniform vec2 uRes;
 uniform float uTime;
+uniform vec3 uBase;   // deep background
+uniform vec3 uMid;    // main plasma body
+uniform vec3 uAccent; // bright veins
 
 float hash(vec2 p){ p = fract(p * vec2(123.34, 345.45)); p += dot(p, p + 34.345); return fract(p.x * p.y); }
 float noise(vec2 p){
@@ -35,22 +38,42 @@ void main(){
   vec2 r = vec2(fbm(p + 3.5 * q + vec2(1.7, 9.2) + t * 1.1), fbm(p + 3.5 * q + vec2(8.3, 2.8) - t * 0.9));
   float f = fbm(p + 3.5 * r);
 
-  vec3 navy = vec3(0.024, 0.086, 0.169); // #06162b  deep blue base
-  vec3 blue = vec3(0.086, 0.376, 0.808); // #1560ce  dark electric blue
-  vec3 cyan = vec3(0.325, 0.804, 0.925); // #53cdec  bright cyan veins
-
-  vec3 col = navy;
-  col = mix(col, blue, clamp(f * 1.15, 0.0, 1.0));
-  col = mix(col, cyan, clamp(pow(max(r.x, 0.0), 1.5) * 1.2 * (0.35 + 0.65 * uv.x), 0.0, 1.0));
-  col += cyan * 0.10 * pow(clamp(f, 0.0, 1.0), 3.0);
+  vec3 col = uBase;
+  col = mix(col, uMid, clamp(f * 1.15, 0.0, 1.0));
+  col = mix(col, uAccent, clamp(pow(max(r.x, 0.0), 1.5) * 1.2 * (0.35 + 0.65 * uv.x), 0.0, 1.0));
+  col += uAccent * 0.10 * pow(clamp(f, 0.0, 1.0), 3.0);
   col *= 1.0 - 0.34 * length(uv - vec2(0.5)); // soft vignette
-  col *= 0.62;                                // slightly lighter than the violet mix
+  col *= 0.62;                                // keep it dark — content sits on it
 
   gl_FragColor = vec4(col, 1.0);
 }`;
 
-export function PlasmaBackground({ className = "" }: { className?: string }) {
+function hexToRgb(hex: string): [number, number, number] {
+  const h = hex.replace("#", "");
+  const n = parseInt(h.length === 3 ? h.split("").map((c) => c + c).join("") : h, 16);
+  return [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255];
+}
+
+// Curated dark palettes — same tereliye flow, one mood per page. [base, mid, accent]
+export const PLASMA_THEMES = {
+  azure: { base: "#06162b", mid: "#1560ce", accent: "#53cdec" }, // deep blue → cyan
+  teal: { base: "#04191c", mid: "#0e766a", accent: "#35e2cf" }, // dark teal → aqua
+  indigo: { base: "#0a0a24", mid: "#3730a3", accent: "#8aa4ff" }, // indigo → periwinkle
+  rose: { base: "#170614", mid: "#7a1e52", accent: "#e56aa6" }, // deep plum → pink
+  ember: { base: "#170c02", mid: "#8a4e12", accent: "#f5b455" }, // burnt orange → gold
+} as const;
+
+export type PlasmaTheme = keyof typeof PLASMA_THEMES;
+
+export function PlasmaBackground({
+  theme = "azure",
+  className = "",
+}: {
+  theme?: PlasmaTheme;
+  className?: string;
+}) {
   const ref = useRef<HTMLCanvasElement>(null);
+  const pal = PLASMA_THEMES[theme];
 
   useEffect(() => {
     const canvas = ref.current;
@@ -88,6 +111,9 @@ export function PlasmaBackground({ className = "" }: { className?: string }) {
 
       const uRes = gl.getUniformLocation(prog, "uRes");
       const uTime = gl.getUniformLocation(prog, "uTime");
+      gl.uniform3f(gl.getUniformLocation(prog, "uBase"), ...hexToRgb(pal.base));
+      gl.uniform3f(gl.getUniformLocation(prog, "uMid"), ...hexToRgb(pal.mid));
+      gl.uniform3f(gl.getUniformLocation(prog, "uAccent"), ...hexToRgb(pal.accent));
 
       const resize = () => {
         const w = Math.max(1, Math.floor(canvas.clientWidth * SCALE));
@@ -127,7 +153,7 @@ export function PlasmaBackground({ className = "" }: { className?: string }) {
       canvas.removeEventListener("webglcontextrestored", onRestored);
       canvas.getContext("webgl")?.getExtension("WEBGL_lose_context")?.loseContext();
     };
-  }, []);
+  }, [pal.base, pal.mid, pal.accent]);
 
   return (
     <>
@@ -135,7 +161,7 @@ export function PlasmaBackground({ className = "" }: { className?: string }) {
         ref={ref}
         aria-hidden="true"
         className={`fixed inset-0 -z-10 h-full w-full ${className}`}
-        style={{ display: "block", background: "#051424" }}
+        style={{ display: "block", background: pal.base }}
       />
       {/* dark scrim so foreground copy stays legible over the plasma */}
       <div aria-hidden="true" className="fixed inset-0 -z-10 bg-black/35" />
