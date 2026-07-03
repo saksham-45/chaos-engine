@@ -27,11 +27,81 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: 'MATRIX', Arial, Helvetica, sans-serif;
+  /* Clean, legible body copy; MATRIX font is reserved for headings via .matrix-font */
+  font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
 .matrix-font {
   font-family: 'MATRIX', Arial, Helvetica, sans-serif;
+}
+
+/* ===== Signature custom cursor (ported from bAIyo) ===== */
+@media (pointer: fine) {
+  body.has-custom-cursor,
+  body.has-custom-cursor * {
+    cursor: none !important;
+  }
+}
+
+#cursor-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 99999;
+  mix-blend-mode: difference;
+  will-change: transform;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+#cursor-dot {
+  width: 9px;
+  height: 9px;
+  background-color: #fff;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.3s cubic-bezier(0.25, 1, 0.5, 1), height 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  will-change: width, height;
+}
+
+#cursor-wrapper.cursor-hover #cursor-dot {
+  width: 46px;
+  height: 46px;
+}
+
+/* Trailing ring — matrix green, eased behind the dot */
+#cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 34px;
+  height: 34px;
+  margin: -17px 0 0 -17px;
+  border: 1.5px solid rgba(0, 255, 65, 0.6);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 99998;
+  opacity: 0;
+  box-shadow: 0 0 12px rgba(0, 255, 65, 0.35), inset 0 0 8px rgba(0, 255, 65, 0.15);
+  transition: width 0.25s cubic-bezier(0.25, 1, 0.5, 1), height 0.25s cubic-bezier(0.25, 1, 0.5, 1),
+    border-color 0.25s ease, opacity 0.2s ease, background-color 0.25s ease;
+  will-change: transform;
+}
+
+#cursor-ring.cursor-hover {
+  width: 64px;
+  height: 64px;
+  margin: -32px 0 0 -32px;
+  border-color: rgba(0, 255, 65, 0.9);
+  background-color: rgba(0, 255, 65, 0.06);
+}
+
+#cursor-ring.cursor-down {
+  width: 22px;
+  height: 22px;
+  margin: -11px 0 0 -11px;
+  border-color: rgba(0, 255, 65, 1);
 }
 
 .glow-text {
