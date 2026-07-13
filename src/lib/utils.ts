@@ -56,7 +56,7 @@ export function getLanguageColor(language: string | null): string {
     'React': '#61dafb',
   };
 
-  return colors[language || ''] || '#00ff00'; // Default to Matrix green
+  return colors[language || ''] || '#3dd6c6';
 }
 
 /**

@@ -11,7 +11,7 @@ interface MatrixBackgroundProps {
 
 export function MatrixBackground({
   className = '',
-  color = '#00FF00',
+  color = '#3dd6c6',
   fontSize = 22,
   density = 3,
 }: MatrixBackgroundProps) {
@@ -104,9 +104,9 @@ interface GlowTextProps {
 
 export function GlowText({ children, className = '', intensity = 'medium' }: GlowTextProps) {
   const shadowIntensity = {
-    low: '0 0 5px #00ff00, 0 0 10px #00ff00',
-    medium: '0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #00ff00',
-    high: '0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #00ff00, 0 0 40px #00ff00',
+    low: '0 0 8px rgba(61,214,198,0.35)',
+    medium: '0 0 12px rgba(61,214,198,0.4)',
+    high: '0 0 16px rgba(61,214,198,0.5)',
   };
 
   return (
@@ -114,7 +114,7 @@ export function GlowText({ children, className = '', intensity = 'medium' }: Glo
       className={className}
       style={{
         textShadow: shadowIntensity[intensity],
-        color: '#00ff00',
+        color: '#3dd6c6',
       }}
     >
       {children}
