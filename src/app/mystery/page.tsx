@@ -403,19 +403,19 @@ export default function MysteryPage() {
             className="fixed inset-0 z-[70] flex flex-col items-center justify-center bg-black cursor-pointer px-6 text-center"
             onClick={() => setEntered(true)}
           >
-            <p className="font-mono text-[11px] tracking-[0.4em] uppercase text-green-500/50 mb-6">
-              you found the ???
+            <p className="label-mono mb-6">
+              you found the lab
             </p>
-            <h1 className="matrix-font text-4xl md:text-6xl text-green-300 mb-5" style={{ textShadow: "0 0 24px rgba(0,255,100,0.4)" }}>
+            <h1 className="text-4xl md:text-6xl font-semibold tracking-tight text-white mb-5">
               <Decrypt text="THE MATHEMATICS UNDERNEATH" />
             </h1>
-            <p className="max-w-lg text-green-100/60 leading-relaxed mb-10">
+            <p className="max-w-lg text-[var(--muted)] leading-relaxed mb-10">
               <Decrypt text="Everything I build starts as an equation. Here are eight of them — alive, drawing themselves, one line of math at a time." delay={600} />
             </p>
             <motion.span
               animate={{ y: [0, 6, 0] }}
               transition={{ repeat: Infinity, duration: 1.6 }}
-              className="font-mono text-sm tracking-[0.3em] uppercase text-green-400"
+              className="font-mono text-sm tracking-[0.3em] uppercase text-[var(--accent)]"
             >
               click to descend ↓
             </motion.span>
@@ -512,7 +512,7 @@ export default function MysteryPage() {
             <div className="font-mono text-[11px] tracking-[0.3em] uppercase mb-2" style={{ color: spec.accent }}>
               {String(i + 1).padStart(2, "0")} / {String(TOTAL).padStart(2, "0")}
             </div>
-            <h2 className="matrix-font text-3xl md:text-4xl mb-3 text-white" style={{ textShadow: `0 0 18px ${spec.accent}66` }}>
+            <h2 className="text-3xl md:text-4xl font-semibold tracking-tight mb-3 text-white">
               {spec.name}
             </h2>
             <pre className="font-mono text-xs md:text-sm whitespace-pre-line leading-relaxed mb-4 border-l-2 pl-3" style={{ color: spec.accent, borderColor: spec.accent + "66" }}>
@@ -530,19 +530,19 @@ export default function MysteryPage() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
         >
-          <p className="font-mono text-[11px] tracking-[0.4em] uppercase text-green-500/50 mb-5">end of gallery</p>
-          <h2 className="matrix-font text-4xl md:text-6xl text-green-200 mb-5" style={{ textShadow: "0 0 24px rgba(0,255,100,0.35)" }}>
+          <p className="label-mono mb-5">end of gallery</p>
+          <h2 className="text-4xl md:text-6xl font-semibold tracking-tight text-white mb-5">
             Math, all the way down.
           </h2>
-          <p className="max-w-lg mx-auto text-green-100/60 leading-relaxed mb-10">
+          <p className="max-w-lg mx-auto text-[var(--muted)] leading-relaxed mb-10">
             It&rsquo;s the substrate. The same equations that drew these curves quantize my ML models,
             score audio features, and shape a 25,000-node planet on the home page.
           </p>
           <div className="flex flex-wrap gap-4 justify-center">
-            <Link href="/projects" className="px-7 py-3 rounded-full bg-green-400 text-black font-semibold transition-all hover:bg-green-300 hover:shadow-[0_0_24px_rgba(0,255,100,0.45)]">
+            <Link href="/projects" className="btn-primary">
               See where it&rsquo;s used →
             </Link>
-            <Link href="/" className="px-6 py-3 rounded-full border border-green-400/30 text-green-100/90 transition-all hover:border-green-400/70 hover:text-white">
+            <Link href="/" className="btn-secondary">
               Back to the planet
             </Link>
           </div>

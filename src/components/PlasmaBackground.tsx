@@ -54,13 +54,13 @@ function hexToRgb(hex: string): [number, number, number] {
   return [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255];
 }
 
-// Curated dark palettes — same tereliye flow, one mood per page. [base, mid, accent]
+// Quiet refined-engineer palettes — low chroma, same accent family across pages.
 export const PLASMA_THEMES = {
-  azure: { base: "#06162b", mid: "#1560ce", accent: "#53cdec" }, // deep blue → cyan
-  teal: { base: "#04191c", mid: "#0e766a", accent: "#35e2cf" }, // dark teal → aqua
-  indigo: { base: "#0a0a24", mid: "#3730a3", accent: "#8aa4ff" }, // indigo → periwinkle
-  rose: { base: "#170614", mid: "#7a1e52", accent: "#e56aa6" }, // deep plum → pink
-  ember: { base: "#170c02", mid: "#8a4e12", accent: "#f5b455" }, // burnt orange → gold
+  azure: { base: "#0a0b0d", mid: "#0f2a32", accent: "#1a5c58" },
+  teal: { base: "#0a0b0d", mid: "#0d2e2a", accent: "#1f6b62" },
+  indigo: { base: "#0a0b0d", mid: "#12182a", accent: "#2a4a58" },
+  rose: { base: "#0a0b0d", mid: "#161820", accent: "#2a4540" },
+  ember: { base: "#0a0b0d", mid: "#1a1814", accent: "#3a5048" },
 } as const;
 
 export type PlasmaTheme = keyof typeof PLASMA_THEMES;
@@ -163,8 +163,8 @@ export function PlasmaBackground({
         className={`fixed inset-0 -z-10 h-full w-full ${className}`}
         style={{ display: "block", background: pal.base }}
       />
-      {/* dark scrim so foreground copy stays legible over the plasma */}
-      <div aria-hidden="true" className="fixed inset-0 -z-10 bg-black/35" />
+      {/* heavy scrim — plasma is atmosphere only, not the visual story */}
+      <div aria-hidden="true" className="fixed inset-0 -z-10 bg-[var(--background)]/55" />
     </>
   );
 }

@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Navigation } from "@/components/Navigation";
-import CustomCursor from "@/components/CustomCursor";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -20,8 +19,18 @@ export const metadata: Metadata = {
   description:
     "Computer Engineering student (B.S. '27, 3.89 GPA) at USF. On-device ML, full-stack platforms serving 40,000+ users, 21 merged open-source PRs. Python · C/C++ · React · Embedded Linux.",
   keywords: [
-    "Saksham Srivastava", "Computer Engineering", "Software Engineer Intern", "Full-Stack Developer",
-    "Machine Learning", "Embedded Systems", "USF", "Python", "C++", "React", "Next.js", "TensorFlow Lite",
+    "Saksham Srivastava",
+    "Computer Engineering",
+    "Software Engineer Intern",
+    "Full-Stack Developer",
+    "Machine Learning",
+    "Embedded Systems",
+    "USF",
+    "Python",
+    "C++",
+    "React",
+    "Next.js",
+    "TensorFlow Lite",
   ],
   authors: [{ name: "Saksham Srivastava" }],
   openGraph: {
@@ -35,7 +44,8 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Saksham Srivastava | Computer Engineer & Full-Stack Developer",
-    description: "On-device ML, full-stack platforms at scale, and open-source contributions.",
+    description:
+      "On-device ML, full-stack platforms at scale, and open-source contributions.",
   },
 };
 
@@ -47,9 +57,8 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[var(--background)] text-[var(--foreground)]`}
       >
-        <CustomCursor />
         <Navigation />
         {children}
       </body>

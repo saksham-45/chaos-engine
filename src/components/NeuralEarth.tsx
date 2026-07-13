@@ -79,17 +79,17 @@ const CART = [
 ];
 
 const CSS = `
-#cstory{position:fixed;inset:0;z-index:20;opacity:0;pointer-events:none;transition:opacity .6s ease;background:radial-gradient(130% 120% at 50% 38%,#0a1a10 0%,#07120b 58%,#040906 100%);perspective:900px;perspective-origin:50% 50%;}
+#cstory{position:fixed;inset:0;z-index:20;opacity:0;pointer-events:none;transition:opacity .6s ease;background:radial-gradient(130% 120% at 50% 38%,#0e1418 0%,#0a0b0d 58%,#070809 100%);perspective:900px;perspective-origin:50% 50%;}
 #cstory.on{opacity:1;pointer-events:auto;}
 #cworld{position:absolute;inset:0;transform-style:preserve-3d;will-change:transform;}
 .ccard{position:absolute;left:50%;top:50%;width:470px;transform-style:preserve-3d;text-align:center;transition:opacity .5s ease;}
-.cbeam{position:absolute;left:50%;top:50%;height:3px;border-radius:2px;transform-origin:0 50%;background:#d8ffe8;box-shadow:0 0 5px #fff,0 0 13px #7dffb0;transition:opacity .5s ease;}
-.cdia{display:block;margin:0 auto 6px;width:330px;filter:drop-shadow(0 0 3px #fff) drop-shadow(0 0 9px #a5ffc9) drop-shadow(0 0 17px #52ff9d);}
-.cstroke{fill:none;stroke:#e6fff0;stroke-linecap:round;stroke-linejoin:round;}
+.cbeam{position:absolute;left:50%;top:50%;height:2px;border-radius:2px;transform-origin:0 50%;background:#3dd6c6;box-shadow:0 0 8px rgba(61,214,198,.45);transition:opacity .5s ease;}
+.cdia{display:block;margin:0 auto 6px;width:330px;filter:drop-shadow(0 0 4px rgba(61,214,198,.35)) drop-shadow(0 0 12px rgba(61,214,198,.2));}
+.cstroke{fill:none;stroke:#c8f5ef;stroke-linecap:round;stroke-linejoin:round;}
 .ccopy{transition:opacity .4s ease;}
-.chead{font-family:'Caveat',cursive;font-weight:700;font-size:46px;line-height:1.06;color:#f0fff6;text-shadow:0 0 7px rgba(160,255,200,.6),0 0 18px rgba(82,255,157,.45);}
-.cbody{margin-top:8px;font-family:var(--font-geist-sans),-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:16px;line-height:1.5;color:#bfd4c6;}
-.ccta{display:inline-flex;align-items:center;gap:7px;margin-top:16px;padding:10px 16px;border-radius:10px;background:#eafff2;color:#0b1810;font-family:var(--font-geist-sans),-apple-system,sans-serif;font-weight:600;font-size:13.5px;text-decoration:none;box-shadow:0 0 16px rgba(160,255,200,.5);pointer-events:none;}
+.chead{font-family:var(--font-geist-sans),-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-weight:600;font-size:36px;line-height:1.15;letter-spacing:-0.02em;color:#e8eaed;text-shadow:none;}
+.cbody{margin-top:10px;font-family:var(--font-geist-sans),-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:15px;line-height:1.55;color:#9aa0a6;}
+.ccta{display:inline-flex;align-items:center;gap:7px;margin-top:16px;padding:10px 18px;border-radius:999px;background:#3dd6c6;color:#0a0b0d;font-family:var(--font-geist-sans),-apple-system,sans-serif;font-weight:600;font-size:13.5px;text-decoration:none;box-shadow:0 4px 20px rgba(61,214,198,.25);pointer-events:none;}
 @keyframes cdraw{to{stroke-dashoffset:0;}}
 @keyframes cwipe{from{clip-path:inset(0 100% 0 0);}to{clip-path:inset(0 0 0 0);}}
 @keyframes crise{from{opacity:.9;transform:translate(0,0) scale(1);}to{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.4);}}
@@ -147,8 +147,9 @@ export function NeuralEarth({
     }
 
     /* ---------------- Colours ---------------- */
-    const C_LAND = new THREE.Color(0.32, 1.0, 0.42);
-    const C_OCEAN = new THREE.Color(0.07, 0.34, 0.95);
+    // Refined teal land / muted ocean — matches site accent #3dd6c6
+    const C_LAND = new THREE.Color(0.24, 0.84, 0.78);
+    const C_OCEAN = new THREE.Color(0.12, 0.28, 0.42);
     function coreColor(nR: number) {
       if (nR < 0.25) return new THREE.Color(0.85, 0.85, 0.57);
       if (nR < 0.5) return new THREE.Color(0.9, 0.48, 0.0);
@@ -163,7 +164,7 @@ export function NeuralEarth({
 
     /* ---------------- Scene / renderer ---------------- */
     const scene = new THREE.Scene();
-    scene.fog = new THREE.Fog(0x000000, FOG_NEAR, FOG_FAR);
+    scene.fog = new THREE.Fog(0x0a0b0d, FOG_NEAR, FOG_FAR);
     let W = window.innerWidth, H = window.innerHeight;
     const camera = new THREE.PerspectiveCamera(55, W / H, 0.1, 1000);
     camera.position.z = CAM_Z;
@@ -187,7 +188,7 @@ export function NeuralEarth({
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(W, H);
     renderer.setPixelRatio(Math.min(devicePixelRatio, PIXEL_CAP));
-    renderer.setClearColor(0x000000, 0);
+    renderer.setClearColor(0x0a0b0d, 0);
 
     const canvas = renderer.domElement;
     canvas.style.position = "fixed";
@@ -586,7 +587,7 @@ export function NeuralEarth({
           const dx = (Math.random() - 0.5) * 130, dy = -30 - Math.random() * 80;
           pt.style.cssText =
             "position:absolute;left:" + cx + "px;top:" + cy + "px;width:" + (3 + Math.random() * 4) +
-            "px;height:" + (3 + Math.random() * 4) + "px;border-radius:50%;background:#eafff2;opacity:0;--dx:" +
+            "px;height:" + (3 + Math.random() * 4) + "px;border-radius:50%;background:#3dd6c6;opacity:0;--dx:" +
             dx + "px;--dy:" + dy + "px;animation:crise " + (0.8 + Math.random() * 0.7) +
             "s ease-out forwards;animation-delay:" + Math.random() * 0.2 + "s;";
           cdust.appendChild(pt);
