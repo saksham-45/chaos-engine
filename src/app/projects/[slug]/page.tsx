@@ -1,250 +1,450 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
 import Link from "next/link";
-import { motion } from "framer-motion";
-import { PlasmaBackground } from "@/components/PlasmaBackground";
-import { ProcessedProject } from "@/types/github";
-import { getLanguageColor, formatRelativeTime } from "@/lib/utils";
+import { useParams } from "next/navigation";
+import {
+  SectionPlate,
+  Stamp,
+  StampButton,
+  SpecTable,
+  SceneSlot,
+  DiagonalBar,
+  BlackSquareAnchor,
+} from "@/components/kb";
+import { FLAGSHIPS, getFlagship, type Flagship } from "@/lib/projects";
+import type { ProcessedProject } from "@/types/github";
+import { formatRelativeTime } from "@/lib/utils";
+
+/* =========================================================================
+   /projects/[slug] - one project as a full assembly sheet.
+   Flagships (moodscope / automix / covid-help) render the full dossier from
+   @/lib/projects; any other slug falls back to the live GitHub repo feed.
+   ========================================================================= */
 
 export default function ProjectDetailPage() {
   const params = useParams();
-  const slug = params.slug as string;
-  const [project, setProject] = useState<ProcessedProject | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const raw = params?.slug;
+  const slug = Array.isArray(raw) ? raw[0] : raw ?? "";
+  const flagship = getFlagship(slug);
 
-  useEffect(() => {
-    async function fetchProject() {
-      try {
-        const response = await fetch("/api/github/repos");
-        if (!response.ok) throw new Error("Failed to fetch projects");
-        const data = await response.json();
-        const foundProject = data.projects?.find(
-          (p: ProcessedProject) => p.slug === slug
-        );
-        if (foundProject) {
-          setProject(foundProject);
-        } else {
-          setError("Project not found");
-        }
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to load project");
-      } finally {
-        setLoading(false);
-      }
-    }
+  if (flagship) return <AssemblySheet p={flagship} />;
+  return <RepoDossier slug={slug} />;
+}
 
-    if (slug) {
-      fetchProject();
-    }
-  }, [slug]);
-
-  if (loading) {
-    return (
-      <>
-        <PlasmaBackground theme="teal" />
-        <main className="relative z-10 min-h-screen flex items-center justify-center">
-          <div className="text-center">
-            <div className="inline-block h-8 w-8 rounded-full border-2 border-[var(--accent)] border-t-transparent animate-spin mb-4" />
-            <p className="text-[var(--muted)]">Loading project...</p>
-          </div>
-        </main>
-      </>
-    );
-  }
-
-  if (error || !project) {
-    return (
-      <>
-        <PlasmaBackground theme="teal" />
-        <main className="relative z-10 min-h-screen flex items-center justify-center">
-          <div className="text-center">
-            <p className="text-red-400 mb-4">{error || "Project not found"}</p>
-            <Link href="/projects" className="btn-secondary">
-              Back to Projects
-            </Link>
-          </div>
-        </main>
-      </>
-    );
-  }
-
-  const languageColor = getLanguageColor(project.language);
-  const languageEntries = Object.entries(project.languages || {}).sort(
-    (a, b) => b[1] - a[1]
+/* ---------- shared breadcrumb (mono, on bone) ---------- */
+function Breadcrumb({ name }: { name: string }) {
+  return (
+    <nav
+      aria-label="Breadcrumb"
+      className="font-mono text-[0.78rem] tracking-[0.14em] uppercase text-[var(--color-ink)]/60 flex flex-wrap items-center gap-2"
+    >
+      <Link
+        href="/"
+        className="text-[var(--color-oxide-dark)] hover:underline underline-offset-4"
+      >
+        Home
+      </Link>
+      <span aria-hidden className="text-[var(--color-ink)]/35">
+        /
+      </span>
+      <Link
+        href="/projects"
+        className="text-[var(--color-oxide-dark)] hover:underline underline-offset-4"
+      >
+        Projects
+      </Link>
+      <span aria-hidden className="text-[var(--color-ink)]/35">
+        /
+      </span>
+      <span className="text-[var(--color-ink)]">{name}</span>
+    </nav>
   );
+}
+
+/* ========================= FLAGSHIP ASSEMBLY SHEET ========================= */
+function AssemblySheet({ p }: { p: Flagship }) {
+  const idx = FLAGSHIPS.findIndex((f) => f.slug === p.slug);
+  const n = FLAGSHIPS.length;
+  const prev = FLAGSHIPS[(idx - 1 + n) % n];
+  const next = FLAGSHIPS[(idx + 1) % n];
 
   return (
-    <>
-      <PlasmaBackground theme="teal" />
-      <main className="relative z-10 min-h-screen text-[var(--foreground)]">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-          <nav className="mb-8 text-sm text-[var(--muted)]">
-            <Link href="/" className="hover:text-[var(--accent)] transition-colors">
-              Home
-            </Link>
-            <span className="mx-2 text-white/20">/</span>
-            <Link href="/projects" className="hover:text-[var(--accent)] transition-colors">
-              Projects
-            </Link>
-            <span className="mx-2 text-white/20">/</span>
-            <span className="text-[var(--foreground)]">{project.name}</span>
-          </nav>
+    <main className="pt-14">
+      {/* breadcrumb band */}
+      <section className="bg-[var(--color-bone)]">
+        <div className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 pt-10">
+          <Breadcrumb name={p.name} />
+        </div>
+      </section>
 
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-12"
-          >
-            <h1 className="text-4xl md:text-5xl font-semibold tracking-tight mb-4 text-white">
-              {project.name}
-            </h1>
-            <p className="text-lg text-[var(--muted)] mb-6">{project.description}</p>
+      {/* ============ 00 · PLATE HEADER + SCHEMATIC ============ */}
+      <section className="relative bg-[var(--color-bone)] overflow-hidden">
+        <div className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 py-14 md:py-20">
+          {/* plate tab row */}
+          <div className="flex items-center gap-3 mb-7 flex-wrap">
+            <span className="font-mono text-[0.8rem] tracking-[0.2em] px-2 py-1 bg-[var(--color-ink)] text-[var(--color-bone)]">
+              {p.no}
+            </span>
+            <span className="font-mono text-[0.8rem] tracking-[0.22em] uppercase text-[var(--color-oxide-dark)]">
+              {p.tag}
+            </span>
+          </div>
 
-            <div className="flex flex-wrap items-center gap-6 mb-8 text-sm text-[var(--muted)]">
-              {project.language && (
-                <div className="flex items-center gap-2">
-                  <div
-                    className="w-3 h-3 rounded-full"
-                    style={{ backgroundColor: languageColor }}
-                  />
-                  <span className="font-mono">{project.language}</span>
+          <div className="grid gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14 items-start">
+            {/* copy column (order-2 on mobile so art stacks above) */}
+            <div className="order-2 lg:order-1 relative">
+              <DiagonalBar className="-left-12 top-4 hidden lg:block" length={190} thickness={24} />
+              <h1 className="display-hero text-[clamp(2.6rem,7vw,5.5rem)] text-[var(--color-ink)] leading-[0.95]">
+                {p.name}
+              </h1>
+
+              <div className="mt-6 flex items-start gap-3">
+                <span aria-hidden className="mt-1.5 w-3 h-3 shrink-0 bg-[var(--color-oxide)]" />
+                <div>
+                  <p className="font-mono text-[0.85rem] uppercase tracking-[0.12em] text-[var(--color-ink)]/70 leading-relaxed">
+                    {p.role} · {p.period}
+                  </p>
+                  <p className="mt-2 text-[1.25rem] leading-snug text-[var(--color-ink)]">
+                    {p.tagline}
+                  </p>
+                </div>
+              </div>
+
+              {/* headline metric */}
+              <div className="mt-8 inline-flex items-end gap-3 bg-[var(--color-ink)] text-[var(--color-bone)] px-5 py-4">
+                <span className="display-plate text-[clamp(2rem,5vw,3rem)] leading-none">
+                  {p.headline.value}
+                </span>
+                <span className="font-mono text-[0.78rem] uppercase tracking-[0.12em] text-[var(--color-bone)]/70 max-w-[16ch] leading-snug pb-1">
+                  {p.headline.label}
+                </span>
+              </div>
+
+              {/* thesis + overview brief */}
+              <p className="mt-8 max-w-2xl text-[1.25rem] leading-relaxed text-[var(--color-ink)]">
+                {p.thesis}
+              </p>
+              <p className="mt-5 max-w-2xl text-[1.125rem] leading-relaxed text-[var(--color-ink)]/85">
+                {p.overview}
+              </p>
+
+              {/* stack chip row */}
+              <div className="mt-8">
+                <span className="font-mono text-[0.72rem] uppercase tracking-[0.2em] text-[var(--color-oxide-dark)] block mb-3">
+                  Stack
+                </span>
+                <ul className="flex flex-wrap gap-2">
+                  {p.stack.map((s) => (
+                    <li
+                      key={s}
+                      className="font-mono text-[0.82rem] px-3 py-1.5 border-2 border-[var(--color-ink)] bg-[var(--color-concrete)] text-[var(--color-ink)]"
+                    >
+                      {s}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* real links */}
+              {(p.demo || p.repo) && (
+                <div className="mt-8 flex flex-wrap gap-4">
+                  {p.demo && (
+                    <StampButton href={p.demo} variant="primary" external>
+                      {p.demoLabel ?? "Live demo"} ↗
+                    </StampButton>
+                  )}
+                  {p.repo && (
+                    <StampButton href={p.repo} variant="secondary" external>
+                      Source ↗
+                    </StampButton>
+                  )}
                 </div>
               )}
-              <span>{project.stars} stars</span>
-              <span>{project.forks} forks</span>
-              <span>Updated {formatRelativeTime(project.updatedAt)}</span>
             </div>
 
-            <div className="flex flex-wrap gap-3">
-              <a
-                href={project.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-primary"
-              >
+            {/* torch-revealed preview scene */}
+            <div className="order-1 lg:order-2 relative">
+              <Stamp>
+                <SceneSlot
+                  slug="oldcity"
+                  ground="concrete"
+                  minH="min-h-[340px] md:min-h-[420px]"
+                  ratio="4 / 3"
+                  label="Preview"
+                  torch={260}
+                  dim={0.72}
+                  catCorner="br"
+                  className="w-full"
+                />
+              </Stamp>
+              <BlackSquareAnchor
+                size={40}
+                className="absolute -bottom-4 -right-4 hidden md:block"
+                color="var(--color-ink)"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ============ 01 · SPECIFICATION + RESPONSIBILITIES ============ */}
+      <SectionPlate
+        ground="concrete"
+        plateNo={p.no}
+        title="How it's built"
+        texture
+        wide
+      >
+        <div className="grid gap-8 lg:grid-cols-[1fr_1fr] items-start">
+          <Stamp>
+            <SpecTable rows={p.spec} caption="SPECIFICATION" />
+          </Stamp>
+
+          {/* responsibilities ledger */}
+          <Stamp delay={0.05}>
+            <div className="border-2 border-[var(--color-ink)] bg-[var(--color-bone)]">
+              <div className="font-mono text-[0.75rem] uppercase tracking-[0.2em] px-4 py-2 border-b-2 border-[var(--color-ink)] text-[var(--color-oxide-dark)]">
+                MY ROLE
+              </div>
+              <ul>
+                {p.responsibilities.map((r, i) => (
+                  <li
+                    key={i}
+                    className={`grid grid-cols-[auto_1fr] items-start gap-3 px-4 py-3 ${
+                      i > 0 ? "border-t border-[var(--color-ink)]/20" : ""
+                    }`}
+                  >
+                    <span className="font-mono text-[0.72rem] leading-relaxed bg-[var(--color-ink)] text-[var(--color-bone)] px-1.5 py-0.5 mt-0.5 tabular-nums">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <span className="text-[1.125rem] leading-relaxed text-[var(--color-ink)]">
+                      {r}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </Stamp>
+        </div>
+      </SectionPlate>
+
+      {/* ============ 02 · PREV / NEXT NAV ============ */}
+      <SectionPlate
+        ground="bone"
+        title="More projects"
+        wide
+      >
+        <div className="grid gap-6 md:grid-cols-2">
+          <PlateNavCard dir="prev" p={prev} />
+          <PlateNavCard dir="next" p={next} />
+        </div>
+        <div className="mt-10">
+          <StampButton href="/projects" variant="secondary">
+            ← Back to all projects
+          </StampButton>
+        </div>
+      </SectionPlate>
+    </main>
+  );
+}
+
+function PlateNavCard({ dir, p }: { dir: "prev" | "next"; p: Flagship }) {
+  const isPrev = dir === "prev";
+  return (
+    <Link
+      href={`/projects/${p.slug}`}
+      className={`group kb-plate kb-plate-hover bg-[var(--color-bone)] text-[var(--color-ink)] block px-6 py-6 ${
+        isPrev ? "text-left" : "md:text-right"
+      }`}
+    >
+      <span className="font-mono text-[0.72rem] uppercase tracking-[0.2em] text-[var(--color-oxide-dark)] block">
+        {isPrev ? "← Previous" : "Next →"}
+      </span>
+      <span className="font-mono text-[0.78rem] tracking-[0.14em] text-[var(--color-ink)]/55 block mt-3">
+        {p.tag}
+      </span>
+      <span className="display-plate text-[clamp(1.75rem,4vw,2.75rem)] block mt-1 leading-none">
+        {p.name}
+      </span>
+      <span className="text-[1.125rem] leading-relaxed text-[var(--color-ink)]/80 block mt-3">
+        {p.tagline}
+      </span>
+    </Link>
+  );
+}
+
+/* ========================= GITHUB FALLBACK DOSSIER ========================= */
+type FetchState = "loading" | "ok" | "notfound" | "error";
+
+function RepoDossier({ slug }: { slug: string }) {
+  const [repo, setRepo] = useState<ProcessedProject | null>(null);
+  const [state, setState] = useState<FetchState>("loading");
+
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      try {
+        const res = await fetch("/api/github/repos");
+        if (!res.ok) throw new Error(String(res.status));
+        const data = await res.json();
+        if (!alive) return;
+        const list: ProcessedProject[] = data.projects || [];
+        const match = list.find(
+          (r) => r.slug === slug || r.name.toLowerCase() === slug.toLowerCase()
+        );
+        if (match) {
+          setRepo(match);
+          setState("ok");
+        } else {
+          setState("notfound");
+        }
+      } catch {
+        if (alive) setState("error");
+      }
+    })();
+    return () => {
+      alive = false;
+    };
+  }, [slug]);
+
+  return (
+    <main className="pt-14">
+      {/* breadcrumb band */}
+      <section className="bg-[var(--color-bone)]">
+        <div className="mx-auto max-w-[1200px] px-5 sm:px-8 lg:px-12 pt-10">
+          <Breadcrumb name={repo?.name ?? slug} />
+        </div>
+      </section>
+
+      {state !== "ok" && <DossierMessage state={state} slug={slug} />}
+
+      {state === "ok" && repo && (
+        <section className="relative bg-[var(--color-bone)] overflow-hidden">
+          <div className="mx-auto max-w-[1200px] px-5 sm:px-8 lg:px-12 py-14 md:py-20">
+            <div className="flex items-center gap-3 mb-7 flex-wrap">
+              <span className="font-mono text-[0.8rem] tracking-[0.2em] px-2 py-1 bg-[var(--color-ink)] text-[var(--color-bone)]">
+                REPO
+              </span>
+              <span className="font-mono text-[0.8rem] tracking-[0.22em] uppercase text-[var(--color-oxide-dark)]">
+                Cross-reference · github.com/saksham-45
+              </span>
+            </div>
+
+            <div className="relative">
+              <DiagonalBar className="-left-12 top-4 hidden lg:block" length={180} thickness={22} />
+              <h1 className="display-hero text-[clamp(2.4rem,7vw,5rem)] text-[var(--color-ink)] leading-[0.95] break-words">
+                {repo.name}
+              </h1>
+            </div>
+
+            <p className="mt-7 max-w-2xl text-[1.25rem] leading-relaxed text-[var(--color-ink)]">
+              {repo.description}
+            </p>
+
+            <div className="mt-9 max-w-2xl">
+              <SpecTable
+                caption="REPOSITORY"
+                rows={[
+                  { label: "Language", value: repo.language || "-" },
+                  { label: "Stars", value: <span className="tabular-nums">{repo.stars}</span> },
+                  { label: "Forks", value: <span className="tabular-nums">{repo.forks}</span> },
+                  { label: "Updated", value: formatRelativeTime(repo.updatedAt) },
+                ]}
+              />
+            </div>
+
+            {repo.topics.length > 0 && (
+              <div className="mt-8">
+                <span className="font-mono text-[0.72rem] uppercase tracking-[0.2em] text-[var(--color-oxide-dark)] block mb-3">
+                  Topics
+                </span>
+                <ul className="flex flex-wrap gap-2">
+                  {repo.topics.map((t) => (
+                    <li
+                      key={t}
+                      className="font-mono text-[0.82rem] px-3 py-1.5 border-2 border-[var(--color-ink)] bg-[var(--color-concrete)] text-[var(--color-ink)]"
+                    >
+                      {t}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            <div className="mt-10 flex flex-wrap gap-4">
+              <StampButton href={repo.url} variant="primary" external>
                 View on GitHub →
-              </a>
-              {project.homepage && (
+              </StampButton>
+              <StampButton href="/projects" variant="secondary">
+                ← Back to all projects
+              </StampButton>
+            </div>
+          </div>
+        </section>
+      )}
+    </main>
+  );
+}
+
+function DossierMessage({ state, slug }: { state: Exclude<FetchState, "ok">; slug: string }) {
+  return (
+    <section className="bg-[var(--color-bone)]">
+      <div className="mx-auto max-w-[1200px] px-5 sm:px-8 lg:px-12 py-16 md:py-24">
+        <div className="border-2 border-[var(--color-ink)] bg-[var(--color-charcoal)] text-[var(--color-bone)] px-6 py-10">
+          {state === "loading" && (
+            <p className="font-mono text-[0.9rem] text-[var(--color-bone)]/75">
+              <span className="inline-block h-3 w-3 border-2 border-[var(--color-cyan)] border-t-transparent animate-spin mr-3 align-middle" />
+              pulling <span className="text-[var(--color-cyan)]">{slug}</span> from
+              github.com/saksham-45 …
+            </p>
+          )}
+
+          {state === "error" && (
+            <div className="font-mono text-[0.9rem] text-[var(--color-bone)]/80 space-y-4">
+              <p>
+                <span className="text-[var(--color-cyan)]">ERR ·</span> the live repository feed is
+                unavailable right now.
+              </p>
+              <p>
+                Browse the source directly at{" "}
                 <a
-                  href={project.homepage}
+                  href="https://github.com/saksham-45"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="btn-secondary"
+                  className="text-[var(--color-cyan)] underline underline-offset-4"
                 >
-                  Live Demo →
+                  github.com/saksham-45
                 </a>
-              )}
-            </div>
-          </motion.div>
-
-          {project.topics.length > 0 && (
-            <motion.section
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.15 }}
-              className="mb-12"
-            >
-              <h2 className="text-xl font-semibold mb-4 text-white">Technologies</h2>
-              <div className="flex flex-wrap gap-2">
-                {project.topics.map((topic) => (
-                  <span
-                    key={topic}
-                    className="px-3 py-1.5 text-sm font-mono text-[var(--muted)] rounded-lg border border-white/[0.08] bg-white/[0.03]"
-                  >
-                    {topic}
-                  </span>
-                ))}
+                .
+              </p>
+              <div className="pt-2">
+                <StampButton href="/projects" variant="ghost">
+                  ← Back to all projects
+                </StampButton>
               </div>
-            </motion.section>
+            </div>
           )}
 
-          {languageEntries.length > 0 && (
-            <motion.section
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.2 }}
-              className="mb-12"
-            >
-              <h2 className="text-xl font-semibold mb-4 text-white">
-                Language Breakdown
-              </h2>
-              <div className="space-y-3">
-                {languageEntries.map(([lang, bytes]) => {
-                  const totalBytes = languageEntries.reduce((sum, [, b]) => sum + b, 0);
-                  const percentage = (bytes / totalBytes) * 100;
-                  const color = getLanguageColor(lang);
-                  return (
-                    <div key={lang} className="space-y-1">
-                      <div className="flex justify-between items-center text-sm">
-                        <div className="flex items-center gap-2">
-                          <div
-                            className="w-2.5 h-2.5 rounded-full"
-                            style={{ backgroundColor: color }}
-                          />
-                          <span className="text-[var(--muted)] font-mono">{lang}</span>
-                        </div>
-                        <span className="text-[var(--accent)]">
-                          {percentage.toFixed(1)}%
-                        </span>
-                      </div>
-                      <div className="h-1.5 bg-white/[0.06] rounded-full overflow-hidden">
-                        <motion.div
-                          className="h-full rounded-full"
-                          initial={{ width: 0 }}
-                          animate={{ width: `${percentage}%` }}
-                          transition={{ delay: 0.3, duration: 0.8 }}
-                          style={{ backgroundColor: color }}
-                        />
-                      </div>
-                    </div>
-                  );
-                })}
+          {state === "notfound" && (
+            <div className="font-mono text-[0.9rem] text-[var(--color-bone)]/80 space-y-4">
+              <p>
+                <span className="text-[var(--color-cyan)]">404 ·</span> no plate or repository filed
+                under <span className="text-[var(--color-cyan)]">{slug}</span>.
+              </p>
+              <p className="text-[var(--color-bone)]/60">
+                It may have been renamed or archived. The flagship plates and the live repo
+                index are on the Projects page.
+              </p>
+              <div className="pt-2">
+                <StampButton href="/projects" variant="ghost">
+                  ← Back to all projects
+                </StampButton>
               </div>
-            </motion.section>
-          )}
-
-          <motion.section
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.25 }}
-            className="mb-12"
-          >
-            <h2 className="text-xl font-semibold mb-4 text-white">
-              Project Statistics
-            </h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {[
-                { value: project.stars, label: "Stars" },
-                { value: project.forks, label: "Forks" },
-                { value: languageEntries.length, label: "Languages" },
-                { value: project.topics.length, label: "Topics" },
-              ].map((s) => (
-                <div key={s.label} className="surface-card rounded-xl p-4">
-                  <div className="text-2xl font-semibold text-[var(--accent)] mb-1">
-                    {s.value}
-                  </div>
-                  <div className="text-sm text-[var(--muted)]">{s.label}</div>
-                </div>
-              ))}
             </div>
-          </motion.section>
-
-          <Link href="/projects" className="btn-secondary inline-flex items-center gap-2">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M10 19l-7-7m0 0l7-7m-7 7h18"
-              />
-            </svg>
-            Back to Projects
-          </Link>
+          )}
         </div>
-      </main>
-    </>
+      </div>
+    </section>
   );
 }

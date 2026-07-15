@@ -1,120 +1,171 @@
 @import "tailwindcss";
 
-:root {
-  --background: #0a0b0d;
-  --surface: #12141a;
-  --foreground: #e8eaed;
-  --muted: #9aa0a6;
-  --accent: #3dd6c6;
-  --accent-dim: rgba(61, 214, 198, 0.14);
-  --accent-border: rgba(61, 214, 198, 0.35);
-  --border: rgba(255, 255, 255, 0.08);
-  --border-strong: rgba(255, 255, 255, 0.14);
+/* =========================================================================
+   КБ-14 - Bureau of One / The Technical Dossier
+   Soviet-constructivist × brutalist design tokens. CSS-first Tailwind v4.
+   ========================================================================= */
+
+@theme {
+  --color-bone: #e7e3da;
+  --color-ink: #15140f;
+  --color-oxide: #c8331f;
+  --color-oxide-dark: #9e2417;
+  --color-concrete: #b4b0a6;
+  --color-navy: #0c2a3a;
+  --color-cyan: #4fc3e8;
+  --color-charcoal: #201e18;
+  --color-paper: #fbf9f4;
 }
 
+/* Map Tailwind's font-* utilities DIRECTLY to the next/font variables (defined
+   on <body>), so `font-mono` / `font-display` / `font-sans` resolve on any
+   descendant. Referencing an intermediate :root var fails because --font-oswald
+   is not visible at :root. */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-surface: var(--surface);
-  --color-muted: var(--muted);
-  --color-accent: var(--accent);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-plex-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-display: var(--font-oswald), "Arial Narrow", "Helvetica Neue", sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, "SFMono-Regular", monospace;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+/* Béton brut: nothing is soft. Radius 0 everywhere by decree. */
+*,
+*::before,
+*::after {
+  border-radius: 0 !important;
 }
 
-/* Shared surface utilities */
-.surface-card {
-  background: rgba(18, 20, 26, 0.72);
-  border: 1px solid var(--border);
-  backdrop-filter: blur(12px);
-}
-
-.btn-primary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.75rem 1.75rem;
-  border-radius: 9999px;
-  background: var(--accent);
-  color: #0a0b0d;
-  font-weight: 600;
-  font-size: 0.9375rem;
-  transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
-}
-.btn-primary:hover {
-  background: #5ee0d2;
-  box-shadow: 0 0 0 1px rgba(61, 214, 198, 0.2), 0 8px 28px rgba(61, 214, 198, 0.18);
-}
-.btn-primary:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 3px;
-}
-
-.btn-secondary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.75rem 1.5rem;
-  border-radius: 9999px;
-  border: 1px solid var(--border-strong);
-  color: var(--foreground);
-  font-size: 0.9375rem;
-  background: rgba(255, 255, 255, 0.02);
-  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
-}
-.btn-secondary:hover {
-  border-color: var(--accent-border);
-  background: var(--accent-dim);
-  color: #fff;
-}
-.btn-secondary:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 3px;
-}
-
-.label-mono {
-  font-family: var(--font-geist-mono), ui-monospace, monospace;
-  font-size: 0.6875rem;
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
-  color: rgba(61, 214, 198, 0.75);
-}
-
-/* Scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
-::-webkit-scrollbar-track {
-  background: var(--background);
-}
-::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.12);
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(61, 214, 198, 0.45);
+/* Let grid/flex children shrink below their intrinsic size so aspect-ratio art
+   panels can never force a track wider than the viewport (zero specificity, so
+   components can still override where needed). */
+:where(.grid) > *,
+:where(.flex) > * {
+  min-width: 0;
 }
 
 html {
   scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
 }
 
+body {
+  background: var(--color-bone);
+  color: var(--color-ink);
+  font-family: var(--font-plex-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 1.125rem; /* 18px hard minimum for running copy */
+  line-height: 1.6;
+  font-feature-settings: "kern" 1;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+/* ---- structural apparatus ---- */
+/* border + hard offset shadow only - each plate sets its own ground color so
+   utilities like bg-navy / GROUND classes are never overridden. */
+.kb-plate {
+  border: 2px solid var(--color-ink);
+  box-shadow: 6px 6px 0 var(--color-ink);
+}
+.kb-plate-hover {
+  transition: box-shadow 0.16s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.16s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.kb-plate-hover:hover {
+  box-shadow: 10px 10px 0 var(--color-ink);
+  transform: translate(-2px, -2px);
+}
+.kb-hairline {
+  border: 1px solid color-mix(in srgb, var(--color-ink) 22%, transparent);
+}
+
+/* board-formed concrete micro-texture - decorative grounds only, never under text */
+.kb-texture {
+  position: relative;
+}
+.kb-texture::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(
+    90deg,
+    transparent 0,
+    transparent 5px,
+    currentColor 5px,
+    currentColor 6px
+  );
+  opacity: 0.04;
+}
+
+/* ---- type helpers ---- */
+.font-display {
+  font-family: var(--font-oswald), "Arial Narrow", "Helvetica Neue", sans-serif;
+}
+.font-mono {
+  font-family: var(--font-plex-mono), ui-monospace, "SFMono-Regular", monospace;
+}
+.label-mono {
+  font-family: var(--font-plex-mono), ui-monospace, "SFMono-Regular", monospace;
+  font-size: 0.875rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-oxide-dark);
+  font-weight: 500;
+}
+.display-hero {
+  font-family: var(--font-oswald), "Arial Narrow", "Helvetica Neue", sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  line-height: 0.92;
+  letter-spacing: -0.02em;
+}
+.display-plate {
+  font-family: var(--font-oswald), "Arial Narrow", "Helvetica Neue", sans-serif;
+  font-weight: 600;
+  text-transform: uppercase;
+  line-height: 0.98;
+  letter-spacing: -0.01em;
+}
+
+/* selection / focus / scrollbar */
 ::selection {
-  background: rgba(61, 214, 198, 0.28);
-  color: #fff;
+  background: var(--color-oxide);
+  color: var(--color-paper);
 }
-
 *:focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 3px solid var(--color-oxide);
   outline-offset: 2px;
 }
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-concrete);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-ink);
+  border: 3px solid var(--color-concrete);
+}
 
+/* glowing cat eyes for the pupsik contact scene (round despite the global rad:0) */
+.pupsik-eye {
+  position: absolute;
+  width: 1.9%;
+  height: 2.4%;
+  border-radius: 50% !important;
+  background: radial-gradient(circle at 50% 45%, #fff7cf 0%, #ffde84 35%, #d79b34 70%, rgba(160, 110, 40, 0) 100%);
+  box-shadow: 0 0 10px 3px rgba(255, 214, 120, 0.75), 0 0 22px 8px rgba(210, 150, 60, 0.35);
+  transform: translate(-50%, -50%);
+  animation: pupsikBlink 6.5s infinite;
+  pointer-events: none;
+}
+@keyframes pupsikBlink {
+  0%, 92%, 100% { transform: translate(-50%, -50%) scaleY(1); }
+  94%, 97% { transform: translate(-50%, -50%) scaleY(0.08); }
+}
+
+/* honor reduced motion - keep everything legible & static */
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -122,8 +173,9 @@ html {
   *,
   *::before,
   *::after {
-    animation-duration: 0.01ms !important;
+    animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
   }
 }

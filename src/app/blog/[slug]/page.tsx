@@ -2,128 +2,113 @@
 
 import React from "react";
 import { useParams } from "next/navigation";
-import Link from "next/link";
-import { motion } from "framer-motion";
-import { PlasmaBackground } from "@/components/PlasmaBackground";
-import ReactMarkdown from "react-markdown";
+import { SectionPlate, Stamp, StampButton, SpecTable } from "@/components/kb";
 
-const blogPosts: Record<
-  string,
-  { title: string; content: string; date: string; readTime: string; tags: string[] }
-> = {
-  welcome: {
-    title: "Welcome to My Blog",
-    date: "2024-01-15",
-    readTime: "3 min read",
-    tags: ["General", "Introduction"],
-    content: `# Welcome to My Blog
+/* =========================================================================
+   JOURNAL - one entry as a readable plate.
+   No posts are filed yet. This route is built so a real data source can slot
+   in later without a rewrite: define entries in POSTS keyed by slug and the
+   article branch renders them as prose on bone (≥18px / lh 1.6 / ~68ch).
+   Until then EVERY slug resolves to the honest "not filed yet" dossier state.
+   ========================================================================= */
 
-This is where I'll be sharing my thoughts, experiences, and insights on:
+interface JournalEntry {
+  title: string;
+  dateFiled: string; // ISO - shown as a ledger row
+  readTime?: string;
+  tags?: string[];
+  /** body as ordered paragraphs; figures ride in SchematicPanels when added */
+  body: string[];
+}
 
-- **Software Development**: Best practices, tips, and lessons learned
-- **Computer Engineering**: Systems programming, embedded systems, and hardware
-- **Projects**: Deep dives into my projects and the challenges I've faced
-- **Learning**: What I'm currently learning and resources I find valuable
+// Intentionally empty - no fabricated writing. Add real entries here later.
+const POSTS: Record<string, JournalEntry> = {};
 
-Stay tuned for more content!
-
-## What to Expect
-
-I'll be writing about:
-- Technical tutorials and guides
-- Project case studies
-- Thoughts on software engineering
-- Reviews of tools and technologies
-- And much more!
-
-Thanks for reading!`,
-  },
-};
-
-export default function BlogPostPage() {
+export default function JournalEntryPage() {
   const params = useParams();
-  const slug = params.slug as string;
-  const post = blogPosts[slug];
+  const raw = params?.slug;
+  const slug = (Array.isArray(raw) ? raw[0] : raw) ?? "";
+  const entry = slug ? POSTS[slug] : undefined;
 
-  if (!post) {
+  /* -------------------- filed entry (future data source) -------------------- */
+  if (entry) {
     return (
-      <>
-        <PlasmaBackground theme="rose" />
-        <main className="relative z-10 min-h-screen flex items-center justify-center">
-          <div className="text-center">
-            <p className="text-red-400 mb-4">Blog post not found</p>
-            <Link href="/blog" className="btn-secondary">
-              Back to Blog
-            </Link>
-          </div>
-        </main>
-      </>
+      <main className="pt-14">
+        <SectionPlate ground="bone" title={entry.title}>
+          <Stamp>
+            <SpecTable
+              rows={[
+                { label: "Filed", value: entry.dateFiled },
+                ...(entry.readTime ? [{ label: "Read", value: entry.readTime }] : []),
+                ...(entry.tags?.length
+                  ? [{ label: "Tags", value: entry.tags.join(" · ") }]
+                  : []),
+                { label: "Ref", value: `JR / ${slug}` },
+              ]}
+              caption="ENTRY RECORD"
+            />
+            <div className="mt-10 max-w-[68ch] space-y-6 text-[1.125rem] leading-[1.6] text-[var(--color-ink)]">
+              {entry.body.map((para, i) => (
+                <p key={i}>{para}</p>
+              ))}
+            </div>
+            <div className="mt-12 flex flex-wrap gap-4">
+              <StampButton href="/blog" variant="primary">
+                ← Back to field notes
+              </StampButton>
+              <StampButton href="/projects" variant="secondary">
+                See the projects
+              </StampButton>
+            </div>
+          </Stamp>
+        </SectionPlate>
+      </main>
     );
   }
 
+  /* -------------------- not filed yet (default for any slug) -------------------- */
   return (
-    <>
-      <PlasmaBackground theme="rose" />
-      <main className="relative z-10 min-h-screen text-[var(--foreground)]">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-          <nav className="mb-8 text-sm text-[var(--muted)]">
-            <Link href="/" className="hover:text-[var(--accent)] transition-colors">
-              Home
-            </Link>
-            <span className="mx-2 text-white/20">/</span>
-            <Link href="/blog" className="hover:text-[var(--accent)] transition-colors">
-              Blog
-            </Link>
-            <span className="mx-2 text-white/20">/</span>
-            <span className="text-[var(--foreground)]">{post.title}</span>
-          </nav>
+    <main className="pt-14">
+      <SectionPlate ground="bone" title="Nothing filed here yet">
+        <Stamp>
+          <div className="max-w-[68ch] space-y-6 text-[1.125rem] leading-[1.6] text-[var(--color-ink)]">
+            <p>
+              There&rsquo;s no post under this link yet. I&rsquo;d rather leave it blank than fill
+              it with filler, so nothing here is invented.
+            </p>
+            <p>
+              Build logs and deep dives are coming, drawn straight from the work: running an
+              emotion model fully on-device, blending tracks on the beat in AutoMix, and holding
+              ~99.9% uptime when traffic is an emergency, not a curve. Until one&rsquo;s written,
+              the code speaks for itself.
+            </p>
+          </div>
 
-          <motion.article
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="surface-card rounded-xl p-8 md:p-12"
-          >
-            <h1 className="text-3xl md:text-4xl font-semibold tracking-tight mb-4 text-white">
-              {post.title}
-            </h1>
-
-            <div className="flex items-center gap-4 mb-8 text-sm text-[var(--muted)]">
-              <span>
-                {new Date(post.date).toLocaleDateString("en-US", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
-              </span>
-              <span className="text-white/20">•</span>
-              <span>{post.readTime}</span>
+          {slug && (
+            <div className="mt-8 max-w-[68ch]">
+              <SpecTable
+                rows={[
+                  { label: "Requested ref", value: <span className="break-all">{`JR / ${slug}`}</span> },
+                  {
+                    label: "Status",
+                    value: <span className="text-[var(--color-oxide-dark)]">NOT ON FILE</span>,
+                  },
+                ]}
+                caption="ENTRY RECORD"
+              />
             </div>
+          )}
 
-            {post.tags.length > 0 && (
-              <div className="flex flex-wrap gap-2 mb-8">
-                {post.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="px-2.5 py-1 text-xs font-mono text-[var(--muted)] rounded-md border border-white/[0.08] bg-white/[0.03]"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            )}
-
-            <div className="prose prose-invert max-w-none text-[var(--muted)] prose-headings:text-white prose-a:text-[var(--accent)] prose-strong:text-[var(--foreground)]">
-              <ReactMarkdown>{post.content}</ReactMarkdown>
-            </div>
-
-            <div className="mt-10 pt-6 border-t border-white/[0.08]">
-              <Link href="/blog" className="btn-secondary">
-                ← Back to Blog
-              </Link>
-            </div>
-          </motion.article>
-        </div>
-      </main>
-    </>
+          <div className="mt-12 flex flex-wrap gap-4">
+            <StampButton href="/blog" variant="primary">
+              ← Back to field notes
+            </StampButton>
+            <StampButton href="/projects" variant="secondary">
+              See the projects
+            </StampButton>
+          </div>
+        </Stamp>
+      </SectionPlate>
+    </main>
   );
 }

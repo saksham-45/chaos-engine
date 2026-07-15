@@ -1,124 +1,149 @@
 "use client";
-import React from "react";
-import Link from "next/link";
-import { motion } from "framer-motion";
-import { PlasmaBackground } from "@/components/PlasmaBackground";
-import { SkillsVisualization } from "@/components/SkillsVisualization";
-import { Timeline } from "@/components/Timeline";
 
-const STATS = [
-  { value: "40,000+", label: "users served in production" },
-  { value: "3.89", label: "GPA · CompEng + Math" },
-  { value: "21", label: "merged open-source PRs" },
-  { value: "~30 ms", label: "per-frame on-device inference" },
+import React from "react";
+import {
+  SectionPlate,
+  StampButton,
+  SpecTable,
+  SceneSlot,
+  Stamp,
+  BlackSquareAnchor,
+} from "@/components/kb";
+import { PROFILE } from "@/lib/projects";
+
+const EDUCATION = [
+  { label: "Institution", value: "University of South Florida · Tampa, FL" },
+  { label: "Degree", value: "B.S. Computer Engineering · Aug 2023 - May 2027" },
+  { label: "Minor", value: "Mathematics" },
+  { label: "Honors", value: "Green & Gold Presidential Scholar" },
+  { label: "College", value: "USF Bellini College of AI, Cybersecurity & Computing" },
+  { label: "Coursework", value: "Algorithms, Linear Algebra, Diff. Equations, OS, Hardware for ML, Statistics" },
+  { label: "Research", value: "Undergrad researcher · Bellini College of AI & Math / Stats" },
 ];
 
-const AboutPage = () => {
+export default function About() {
   return (
-    <>
-      <PlasmaBackground theme="azure" />
-      <main className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-[var(--foreground)] min-h-screen">
-        <motion.header
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex flex-col items-center text-center mb-14"
-        >
-          <p className="label-mono mb-4">
-            computer engineer · full-stack · embedded ml
-          </p>
-          <h1 className="text-5xl md:text-6xl font-semibold tracking-tight mb-4 text-white">
-            Saksham Srivastava
-          </h1>
-          <p className="text-[var(--muted)] max-w-2xl leading-relaxed">
-            Full-stack Computer Engineering student (B.S. &rsquo;27) who designs, codes, tests and ships —
-            from on-device real-time ML to high-availability web platforms. I&rsquo;m happiest where math
-            meets the machine, and I care about the parts users never see: the schema, the pipeline, the
-            uptime.
-          </p>
-          <div className="flex flex-wrap gap-3 justify-center text-sm text-[var(--muted)] mt-5">
-            <a href="mailto:saksham146053@gmail.com" className="hover:text-[var(--accent)] underline underline-offset-4 transition-colors">
-              Email
-            </a>
-            <span className="text-white/20">•</span>
-            <a
-              href="https://linkedin.com/in/sakshamsriv"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-[var(--accent)] underline underline-offset-4 transition-colors"
-            >
-              LinkedIn
-            </a>
-            <span className="text-white/20">•</span>
-            <a
-              href="https://github.com/saksham-45"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-[var(--accent)] underline underline-offset-4 transition-colors"
-            >
-              GitHub
-            </a>
+    <main className="pt-14">
+      {/* ============ 00 · MASTHEAD ============ */}
+      <SectionPlate
+        id="s00"
+        ground="bone"
+        plateNo="00"
+        title="About me"
+      >
+        <div className="relative grid gap-8 lg:grid-cols-[1.5fr_1fr] lg:gap-14 items-start">
+          <div className="max-w-2xl">
+            <p className="text-[1.25rem] leading-relaxed text-[var(--color-ink)]">
+              I&rsquo;m a full-stack developer and computer engineering student at USF. I build
+              complete applications:{" "}
+              <span className="bg-[var(--color-oxide)] text-[var(--color-paper)] px-1.5">
+                backend, data, ML, and the interface
+              </span>
+              , and I work best where those layers meet.
+            </p>
           </div>
-        </motion.header>
-
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-20"
-        >
-          {STATS.map((s) => (
-            <div key={s.label} className="surface-card rounded-xl p-5 text-center">
-              <div className="text-2xl md:text-3xl font-semibold text-[var(--accent)] mb-1 tracking-tight">
-                {s.value}
-              </div>
-              <div className="text-[11px] text-[var(--muted)] leading-snug">{s.label}</div>
-            </div>
-          ))}
-        </motion.section>
-
-        <motion.section
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          className="mb-20"
-        >
-          <h2 className="text-2xl md:text-3xl font-semibold mb-8 text-white tracking-tight border-b border-white/[0.08] pb-3">
-            Experience
-          </h2>
-          <Timeline />
-        </motion.section>
-
-        <motion.section
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          className="mb-20"
-        >
-          <h2 className="text-2xl md:text-3xl font-semibold mb-8 text-white tracking-tight border-b border-white/[0.08] pb-3">
-            Toolkit
-          </h2>
-          <SkillsVisualization />
-        </motion.section>
-
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center"
-        >
-          <p className="text-[var(--muted)] mb-5">See it in the code, or say hello.</p>
-          <div className="flex flex-wrap gap-4 justify-center">
-            <Link href="/projects" className="btn-primary">
-              View Projects →
-            </Link>
-            <Link href="/contact" className="btn-secondary">
-              Get In Touch
-            </Link>
+          <div className="flex items-start gap-3 self-center">
+            <span aria-hidden className="mt-1.5 w-3 h-3 shrink-0 bg-[var(--color-oxide)]" />
+            <p className="font-mono text-[0.85rem] uppercase tracking-[0.12em] text-[var(--color-ink)]/70 leading-relaxed">
+              {PROFILE.role}
+              <br />
+              {PROFILE.research}
+              <br />
+              {PROFILE.location}
+            </p>
           </div>
-        </motion.section>
-      </main>
-    </>
+        </div>
+      </SectionPlate>
+
+      {/* ============ 01 · BIO BRIEF ============ */}
+      <SectionPlate
+        id="s01"
+        ground="bone"
+        plateNo="01"
+        title="How I work"
+      >
+        <div className="space-y-6 text-[1.25rem] leading-relaxed text-[var(--color-ink)]/85 max-w-[68ch]">
+          <p>
+            I&rsquo;m a computer engineering student at USF (B.S. &rsquo;27, {PROFILE.scholar})
+            with a {PROFILE.mathMinor}, and an undergraduate researcher at USF&rsquo;s Bellini
+            College of AI. I work full-stack: on most projects I&rsquo;ve built the backend, the
+            data pipeline, the model, and the UI myself.
+          </p>
+          <p>
+            MoodScope runs emotion detection on-device on a Raspberry Pi. AutoMix beat-matches and
+            mixes tracks with a learned model. Visualizzer turns live audio into real-time graphics.
+            Each one spans ML, systems, and a frontend, which is the kind of end-to-end build I like.
+          </p>
+          <p>
+            The one I&rsquo;m proudest of is the least flashy. During India&rsquo;s second COVID
+            wave I founded and led COVID-HELP, a platform that connected 10,000+ people to live ICU
+            beds and oxygen at ~99.9% uptime, aggregating 50+ live sources with a 15+ person volunteer
+            team. It held up under real load when it mattered.
+          </p>
+        </div>
+      </SectionPlate>
+
+      {/* ============ 02 · EDUCATION & HONORS LEDGER ============ */}
+      <SectionPlate
+        id="s02"
+        ground="concrete"
+        plateNo="02"
+        title="Education"
+        intro="The facts, nothing invented."
+        texture
+      >
+        <div className="max-w-3xl">
+          <SpecTable rows={EDUCATION} caption="ACADEMIC RECORD" />
+        </div>
+      </SectionPlate>
+
+      {/* ============ 03 · DISCIPLINES ============ */}
+      <SectionPlate
+        id="s03"
+        ground="ink"
+        plateNo="03"
+        title="Across the stack"
+        intro="The layers I move between, from backend and data to models and graphics."
+      >
+        <div className="grid gap-8 lg:grid-cols-[1fr_1fr] lg:gap-12 items-center">
+          <div className="order-2 lg:order-1">
+            <SceneSlot slug="taj" ground="charcoal" minH="min-h-[280px] md:min-h-[340px]" ratio="4 / 3" label="Diagram" torch={240} dim={0.78} catCorner="bl" className="w-full" />
+          </div>
+          <div className="order-1 lg:order-2 relative">
+            <BlackSquareAnchor
+              size={36}
+              className="absolute -top-4 -right-2 hidden lg:block"
+              color="var(--color-oxide)"
+            />
+            <p className="text-[1.125rem] leading-relaxed text-[var(--color-bone)]/85 max-w-[46ch]">
+              Building the whole stack, from API and data to model and UI, means the constraints of
+              one layer keep the others honest: latency and memory from embedded, perception from
+              audio, and the math underneath all of it.
+            </p>
+          </div>
+        </div>
+      </SectionPlate>
+
+      {/* ============ 04 · CONTACT ROW ============ */}
+      <SectionPlate
+        id="s04"
+        ground="charcoal"
+        plateNo="04"
+        title="Get in touch"
+        intro="My contact details and availability are on the contact page. Start there, or browse the projects."
+      >
+        <div className="flex flex-wrap gap-4">
+          <StampButton href="/contact" variant="primary">
+            Contact →
+          </StampButton>
+          <StampButton href="/projects" variant="ghost">
+            View projects
+          </StampButton>
+          <StampButton href={PROFILE.github} variant="ghost" external>
+            GitHub · {PROFILE.githubHandle}
+          </StampButton>
+        </div>
+      </SectionPlate>
+    </main>
   );
-};
-
-export default AboutPage;
+}

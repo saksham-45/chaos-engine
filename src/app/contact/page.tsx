@@ -1,17 +1,15 @@
 "use client";
 
 import React, { useState } from "react";
-import { PlasmaBackground } from "@/components/PlasmaBackground";
-import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
+import { StampButton, PupsikAmbient, PupsikCat } from "@/components/kb";
+import { PROFILE } from "@/lib/projects";
 
 interface ContactFormData {
   name: string;
   email: string;
   message: string;
 }
-
-const EMAIL = "saksham146053@gmail.com";
 
 export default function ContactPage() {
   const [sent, setSent] = useState(false);
@@ -23,218 +21,137 @@ export default function ContactPage() {
 
   const onSubmit = (data: ContactFormData) => {
     const subject = encodeURIComponent(`Portfolio · hello from ${data.name}`);
-    const body = encodeURIComponent(
-      `${data.message}\n\n— ${data.name}\n${data.email}`
-    );
-    window.location.href = `mailto:${EMAIL}?subject=${subject}&body=${body}`;
+    const body = encodeURIComponent(`${data.message}\n\n${data.name}\n${data.email}`);
+    window.location.href = `mailto:${PROFILE.email}?subject=${subject}&body=${body}`;
     setSent(true);
   };
 
-  const socialLinks = [
-    {
-      name: "GitHub",
-      url: "https://github.com/saksham-45",
-      icon: (
-        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
-      ),
-    },
-    {
-      name: "LinkedIn",
-      url: "https://linkedin.com/in/sakshamsriv",
-      icon: (
-        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-      ),
-    },
-    {
-      name: "Email",
-      url: `mailto:${EMAIL}`,
-      icon: (
-        <path d="M12 12.713l-11.985-9.713h23.97l-11.985 9.713zm0 2.574l-12-9.725v15.438h24v-15.438l-12 9.725z" />
-      ),
-    },
+  const inputCls =
+    "w-full px-4 py-3 bg-[#0d120c]/85 border-2 border-[var(--color-bone)]/20 text-[var(--color-bone)] placeholder:text-[var(--color-bone)]/35 focus:border-[var(--color-oxide)] focus:outline-none text-[1.125rem] font-mono";
+  const labelCls =
+    "block mb-2 font-mono text-[0.75rem] uppercase tracking-[0.16em] text-[var(--color-cyan)]";
+  const errCls = "mt-1.5 font-mono text-[0.8rem] text-[#f3a08f]";
+
+  const rails = [
+    { label: "Email", value: PROFILE.email, href: `mailto:${PROFILE.email}` },
+    { label: "Phone", value: PROFILE.phone, href: PROFILE.phoneHref },
+    { label: "GitHub", value: PROFILE.githubHandle, href: PROFILE.github },
+    { label: "LinkedIn", value: PROFILE.linkedinHandle, href: PROFILE.linkedin },
   ];
 
-  const inputCls =
-    "w-full px-4 py-3 bg-[var(--surface)]/80 border border-white/[0.08] rounded-lg text-[var(--foreground)] placeholder:text-[var(--muted)]/50 focus:outline-none focus:border-[var(--accent-border)] focus:ring-1 focus:ring-[var(--accent)]/40 transition-colors font-mono text-sm";
-
   return (
-    <>
-      <PlasmaBackground theme="indigo" />
-      <main className="relative z-10 min-h-screen text-[var(--foreground)]">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center mb-16"
-          >
-            <p className="label-mono mb-4">
-              open to software engineer intern roles
-            </p>
-            <h1 className="text-5xl md:text-6xl font-semibold tracking-tight mb-4 text-white">
-              Say Hello
+    <main className="relative min-h-screen overflow-hidden pt-14 text-[var(--color-bone)]">
+      <PupsikAmbient />
+
+      <div className="relative z-10 mx-auto max-w-[1300px] px-5 sm:px-8 lg:px-12 py-12 md:py-16">
+        <div className="grid gap-10 lg:grid-cols-[1fr_0.85fr] lg:gap-16 items-start">
+          {/* ---- content (never overlaps the cat) ---- */}
+          <div className="order-2 lg:order-1">
+            <span className="font-mono text-[0.8rem] tracking-[0.22em] uppercase text-[var(--color-cyan)]">
+              Contact
+            </span>
+            <h1 className="display-hero text-[clamp(2.6rem,8vw,5.5rem)] mt-3 text-[var(--color-bone)]">
+              Let&rsquo;s build
             </h1>
-            <p className="text-[var(--muted)] text-lg max-w-2xl mx-auto">
-              Building something interesting, or hiring for one? I&rsquo;d genuinely love to hear about it.
+            <p className="mt-5 max-w-md text-[1.125rem] leading-relaxed text-[var(--color-bone)]/85">
+              Building something, or hiring for a full-stack or ML role? I reply to everything. Based in{" "}
+              {PROFILE.location}, open to full-time software and ML engineering roles.
             </p>
-          </motion.div>
 
-          <div className="grid md:grid-cols-2 gap-12">
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="space-y-8"
-            >
+            {/* quick rails */}
+            <div className="mt-7 border-2 border-[var(--color-bone)]/20 bg-[#10160f]/85">
+              {rails.map((r, i) => (
+                <a
+                  key={r.label}
+                  href={r.href}
+                  target={r.href.startsWith("http") ? "_blank" : undefined}
+                  rel={r.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                  className={`group grid grid-cols-[minmax(80px,0.35fr)_1fr] items-center transition-colors hover:bg-[var(--color-oxide)] ${
+                    i > 0 ? "border-t border-[var(--color-bone)]/15" : ""
+                  }`}
+                >
+                  <span className="px-4 py-3 font-mono text-[0.72rem] uppercase tracking-[0.14em] text-[var(--color-cyan)] border-r border-[var(--color-bone)]/15 group-hover:text-[var(--color-paper)]">
+                    {r.label}
+                  </span>
+                  <span className="px-4 py-3 font-mono text-[0.9rem] text-[var(--color-bone)] truncate group-hover:text-[var(--color-paper)]">
+                    {r.value}
+                  </span>
+                </a>
+              ))}
+            </div>
+
+            {/* mailto form */}
+            <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-5 max-w-lg">
               <div>
-                <h2 className="text-xl font-semibold mb-4 text-white">Direct</h2>
-                <div className="space-y-4">
-                  <div>
-                    <p className="text-xs uppercase tracking-wider text-[var(--muted)] mb-1">
-                      Email
-                    </p>
-                    <a
-                      href={`mailto:${EMAIL}`}
-                      className="text-[var(--foreground)] hover:text-[var(--accent)] transition-colors font-mono text-sm"
-                    >
-                      {EMAIL}
-                    </a>
-                  </div>
-                  <div>
-                    <p className="text-xs uppercase tracking-wider text-[var(--muted)] mb-1">
-                      Phone
-                    </p>
-                    <a
-                      href="tel:+18138608506"
-                      className="text-[var(--foreground)] hover:text-[var(--accent)] transition-colors font-mono text-sm"
-                    >
-                      (813) 860-8506
-                    </a>
-                  </div>
-                  <div>
-                    <p className="text-xs uppercase tracking-wider text-[var(--muted)] mb-1">
-                      Based in
-                    </p>
-                    <p className="text-[var(--foreground)] font-mono text-sm">Tampa, FL</p>
-                  </div>
-                </div>
+                <label htmlFor="name" className={labelCls}>
+                  Name
+                </label>
+                <input
+                  id="name"
+                  className={inputCls}
+                  placeholder="Your name"
+                  {...register("name", { required: "Name is required" })}
+                />
+                {errors.name && <p className={errCls}>{errors.name.message}</p>}
+              </div>
+              <div>
+                <label htmlFor="email" className={labelCls}>
+                  Email
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  className={inputCls}
+                  placeholder="you@company.com"
+                  {...register("email", {
+                    required: "Email is required",
+                    pattern: { value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i, message: "Invalid email address" },
+                  })}
+                />
+                {errors.email && <p className={errCls}>{errors.email.message}</p>}
+              </div>
+              <div>
+                <label htmlFor="message" className={labelCls}>
+                  Message
+                </label>
+                <textarea
+                  id="message"
+                  rows={5}
+                  className={`${inputCls} resize-none`}
+                  placeholder="What are you building, or hiring for?"
+                  {...register("message", { required: "Message is required" })}
+                />
+                {errors.message && <p className={errCls}>{errors.message.message}</p>}
               </div>
 
-              <div className="surface-card rounded-xl p-5">
-                <p className="text-[var(--muted)] text-sm leading-relaxed">
-                  <span className="text-[var(--foreground)] font-semibold">Currently:</span> B.S.
-                  Computer Engineering &rsquo;27 at USF &middot; 3.89 GPA &middot; Green &amp; Gold
-                  Presidential Scholar &middot; undergraduate researcher at the Bellini College of AI.
+              <StampButton type="submit" variant="primary">
+                Compose message
+              </StampButton>
+
+              {sent && (
+                <p className="font-mono text-[0.85rem] text-[var(--color-bone)]/80">
+                  Your mail app should be open with everything filled in. Prefer to skip it?{" "}
+                  <a
+                    href={`mailto:${PROFILE.email}`}
+                    className="text-[var(--color-cyan)] underline underline-offset-4"
+                  >
+                    Email me directly
+                  </a>
+                  .
                 </p>
-              </div>
+              )}
+            </form>
+          </div>
 
-              <div>
-                <h3 className="text-lg font-semibold mb-4 text-white">Elsewhere</h3>
-                <div className="flex gap-3">
-                  {socialLinks.map((link) => (
-                    <a
-                      key={link.name}
-                      href={link.url}
-                      target={link.url.startsWith("http") ? "_blank" : undefined}
-                      rel="noopener noreferrer"
-                      aria-label={link.name}
-                      className="w-11 h-11 border border-white/[0.08] rounded-lg flex items-center justify-center text-[var(--muted)] hover:border-[var(--accent-border)] hover:text-[var(--accent)] hover:bg-[var(--accent-dim)] transition-colors"
-                    >
-                      <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                        {link.icon}
-                      </svg>
-                    </a>
-                  ))}
-                </div>
-              </div>
-            </motion.div>
-
-            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-                <div>
-                  <label
-                    htmlFor="name"
-                    className="block text-sm font-mono text-[var(--muted)] mb-2"
-                  >
-                    Name
-                  </label>
-                  <input
-                    {...register("name", { required: "Name is required" })}
-                    type="text"
-                    id="name"
-                    className={inputCls}
-                    placeholder="Your name"
-                  />
-                  {errors.name && (
-                    <p className="mt-1 text-sm text-red-400">{errors.name.message}</p>
-                  )}
-                </div>
-                <div>
-                  <label
-                    htmlFor="email"
-                    className="block text-sm font-mono text-[var(--muted)] mb-2"
-                  >
-                    Email
-                  </label>
-                  <input
-                    {...register("email", {
-                      required: "Email is required",
-                      pattern: {
-                        value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                        message: "Invalid email address",
-                      },
-                    })}
-                    type="email"
-                    id="email"
-                    className={inputCls}
-                    placeholder="you@company.com"
-                  />
-                  {errors.email && (
-                    <p className="mt-1 text-sm text-red-400">{errors.email.message}</p>
-                  )}
-                </div>
-                <div>
-                  <label
-                    htmlFor="message"
-                    className="block text-sm font-mono text-[var(--muted)] mb-2"
-                  >
-                    Message
-                  </label>
-                  <textarea
-                    {...register("message", { required: "Message is required" })}
-                    id="message"
-                    rows={6}
-                    className={`${inputCls} resize-none`}
-                    placeholder="What's on your mind…"
-                  />
-                  {errors.message && (
-                    <p className="mt-1 text-sm text-red-400">{errors.message.message}</p>
-                  )}
-                </div>
-
-                <button type="submit" className="btn-primary w-full">
-                  Compose Message →
-                </button>
-
-                {sent && (
-                  <motion.p
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="text-[var(--muted)] text-center text-sm"
-                  >
-                    Your mail app should be open with everything filled in. Prefer to skip it?{" "}
-                    <a
-                      href={`mailto:${EMAIL}`}
-                      className="text-[var(--accent)] underline underline-offset-4 hover:text-white"
-                    >
-                      Email me directly
-                    </a>
-                    .
-                  </motion.p>
-                )}
-              </form>
-            </motion.div>
+          {/* ---- the cat (unobscured; top on mobile, right on desktop) ---- */}
+          <div className="order-1 lg:order-2 lg:sticky lg:top-24">
+            <PupsikCat className="mx-auto w-full max-w-[520px]" />
+            <p className="mt-4 text-center font-mono text-[0.72rem] tracking-[0.14em] uppercase text-[var(--color-bone)]/45">
+              move your cursor over the cat · click it
+            </p>
           </div>
         </div>
-      </main>
-    </>
+      </div>
+    </main>
   );
 }
