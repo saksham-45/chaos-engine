@@ -161,7 +161,7 @@ export function TorchScene({
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={src}
-          alt={alt}
+          alt={alt || label || ""}
           loading="lazy"
           decoding="async"
           className="absolute inset-0 h-full w-full object-cover"
@@ -184,20 +184,6 @@ export function TorchScene({
               ") 100%)",
           }}
         />
-      )}
-
-      {/* dossier frame label */}
-      {label && (
-        <span className="absolute left-0 top-0 z-20 font-mono text-[0.62rem] uppercase tracking-[0.2em] bg-[var(--color-ink)] text-[var(--color-bone)] px-2 py-1">
-          {label}
-        </span>
-      )}
-
-      {/* hint */}
-      {!reduce && (
-        <span className="absolute right-2 bottom-2 z-20 font-mono text-[0.62rem] uppercase tracking-[0.18em] text-[var(--color-bone)]/40 pointer-events-none">
-          move to reveal
-        </span>
       )}
 
       {cat && <SceneCat corner={catCorner} />}
