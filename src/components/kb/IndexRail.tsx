@@ -38,9 +38,9 @@ export function IndexRail({ items }: { items: RailItem[] }) {
   return (
     <nav
       aria-label="Dossier contents"
-      className="hidden xl:flex fixed left-4 top-1/2 -translate-y-1/2 z-40 flex-col gap-0 border-2 border-[var(--color-ink)] bg-[var(--color-bone)] shadow-[6px_6px_0_var(--color-ink)]"
+      className="hidden xl:flex fixed left-4 top-1/2 -translate-y-1/2 z-40 flex-col gap-0 border-2 border-[var(--color-rule)] bg-[var(--color-concrete)] shadow-[6px_6px_0_var(--color-rule)]"
     >
-      <span className="px-3 py-1.5 font-mono text-[0.62rem] tracking-[0.2em] uppercase text-[var(--color-ink)]/50 border-b-2 border-[var(--color-ink)]">
+      <span className="px-3 py-1.5 font-mono text-[0.62rem] tracking-[0.2em] uppercase text-[var(--color-ink)]/50 border-b-2 border-[var(--color-rule)]">
         INDEX
       </span>
       {items.map((it) => {
@@ -52,7 +52,7 @@ export function IndexRail({ items }: { items: RailItem[] }) {
             className={`group flex items-center gap-2 px-3 py-2 text-left transition-colors ${
               on
                 ? "bg-[var(--color-oxide)] text-[var(--color-paper)]"
-                : "text-[var(--color-ink)] hover:bg-[var(--color-ink)]/5"
+                : "text-[var(--color-ink)] hover:bg-[var(--color-bone)]"
             }`}
           >
             <span className="font-mono text-[0.66rem] tabular-nums opacity-80">{it.no}</span>

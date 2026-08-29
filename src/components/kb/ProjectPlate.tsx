@@ -2,41 +2,31 @@
 
 import React from "react";
 import Link from "next/link";
-import { SceneSlot } from "./SceneSlot";
+import { ProjectStage } from "./ProjectStage";
 import type { Flagship } from "@/lib/projects";
 import type { Ground } from "./Plate";
 
 /* Flagship project plate: role tag + plate no + headline metric pulled large,
-   a torch-revealed scene preview, real demo/repo links, and a link to the
-   full assembly sheet at /projects/[slug]. */
+   a live demo / screenshot / architecture preview, real demo/repo links, and a
+   link to the full assembly sheet at /projects/[slug]. */
 export function ProjectPlate({
   p,
   ground = "bone",
   reversed = false,
-  scene = "starfield",
 }: {
   p: Flagship;
   ground?: Ground;
   reversed?: boolean;
-  /** traced scene slug for the preview slot */
-  scene?: string;
 }) {
-  const dark = ground === "ink" || ground === "charcoal";
-  const text = dark ? "text-[var(--color-bone)]" : "text-[var(--color-ink)]";
-  const sub = dark ? "text-[var(--color-bone)]/70" : "text-[var(--color-ink)]/70";
-  const line = dark ? "border-[var(--color-bone)]/25" : "border-[var(--color-ink)]";
-  const accent = dark ? "text-[var(--color-cyan)]" : "text-[var(--color-oxide-dark)]";
-  const reservedGround: "bone" | "concrete" | "charcoal" =
-    ground === "bone" ? "concrete" : ground === "concrete" ? "bone" : "charcoal";
+  const text = "text-[var(--color-ink)]";
+  const sub = "text-[var(--color-ink)]/70";
+  const line = "border-[var(--color-rule)]";
+  const accent = "text-[var(--color-oxide-dark)]";
 
   return (
     <article
       className={`kb-plate ${
-        ground === "concrete"
-          ? "bg-[var(--color-concrete)]"
-          : dark
-          ? "bg-[var(--color-charcoal)]"
-          : "bg-[var(--color-bone)]"
+        ground === "concrete" ? "bg-[var(--color-concrete)]" : "bg-[var(--color-bone)]"
       } ${text}`}
     >
       <div className={`grid gap-0 lg:grid-cols-2 ${reversed ? "lg:[direction:rtl]" : ""}`}>
@@ -70,9 +60,7 @@ export function ProjectPlate({
             {p.stack.map((s) => (
               <span
                 key={s}
-                className={`font-mono text-[0.72rem] px-2 py-1 border ${
-                  dark ? "border-[var(--color-bone)]/25 text-[var(--color-bone)]/80" : "border-[var(--color-ink)]/40 text-[var(--color-ink)]/75"
-                }`}
+                className="font-mono text-[0.72rem] px-2 py-1 border border-[var(--color-rule)] text-[var(--color-ink)]/75"
               >
                 {s}
               </span>
@@ -100,7 +88,7 @@ export function ProjectPlate({
                 href={p.repo}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`inline-flex items-center gap-2 ${sub} hover:${dark ? "text-[var(--color-bone)]" : "text-[var(--color-ink)]"}`}
+                className={`inline-flex items-center gap-2 ${sub} hover:text-[var(--color-ink)]`}
               >
                 <span className="border-b-2 border-current/40 pb-0.5">Source</span>
               </a>
@@ -108,17 +96,9 @@ export function ProjectPlate({
           </div>
         </div>
 
-        {/* torch-revealed scene preview */}
+        {/* live demo, screenshot, or architecture — never a scenic cat */}
         <div className="p-6 md:p-9 [direction:ltr] flex items-center">
-          <SceneSlot
-            slug={scene}
-            ground={reservedGround}
-            minH="min-h-[240px]"
-            ratio="4 / 3"
-            label="Preview"
-            catCorner="br"
-            className="w-full"
-          />
+          <ProjectStage p={p} minH="min-h-[240px]" ratio="4 / 3" className="w-full" />
         </div>
       </div>
     </article>

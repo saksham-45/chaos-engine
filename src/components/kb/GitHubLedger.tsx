@@ -31,9 +31,9 @@ export function GitHubLedger({ limit = 12 }: { limit?: number }) {
   }, []);
 
   return (
-    <div className="border-2 border-[var(--color-bone)]/25 bg-[var(--color-charcoal)] text-[var(--color-bone)]">
+    <div className="border-2 border-[var(--color-rule)] bg-[var(--color-charcoal)] text-[var(--color-ink)]">
       {/* header row */}
-      <div className="grid grid-cols-[1fr_auto] sm:grid-cols-[minmax(0,2fr)_1fr_auto_auto] gap-x-4 px-4 py-2.5 border-b-2 border-[var(--color-bone)]/25 font-mono text-[0.7rem] uppercase tracking-[0.18em] text-[var(--color-cyan)]">
+      <div className="grid grid-cols-[1fr_auto] sm:grid-cols-[minmax(0,2fr)_1fr_auto_auto] gap-x-4 px-4 py-2.5 border-b-2 border-[var(--color-rule)] font-mono text-[0.7rem] uppercase tracking-[0.18em] text-[var(--color-cyan)]">
         <span>repository</span>
         <span className="hidden sm:block">language</span>
         <span className="hidden sm:block text-right">updated</span>
@@ -41,14 +41,14 @@ export function GitHubLedger({ limit = 12 }: { limit?: number }) {
       </div>
 
       {state === "loading" && (
-        <div className="px-4 py-8 font-mono text-[0.85rem] text-[var(--color-bone)]/60">
+        <div className="px-4 py-8 font-mono text-[0.85rem] text-[var(--color-ink)]/60">
           <span className="inline-block h-3 w-3 border-2 border-[var(--color-cyan)] border-t-transparent animate-spin mr-3 align-middle" />
           pulling repositories from github.com/saksham-45 …
         </div>
       )}
 
       {state === "error" && (
-        <div className="px-4 py-8 font-mono text-[0.85rem] text-[var(--color-bone)]/70">
+        <div className="px-4 py-8 font-mono text-[0.85rem] text-[var(--color-ink)]/70">
           feed unavailable - browse directly at{" "}
           <a
             href="https://github.com/saksham-45"
@@ -62,7 +62,7 @@ export function GitHubLedger({ limit = 12 }: { limit?: number }) {
       )}
 
       {state === "empty" && (
-        <div className="px-4 py-8 font-mono text-[0.85rem] text-[var(--color-bone)]/60">
+        <div className="px-4 py-8 font-mono text-[0.85rem] text-[var(--color-ink)]/60">
           no public repositories to show right now.
         </div>
       )}
@@ -75,7 +75,7 @@ export function GitHubLedger({ limit = 12 }: { limit?: number }) {
             target="_blank"
             rel="noopener noreferrer"
             className={`grid grid-cols-[1fr_auto] sm:grid-cols-[minmax(0,2fr)_1fr_auto_auto] gap-x-4 px-4 py-2.5 font-mono text-[0.85rem] items-center transition-colors hover:bg-[var(--color-oxide)] hover:text-[var(--color-paper)] ${
-              i > 0 ? "border-t border-[var(--color-bone)]/15" : ""
+              i > 0 ? "border-t border-[var(--color-rule)]" : ""
             }`}
           >
             <span className="truncate">

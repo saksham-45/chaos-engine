@@ -4,8 +4,8 @@ import React, { useEffect, useRef } from "react";
 import { useReducedMotion } from "framer-motion";
 import { getCurve, project, type Vec3 } from "@/lib/curves";
 
-const NAVY = "#0c2a3a";
-const CYAN = "#4fc3e8";
+const NAVY = "#0c0c0e";
+const CYAN = "#d4d4d8";
 
 /* One live parametric figure, cyan-on-navy, canvas-2D. Points are precomputed
    once; each frame just re-projects them under a slow rotation. A full static
@@ -101,8 +101,8 @@ export function CurveStage({
           const [hx, hy] = project(last[0], last[1], last[2], ax, ay, scale, ox, oy);
           const g = ctx.createRadialGradient(hx, hy, 0, hx, hy, 13);
           g.addColorStop(0, "rgba(255,255,255,0.95)");
-          g.addColorStop(0.4, "rgba(79,195,232,0.8)");
-          g.addColorStop(1, "rgba(12,42,58,0)");
+          g.addColorStop(0.4, "rgba(212,212,216,0.8)");
+          g.addColorStop(1, "rgba(12,12,14,0)");
           ctx.fillStyle = g;
           ctx.beginPath();
           ctx.arc(hx, hy, 13, 0, Math.PI * 2);

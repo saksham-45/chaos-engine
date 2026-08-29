@@ -19,6 +19,8 @@ export { ReservedPanel } from "./ReservedPanel";
 export { TorchScene } from "./TorchScene";
 export { SceneSlot } from "./SceneSlot";
 export { Visualizer, type VizMode } from "./Visualizer";
+export { ArchCanvas, type ArchId } from "./ArchCanvas";
+export { ProjectStage } from "./ProjectStage";
 export { GitHubLedger } from "./GitHubLedger";
 export { ContactColophon } from "./ContactColophon";
 export { ProjectPlate } from "./ProjectPlate";

@@ -104,16 +104,16 @@ export function Visualizer({
 
   return (
     <figure
-      className={`relative border-2 border-[var(--color-ink)] bg-[var(--color-navy)] overflow-hidden shadow-[6px_6px_0_var(--color-ink)] ${className}`}
+      className={`relative border-2 border-[var(--color-rule)] bg-[var(--color-navy)] overflow-hidden shadow-[6px_6px_0_var(--color-rule)] ${className}`}
     >
       <div className={`relative w-full ${minH}`} style={{ aspectRatio: ratio }}>
         <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" />
       </div>
       {(label || href) && (
-        <figcaption className="absolute bottom-0 inset-x-0 flex items-center justify-between px-3 py-1.5 font-mono text-[0.72rem] uppercase tracking-[0.18em] text-[var(--color-bone)]/60">
+        <figcaption className="absolute bottom-0 inset-x-0 flex items-center justify-between px-3 py-1.5 font-mono text-[0.72rem] uppercase tracking-[0.18em] text-[var(--color-ink)]/60">
           <span>{label}</span>
           {href && (
-            <Link href={href} className="text-[var(--color-cyan)] hover:text-[var(--color-bone)]">
+            <Link href={href} className="text-[var(--color-cyan)] hover:text-[var(--color-ink)]">
               Visualizzer ↗
             </Link>
           )}

@@ -25,16 +25,16 @@
 /* Palette (themed to the portfolio, not the repo's rainbow HSV)       */
 /* ------------------------------------------------------------------ */
 
-/** Background navy. */
-const BG = "#0c2a3a";
-/** Primary line/fill cyan (rgb 79,195,232). */
-const CYAN = "#4fc3e8";
-const CYAN_RGB = { r: 79, g: 195, b: 232 } as const;
-/** Accent oxide-red for peaks / beats / hot bins (rgb 200,51,31). */
-const RED = "#c8331f";
-const RED_RGB = { r: 200, g: 51, b: 31 } as const;
-/** Faint cyan grid. */
-const GRID = "rgba(79,195,232,0.10)";
+/** Background. */
+const BG = "#0c0c0e";
+/** Primary line/fill zinc. */
+const CYAN = "#d4d4d8";
+const CYAN_RGB = { r: 212, g: 212, b: 216 } as const;
+/** Accent white for peaks / beats. */
+const RED = "#fafafa";
+const RED_RGB = { r: 250, g: 250, b: 250 } as const;
+/** Faint grid. */
+const GRID = "rgba(212,212,216,0.10)";
 
 /** Interpolate cyan -> oxide-red by `e` (0..1); returns an rgba() string. */
 function hot(e: number, alpha: number): string {

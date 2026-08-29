@@ -19,21 +19,15 @@ export function SpecTable({
   dark?: boolean;
   className?: string;
 }) {
-  const border = dark ? "border-[var(--color-bone)]/20" : "border-[var(--color-ink)]/20";
-  const labelText = dark ? "text-[var(--color-bone)]/60" : "text-[var(--color-ink)]/55";
-  const valueText = dark ? "text-[var(--color-bone)]" : "text-[var(--color-ink)]";
-  const zebra = dark ? "bg-[var(--color-bone)]/[0.04]" : "bg-[var(--color-ink)]/[0.03]";
+  const border = "border-[var(--color-rule)]";
+  const labelText = "text-[var(--color-ink)]/55";
+  const valueText = "text-[var(--color-ink)]";
+  const zebra = "bg-[var(--color-ink)]/[0.04]";
 
   return (
-    <div className={`border-2 ${dark ? "border-[var(--color-bone)]/25" : "border-[var(--color-ink)]"} ${className}`}>
+    <div className={`border-2 border-[var(--color-rule)] ${className}`}>
       {caption && (
-        <div
-          className={`font-mono text-[0.75rem] uppercase tracking-[0.2em] px-4 py-2 border-b-2 ${
-            dark
-              ? "border-[var(--color-bone)]/25 text-[var(--color-cyan)]"
-              : "border-[var(--color-ink)] text-[var(--color-oxide-dark)]"
-          }`}
-        >
+        <div className="font-mono text-[0.75rem] uppercase tracking-[0.2em] px-4 py-2 border-b-2 border-[var(--color-rule)] text-[var(--color-oxide-dark)]">
           {caption}
         </div>
       )}

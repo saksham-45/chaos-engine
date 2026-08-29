@@ -27,7 +27,7 @@ export default function ContactPage() {
   };
 
   const inputCls =
-    "w-full px-4 py-3 bg-[#0d120c]/85 border-2 border-[var(--color-bone)]/20 text-[var(--color-bone)] placeholder:text-[var(--color-bone)]/35 focus:border-[var(--color-oxide)] focus:outline-none text-[1.125rem] font-mono";
+    "w-full px-4 py-3 bg-[#0d120c]/85 border-2 border-[var(--color-ink)]/20 text-[var(--color-ink)] placeholder:text-[var(--color-ink)]/35 focus:border-[var(--color-oxide)] focus:outline-none text-[1.125rem] font-mono";
   const labelCls =
     "block mb-2 font-mono text-[0.75rem] uppercase tracking-[0.16em] text-[var(--color-cyan)]";
   const errCls = "mt-1.5 font-mono text-[0.8rem] text-[#f3a08f]";
@@ -40,7 +40,7 @@ export default function ContactPage() {
   ];
 
   return (
-    <main className="relative min-h-screen overflow-hidden pt-14 text-[var(--color-bone)]">
+    <main className="relative min-h-screen overflow-hidden pt-14 text-[var(--color-ink)]">
       <PupsikAmbient />
 
       <div className="relative z-10 mx-auto max-w-[1300px] px-5 sm:px-8 lg:px-12 py-12 md:py-16">
@@ -50,10 +50,10 @@ export default function ContactPage() {
             <span className="font-mono text-[0.8rem] tracking-[0.22em] uppercase text-[var(--color-cyan)]">
               Contact
             </span>
-            <h1 className="display-hero text-[clamp(2.6rem,8vw,5.5rem)] mt-3 text-[var(--color-bone)]">
+            <h1 className="display-hero text-[clamp(2.6rem,8vw,5.5rem)] mt-3 text-[var(--color-ink)]">
               Let&rsquo;s build
             </h1>
-            <p className="mt-5 max-w-md text-[1.125rem] leading-relaxed text-[var(--color-bone)]/85">
+            <p className="mt-5 max-w-md text-[1.125rem] leading-relaxed text-[var(--color-ink)]/85">
               Building something, or hiring for a full-stack or ML role? I reply to everything. Based in{" "}
               {PROFILE.location}, open to full-time software and ML engineering roles.
             </p>

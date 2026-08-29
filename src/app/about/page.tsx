@@ -5,8 +5,7 @@ import {
   SectionPlate,
   StampButton,
   SpecTable,
-  SceneSlot,
-  Stamp,
+  ArchCanvas,
   BlackSquareAnchor,
 } from "@/components/kb";
 import { PROFILE } from "@/lib/projects";
@@ -107,7 +106,14 @@ export default function About() {
       >
         <div className="grid gap-8 lg:grid-cols-[1fr_1fr] lg:gap-12 items-center">
           <div className="order-2 lg:order-1">
-            <SceneSlot slug="taj" ground="charcoal" minH="min-h-[280px] md:min-h-[340px]" ratio="4 / 3" label="Diagram" torch={240} dim={0.78} catCorner="bl" className="w-full" />
+            <figure className="relative overflow-hidden border-2 border-[var(--color-bone)]/25 bg-[var(--color-navy)]">
+              <div className="relative w-full min-h-[280px] md:min-h-[340px]" style={{ aspectRatio: "4 / 3" }}>
+                <ArchCanvas diagram="stack" className="absolute inset-0" />
+              </div>
+              <figcaption className="absolute bottom-0 inset-x-0 bg-[var(--color-bone)]/85 px-3 py-1.5 font-mono text-[0.72rem] uppercase tracking-[0.18em] text-[var(--color-ink)]/70">
+                Edge · audio · systems · UI
+              </figcaption>
+            </figure>
           </div>
           <div className="order-1 lg:order-2 relative">
             <BlackSquareAnchor
@@ -115,7 +121,7 @@ export default function About() {
               className="absolute -top-4 -right-2 hidden lg:block"
               color="var(--color-oxide)"
             />
-            <p className="text-[1.125rem] leading-relaxed text-[var(--color-bone)]/85 max-w-[46ch]">
+            <p className="text-[1.125rem] leading-relaxed text-[var(--color-ink)]/85 max-w-[46ch]">
               Building the whole stack, from API and data to model and UI, means the constraints of
               one layer keep the others honest: latency and memory from embedded, perception from
               audio, and the math underneath all of it.

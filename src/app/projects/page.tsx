@@ -79,7 +79,6 @@ export default function ProjectsPage() {
                 <ProjectPlate
                   p={p}
                   ground={i % 2 === 1 ? "concrete" : "bone"}
-                  scene={["starfield", "taj", "oldcity", "canyon"][i % 4]}
                 />
               </Stamp>
             ))}
@@ -104,7 +103,7 @@ export default function ProjectsPage() {
       <SectionPlate
         ground="concrete"
         title="Selected work"
-        intro="Smaller builds across the stack: a compiler, combinatorics research, graphics, an RL agent, and everyday math tooling."
+        intro="Smaller builds across the stack: an LMMS MCP plugin, a compiler, combinatorics research, graphics, an RL agent, and everyday math tooling."
         texture
         wide
       >

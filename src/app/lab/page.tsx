@@ -33,8 +33,8 @@ export default function LabPage() {
           ))}
         </div>
 
-        <div className="mt-14 border-t-2 border-[var(--color-bone)]/25 pt-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
-          <p className="max-w-lg text-[1.125rem] leading-relaxed text-[var(--color-bone)]/80">
+        <div className="mt-14 border-t-2 border-[var(--color-rule)] pt-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+          <p className="max-w-lg text-[1.125rem] leading-relaxed text-[var(--color-ink)]/80">
             The same math shows up everywhere I work: scoring audio features in AutoMix, driving the
             visualizers around this site, running the models in MoodScope. It&rsquo;s the common thread.
           </p>

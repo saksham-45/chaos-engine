@@ -4,10 +4,10 @@ import React, { useEffect, useRef, useState } from "react";
 import { useReducedMotion } from "framer-motion";
 import { CURVES, project } from "@/lib/curves";
 
-const NAVY = "#0c2a3a";
-const CYAN = "#4fc3e8";
-const BONE = "#e7e3da";
-const OXIDE = "#c8331f";
+const NAVY = "#0c0c0e";
+const CYAN = "#d4d4d8";
+const BONE = "#f4f4f5";
+const OXIDE = "#fafafa";
 
 /* "General Assembly Drawing."
    One imaginary machine drafted from Saksham's three disciplines:

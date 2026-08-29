@@ -171,6 +171,13 @@ export interface Selected {
 
 export const SELECTED: Selected[] = [
   {
+    name: "LMMS AgentControl + MCP",
+    blurb:
+      "An AgentControl plugin and MCP server that expose LMMS DAW state (tracks, FX, clips, song) to an LLM through a local daemon. Built as a real plugin in the C++ DAW. The upstream PR was not merged; the work is mine.",
+    tags: ["C++", "Qt", "MCP", "DAW"],
+    repo: "https://github.com/saksham-45/lmms",
+  },
+  {
     name: "Mathon",
     blurb:
       "A scientific-computing language with a real compiler: parser to AST, LLVM IR via llvmlite, JIT to native code, plus symbolic and automatic differentiation.",

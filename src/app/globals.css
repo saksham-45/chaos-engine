@@ -1,20 +1,22 @@
 @import "tailwindcss";
 
 /* =========================================================================
-   КБ-14 - Bureau of One / The Technical Dossier
-   Soviet-constructivist × brutalist design tokens. CSS-first Tailwind v4.
+   Bureau of One — dark zinc dossier.
+   Black / dark-grey (Dark Mode Design). Accent is white, never orange.
+   Aceternity-style grid + spotlight live on the canvas.
    ========================================================================= */
 
 @theme {
-  --color-bone: #e7e3da;
-  --color-ink: #15140f;
-  --color-oxide: #c8331f;
-  --color-oxide-dark: #9e2417;
-  --color-concrete: #b4b0a6;
-  --color-navy: #0c2a3a;
-  --color-cyan: #4fc3e8;
-  --color-charcoal: #201e18;
-  --color-paper: #fbf9f4;
+  --color-bone: #09090b;
+  --color-ink: #f4f4f5;
+  --color-oxide: #fafafa;
+  --color-oxide-dark: #a1a1aa;
+  --color-concrete: #18181b;
+  --color-navy: #0c0c0e;
+  --color-cyan: #d4d4d8;
+  --color-charcoal: #111113;
+  --color-paper: #09090b;
+  --color-rule: #3f3f46;
 }
 
 /* Map Tailwind's font-* utilities DIRECTLY to the next/font variables (defined
@@ -51,7 +53,7 @@ body {
   background: var(--color-bone);
   color: var(--color-ink);
   font-family: var(--font-plex-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  font-size: 1.125rem; /* 18px hard minimum for running copy */
+  font-size: 1.125rem;
   line-height: 1.6;
   font-feature-settings: "kern" 1;
   -webkit-font-smoothing: antialiased;
@@ -59,23 +61,38 @@ body {
   overflow-x: hidden;
 }
 
-/* ---- structural apparatus ---- */
-/* border + hard offset shadow only - each plate sets its own ground color so
-   utilities like bg-navy / GROUND classes are never overridden. */
+.kb-grid {
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+  background-size: 48px 48px;
+  background-position: center top;
+}
+.kb-grid-fade {
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 0%, black 30%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 0%, black 30%, transparent 75%);
+}
+.kb-spotlight {
+  pointer-events: none;
+  background:
+    radial-gradient(680px 420px at 72% 8%, rgba(255, 255, 255, 0.09), transparent 62%),
+    radial-gradient(420px 320px at 18% 88%, rgba(255, 255, 255, 0.04), transparent 70%);
+}
+
 .kb-plate {
-  border: 2px solid var(--color-ink);
-  box-shadow: 6px 6px 0 var(--color-ink);
+  border: 2px solid var(--color-rule);
+  box-shadow: 6px 6px 0 var(--color-rule);
 }
 .kb-plate-hover {
   transition: box-shadow 0.16s cubic-bezier(0.16, 1, 0.3, 1),
     transform 0.16s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .kb-plate-hover:hover {
-  box-shadow: 10px 10px 0 var(--color-ink);
+  box-shadow: 10px 10px 0 var(--color-rule);
   transform: translate(-2px, -2px);
 }
 .kb-hairline {
-  border: 1px solid color-mix(in srgb, var(--color-ink) 22%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-ink) 18%, transparent);
 }
 
 /* board-formed concrete micro-texture - decorative grounds only, never under text */
@@ -141,11 +158,11 @@ body {
   height: 12px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--color-concrete);
+  background: var(--color-bone);
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--color-ink);
-  border: 3px solid var(--color-concrete);
+  background: var(--color-rule);
+  border: 3px solid var(--color-bone);
 }
 
 /* glowing cat eyes for the pupsik contact scene (round despite the global rad:0) */

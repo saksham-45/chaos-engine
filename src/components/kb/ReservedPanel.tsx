@@ -42,7 +42,7 @@ export function ReservedPanel({
         aspectRatio: ratio,
         background: BG[ground],
         border: `2px solid ${borderColor}`,
-        color: dark ? "#e7e3da" : "#15140f",
+        color: dark ? "#f4f4f5" : "#09090b",
       }}
     >
       <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 px-4 text-center">

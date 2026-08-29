@@ -8,11 +8,11 @@ import {
   Stamp,
   SectionPlate,
   StatLedger,
-  SceneSlot,
   ProjectPlate,
   GitHubLedger,
   ContactColophon,
   DiagonalBar,
+  SchematicPanel,
   BlackSquareAnchor,
 } from "@/components/kb";
 import { FLAGSHIPS, STATS, STACK, PROFILE } from "@/lib/projects";
@@ -36,7 +36,9 @@ export default function Home() {
       <main className="pt-14">
         {/* ============ 00 · MASTHEAD + GENERAL ASSEMBLY ============ */}
         <section id="s00" className="relative bg-[var(--color-bone)] overflow-hidden">
-          <div className="mx-auto max-w-[1400px] pl-5 sm:pl-8 lg:pl-12 xl:pl-[248px] pr-5 sm:pr-8 lg:pr-12 py-14 md:py-20">
+          <div aria-hidden className="kb-grid kb-grid-fade pointer-events-none absolute inset-0" />
+          <div aria-hidden className="kb-spotlight absolute inset-0" />
+          <div className="relative mx-auto max-w-[1400px] pl-5 sm:pl-8 lg:pl-12 xl:pl-[248px] pr-5 sm:pr-8 lg:pr-12 py-14 md:py-20">
             <div className="flex items-center gap-3 mb-8 flex-wrap">
               <span className="font-mono text-[0.72rem] tracking-[0.22em] uppercase bg-[var(--color-oxide)] text-[var(--color-paper)] px-2 py-1">
                 Open to full-time software or ML engineering roles
@@ -47,7 +49,6 @@ export default function Home() {
             </div>
 
             <div className="grid gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14 items-center">
-              {/* title block (order-2 on mobile so art stacks above) */}
               <div className="order-2 lg:order-1 relative">
                 <DiagonalBar className="-left-12 top-6 hidden lg:block" length={200} thickness={26} />
                 <h1 className="display-hero text-[clamp(2.8rem,9vw,7rem)] text-[var(--color-ink)]">
@@ -85,22 +86,23 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* hero scene: torch-revealed, brighter resting light so it invites */}
               <div className="order-1 lg:order-2 relative">
                 <Stamp>
-                  <SceneSlot
-                    slug="canyon"
-                    ground="concrete"
-                    minH="min-h-[340px] md:min-h-[420px]"
-                    ratio="16 / 10"
-                    label="Assembly"
-                    torch={330}
-                    dim={0.55}
-                    catCorner="br"
-                    className="w-full"
-                  />
+                  <figure className="relative w-full overflow-hidden border-2 border-[var(--color-rule)] bg-[#09090b] shadow-[6px_6px_0_var(--color-rule)]">
+                    <div className="relative w-full min-h-[420px] md:min-h-[560px]" style={{ aspectRatio: "3 / 4" }}>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src="/saksham.webp"
+                        alt="Saksham Srivastava on the Tampa riverwalk"
+                        className="absolute inset-0 h-full w-full object-contain object-center"
+                      />
+                    </div>
+                    <figcaption className="absolute bottom-0 inset-x-0 bg-[var(--color-bone)]/85 px-3 py-1.5 font-mono text-[0.72rem] uppercase tracking-[0.18em] text-[var(--color-ink)]/70">
+                      Tampa, FL
+                    </figcaption>
+                  </figure>
                 </Stamp>
-                <BlackSquareAnchor size={40} className="absolute -bottom-4 -right-4 hidden md:block" color="var(--color-ink)" />
+                <BlackSquareAnchor size={40} className="absolute -bottom-4 -right-4 hidden md:block" color="var(--color-oxide)" />
               </div>
             </div>
           </div>
@@ -174,7 +176,6 @@ export default function Home() {
                 <ProjectPlate
                   p={p}
                   ground={i % 2 === 1 ? "concrete" : "bone"}
-                  scene={["starfield", "taj", "oldcity", "canyon"][i % 4]}
                 />
               </Stamp>
             ))}
@@ -227,9 +228,13 @@ export default function Home() {
           }
           wide
         >
-          <Stamp>
-            <SceneSlot slug="ghat" ground="charcoal" minH="min-h-[220px]" ratio="21 / 9" label="Figures" torch={260} dim={0.7} catCorner="bl" className="w-full" />
-          </Stamp>
+          <div className="grid gap-4 md:grid-cols-4">
+            {["lorenz", "lissajous", "butterfly", "heart"].map((id, i) => (
+              <Stamp key={id} delay={i * 0.04}>
+                <SchematicPanel curveId={id} figNo={String(i + 1).padStart(2, "0")} minH="min-h-[180px]" />
+              </Stamp>
+            ))}
+          </div>
           <div className="mt-10">
             <StampButton href="/lab" variant="ghost">
               Enter the Lab →

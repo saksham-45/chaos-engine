@@ -8,7 +8,7 @@ import {
   Stamp,
   StampButton,
   SpecTable,
-  SceneSlot,
+  ProjectStage,
   DiagonalBar,
   BlackSquareAnchor,
 } from "@/components/kb";
@@ -163,18 +163,13 @@ function AssemblySheet({ p }: { p: Flagship }) {
               )}
             </div>
 
-            {/* torch-revealed preview scene */}
+            {/* live demo, screenshot, or architecture */}
             <div className="order-1 lg:order-2 relative">
               <Stamp>
-                <SceneSlot
-                  slug="oldcity"
-                  ground="concrete"
+                <ProjectStage
+                  p={p}
                   minH="min-h-[340px] md:min-h-[420px]"
                   ratio="4 / 3"
-                  label="Preview"
-                  torch={260}
-                  dim={0.72}
-                  catCorner="br"
                   className="w-full"
                 />
               </Stamp>

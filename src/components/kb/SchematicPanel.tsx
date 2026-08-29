@@ -37,11 +37,11 @@ export function SchematicPanel({
       className={`kb-plate bg-[var(--color-navy)] p-0 overflow-hidden ${className}`}
     >
       {/* top registration strip */}
-      <div className="flex items-center justify-between px-3 py-1.5 border-b-2 border-[var(--color-bone)]/20 bg-[var(--color-navy)]">
+      <div className="flex items-center justify-between px-3 py-1.5 border-b-2 border-[var(--color-rule)] bg-[var(--color-navy)]">
         <span className="font-mono text-[0.72rem] tracking-[0.2em] text-[var(--color-cyan)]">
-          {figNo ? `FIG. ${figNo}` : "FIG."} {title && <span className="text-[var(--color-bone)]/60">· {title}</span>}
+          {figNo ? `FIG. ${figNo}` : "FIG."} {title && <span className="text-[var(--color-ink)]/60">· {title}</span>}
         </span>
-        <span aria-hidden className="font-mono text-[0.72rem] text-[var(--color-bone)]/40">
+        <span aria-hidden className="font-mono text-[0.72rem] text-[var(--color-ink)]/40">
           FIG.{figNo ?? ""}
         </span>
       </div>
@@ -57,7 +57,7 @@ export function SchematicPanel({
 
       {/* docked solid caption bar (ink ground → bone text, always legible) */}
       {(eq || cap) && (
-        <figcaption className="bg-[var(--color-ink)] text-[var(--color-bone)] px-4 py-3 border-t-2 border-[var(--color-bone)]/20">
+        <figcaption className="bg-[var(--color-charcoal)] text-[var(--color-ink)] px-4 py-3 border-t-2 border-[var(--color-rule)]">
           {captionRu && (
             <span className="font-mono text-[0.7rem] tracking-[0.22em] uppercase text-[var(--color-cyan)] block mb-1">
               {captionRu}
@@ -69,7 +69,7 @@ export function SchematicPanel({
             </pre>
           )}
           {cap && (
-            <p className="font-mono text-[0.78rem] leading-relaxed text-[var(--color-bone)]/75">
+            <p className="font-mono text-[0.78rem] leading-relaxed text-[var(--color-ink)]/75">
               {cap}
             </p>
           )}
