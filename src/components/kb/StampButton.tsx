@@ -11,6 +11,9 @@ type Variant = "primary" | "secondary" | "ghost";
 const base =
   "group relative inline-flex items-center justify-center gap-2 overflow-hidden border-2 px-6 min-h-[48px] font-mono text-[0.8rem] uppercase tracking-[0.16em] font-medium select-none";
 
+const compactBase =
+  "group relative inline-flex items-center justify-center gap-1 overflow-hidden border-2 px-3 min-h-[40px] font-mono text-[0.7rem] uppercase tracking-[0.08em] font-medium select-none whitespace-nowrap flex-1";
+
 const variants: Record<Variant, string> = {
   primary:
     "border-[var(--color-oxide)] bg-[var(--color-oxide)] text-[var(--color-paper)]",
@@ -51,6 +54,7 @@ export function StampButton({
   type = "button",
   className = "",
   ariaLabel,
+  compact = false,
 }: {
   children: React.ReactNode;
   href?: string;
@@ -60,8 +64,9 @@ export function StampButton({
   type?: "button" | "submit";
   className?: string;
   ariaLabel?: string;
+  compact?: boolean;
 }) {
-  const cls = `${base} ${variants[variant]} ${className}`;
+  const cls = `${compact ? compactBase : base} ${variants[variant]} ${className}`;
   const isExternal = external || href?.startsWith("http") || href?.startsWith("mailto:") || href?.startsWith("tel:");
 
   if (href && isExternal) {

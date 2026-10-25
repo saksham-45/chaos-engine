@@ -25,7 +25,7 @@ export default function Home() {
       <section className="relative bg-[var(--color-bone)] overflow-hidden">
         <div aria-hidden className="kb-grid kb-grid-fade pointer-events-none absolute inset-0" />
         <div aria-hidden className="kb-spotlight absolute inset-0" />
-        <div className="relative mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 py-14 md:py-20">
+        <div className="relative mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 py-8 md:py-12">
           <div className="flex items-center gap-3 mb-8 flex-wrap">
             <span className="font-mono text-[0.72rem] tracking-[0.22em] uppercase bg-[var(--color-oxide)] text-[var(--color-paper)] px-2 py-1">
               Graduating May 2027 · open to new-grad roles
@@ -35,7 +35,7 @@ export default function Home() {
             </span>
           </div>
 
-          <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:gap-14 items-start">
+          <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr] lg:gap-14 items-start">
             <div className="order-1">
               <h1 className="display-hero text-[clamp(2.6rem,8vw,5.5rem)] text-[var(--color-ink)]">
                 Saksham
@@ -45,14 +45,16 @@ export default function Home() {
               <p className="mt-6 max-w-xl text-[1.25rem] leading-relaxed text-[var(--color-ink)]">
                 I build FPGA tooling, embedded firmware, and applied AI.
               </p>
-              <div className="mt-8 flex flex-wrap gap-4">
-                <StampButton href="/projects" variant="primary">
-                  View projects
+              <div className="mt-6 flex flex-nowrap gap-2">
+                <StampButton href="/projects" variant="primary" compact>
+                  <span className="hidden sm:inline">View projects</span>
+                  <span className="sm:hidden">Projects</span>
                 </StampButton>
-                <StampButton href="/about" variant="secondary">
-                  About me
+                <StampButton href="/about" variant="secondary" compact>
+                  <span className="hidden sm:inline">About me</span>
+                  <span className="sm:hidden">About</span>
                 </StampButton>
-                <StampButton href="/contact" variant="secondary">
+                <StampButton href="/contact" variant="secondary" compact>
                   Contact
                 </StampButton>
               </div>
@@ -77,7 +79,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="mt-14 border-2 border-[var(--color-rule)] bg-[var(--color-concrete)]">
+          <div className="mt-8 border-2 border-[var(--color-rule)] bg-[var(--color-concrete)]">
             <div className="px-4 py-2 border-b-2 border-[var(--color-rule)] font-mono text-[0.72rem] uppercase tracking-[0.2em] text-[var(--color-ink)]/60">
               Right now
             </div>

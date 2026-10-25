@@ -2,38 +2,38 @@
 
 /* =========================================================================
    Clean professional engineering portfolio.
-   Default is near-black, warm white ink, one teal accent. Dark is
+   Default is slate near-black, off-white ink, one muted slate-blue accent. Dark is
    available from the nav toggle and persists in localStorage.
    No dossier numbering, no novelty art, no lab gimmicks. The accent is
    used sparingly: active states, one metric, one rule, one button.
    ========================================================================= */
 
 @theme {
-  --color-bone: #0b0b0c;
-  --color-ink: #f4efe6;
-  --color-oxide: #2fb5a8;
-  --color-oxide-dark: #7de8dc;
-  --color-concrete: #161614;
-  --color-navy: #0c0c0e;
-  --color-cyan: #7de8dc;
-  --color-charcoal: #121210;
-  --color-paper: #0b0b0c;
-  --color-rule: #26262a;
-  --color-muted: #97907f;
+  --color-bone: #0b1018;
+  --color-ink: #f3f4f7;
+  --color-oxide: #7a9cc6;
+  --color-oxide-dark: #a8c0dc;
+  --color-concrete: #1f2733;
+  --color-navy: #0b1018;
+  --color-cyan: #a8c0dc;
+  --color-charcoal: #141b26;
+  --color-paper: #0b1018;
+  --color-rule: #3a4a63;
+  --color-muted: #8d9bb0;
 }
 
 :root[data-theme="light"] {
-  --color-bone: #f5f0e6;
-  --color-ink: #121210;
-  --color-oxide: #0e7a70;
-  --color-oxide-dark: #0a5c54;
-  --color-concrete: #e6ddc9;
-  --color-navy: #f5f0e6;
-  --color-cyan: #0e7a70;
-  --color-charcoal: #d9cfb8;
-  --color-paper: #f5f0e6;
-  --color-rule: #c4b99e;
-  --color-muted: #6b6558;
+  --color-bone: #f1f5f9;
+  --color-ink: #0f172a;
+  --color-oxide: #2f4a6b;
+  --color-oxide-dark: #1e334f;
+  --color-concrete: #e2e8f0;
+  --color-navy: #f1f5f9;
+  --color-cyan: #2f4a6b;
+  --color-charcoal: #dde3ea;
+  --color-paper: #f1f5f9;
+  --color-rule: #cbd5e1;
+  --color-muted: #475569;
 }
 
 /* Map Tailwind's font-* utilities DIRECTLY to the next/font variables (defined
@@ -92,8 +92,8 @@ body {
 .kb-spotlight {
   pointer-events: none;
   background:
-    radial-gradient(680px 420px at 72% 8%, rgba(47, 181, 168, 0.10), transparent 62%),
-    radial-gradient(420px 320px at 18% 88%, rgba(47, 181, 168, 0.04), transparent 70%);
+    radial-gradient(680px 420px at 72% 8%, rgba(122, 156, 198, 0.12), transparent 62%),
+    radial-gradient(420px 320px at 18% 88%, rgba(122, 156, 198, 0.05), transparent 70%);
 }
 
 /* Subtle spring micro-interactions. One easing, used everywhere, so motion
@@ -234,6 +234,6 @@ body {
 }
 :root[data-theme="light"] .kb-spotlight {
   background:
-    radial-gradient(680px 420px at 72% 8%, rgba(14, 122, 112, 0.08), transparent 62%),
-    radial-gradient(420px 320px at 18% 88%, rgba(14, 122, 112, 0.04), transparent 70%);
+    radial-gradient(680px 420px at 72% 8%, rgba(47, 74, 107, 0.08), transparent 62%),
+    radial-gradient(420px 320px at 18% 88%, rgba(47, 74, 107, 0.04), transparent 70%);
 }
