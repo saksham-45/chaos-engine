@@ -13,12 +13,12 @@
   --color-ink: #121210;
   --color-oxide: #8a5a0a;
   --color-oxide-dark: #6b4a08;
-  --color-concrete: #ede8dc;
+  --color-concrete: #e6ddc9;
   --color-navy: #f5f0e6;
   --color-cyan: #6b4a08;
-  --color-charcoal: #e9e3d6;
+  --color-charcoal: #d9cfb8;
   --color-paper: #f5f0e6;
-  --color-rule: #d8d2c4;
+  --color-rule: #c4b99e;
   --color-muted: #6b6558;
 }
 
@@ -211,22 +211,6 @@ body {
   border: 3px solid var(--color-bone);
 }
 
-/* glowing cat eyes for the pupsik contact scene (round despite the global rad:0) */
-.pupsik-eye {
-  position: absolute;
-  width: 1.9%;
-  height: 2.4%;
-  border-radius: 50% !important;
-  background: radial-gradient(circle at 50% 45%, #fff7cf 0%, #ffde84 35%, #d79b34 70%, rgba(160, 110, 40, 0) 100%);
-  box-shadow: 0 0 10px 3px rgba(255, 214, 120, 0.75), 0 0 22px 8px rgba(210, 150, 60, 0.35);
-  transform: translate(-50%, -50%);
-  animation: pupsikBlink 6.5s infinite;
-  pointer-events: none;
-}
-@keyframes pupsikBlink {
-  0%, 92%, 100% { transform: translate(-50%, -50%) scaleY(1); }
-  94%, 97% { transform: translate(-50%, -50%) scaleY(0.08); }
-}
 
 /* honor reduced motion - keep everything legible & static */
 @media (prefers-reduced-motion: reduce) {

@@ -40,7 +40,7 @@ export function ProjectPlate({ p }: { p: Flagship }) {
         </div>
 
         <div className="mt-4 flex flex-wrap gap-1.5">
-          {p.stack.map((s) => (
+          {p.stack.slice(0, 4).map((s) => (
             <span
               key={s}
               className="font-mono text-[0.7rem] px-2 py-1 border border-[var(--color-rule)] text-[var(--color-ink)]/70"

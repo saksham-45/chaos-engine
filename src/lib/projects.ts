@@ -358,11 +358,9 @@ export const STATS: { value: string; unit?: string; label: string; callout?: boo
 ];
 
 export const STACK: { group: string; items: string[] }[] = [
-  { group: "Languages", items: ["Python", "Rust", "C / C++", "SystemVerilog", "JavaScript / TypeScript", "SQL", "Bash"] },
-  { group: "Hardware & Embedded", items: ["FPGA CAD", "Zephyr", "BLE", "PathFinder", "Static timing analysis", "nRF52840"] },
-  { group: "Web & Backend", items: ["Next.js", "Node.js", "REST APIs", "FastAPI", "MySQL", "SQLite", "Three.js / WebGL2"] },
-  { group: "ML & Applied AI", items: ["PyTorch", "TensorFlow Lite", "RAG", "LLM tool use", "Evals", "Librosa", "NumPy", "Pandas"] },
-  { group: "Tools & Practices", items: ["Git / GitHub", "CI/CD", "Unit & integration testing", "Linux", "Docker"] },
+  { group: "FPGA and Embedded", items: ["Rust", "SystemVerilog", "FPGA CAD", "Zephyr", "BLE", "PathFinder", "Static timing analysis", "nRF52840"] },
+  { group: "Applied AI", items: ["Python", "PyTorch", "TensorFlow Lite", "RAG", "LLM tool use", "Evals", "Librosa", "NumPy", "Pandas"] },
+  { group: "Systems and Web", items: ["C / C++", "TypeScript", "Next.js", "Node.js", "REST APIs", "MySQL", "Three.js / WebGL2"] },
 ];
 
 export const PROFILE = {

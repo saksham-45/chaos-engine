@@ -68,7 +68,7 @@ export default function About() {
         </div>
       </SectionPlate>
 
-      <SectionPlate id="method" ground="bone" title="How I work" titleRu="THE METHOD">
+      <SectionPlate id="method" ground="bone" title="How I work">
         <div className="border-2 border-[var(--color-ink)]">
           {[
             ["01", "Measure first", "Define the metric before building: timing, latency, users, or a gold value to check against."],
