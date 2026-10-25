@@ -26,6 +26,7 @@ export interface Flagship {
   stack: string[];
   image?: string;
   imageLabel?: string;
+  gallery?: { src: string; label: string }[];
   imageKind?: "screenshot" | "diagram";
   flow?: string[];
   demo?: string;
@@ -44,7 +45,7 @@ export const FLAGSHIPS: Flagship[] = [
     discipline: "FPGA",
     tagline: "Open-source FPGA toolchain in Rust",
     what: "I built Helion, an open-source FPGA toolchain in Rust. It does synthesis, packing, placement, routing, timing analysis, and bitstream generation, with a CLI, a Tcl session, and an IDE on the same engines.",
-    why: "I wanted to understand how a design goes from SystemVerilog to a working bitstream, and I wanted a tool I could read, change, and trust end to end instead of only using a vendor tool.",
+    why: "I did it because FPGA work should not depend on proprietary vendor tools and black boxes. A design should build the same way every time, fail loudly instead of silently clipping, and be checkable.",
     how: "I wrote the pack, PathFinder placement and routing, and timing engines in Rust. I kept a gold timing value, WNS_PS=9640, and a corpus check, 100/100 on the 1.0 corpus, and I added HL10T, Xilinx 7-series, iCE40, and ECP5 targets, with UltraScale+ in progress.",
     headline: { value: "~30 ms", label: "empty-XDC counter, synth to bitstream" },
     spec: [
@@ -72,16 +73,16 @@ export const FLAGSHIPS: Flagship[] = [
     period: "Aug 2026 - Present",
     discipline: "Embedded",
     tagline: "Zephyr firmware for a mouth-worn injury sensor",
-    what: "I write Zephyr firmware for a mouth-worn injury sensor on the nRF52840, in the USF SHIELD Lab with Dr. Templeton.",
-    why: "I did it because injury research needs sensor data that is reliable on a real body, not only in a lab setup.",
-    how: "I wrote drivers for IMU, pulse-ox, force, and temperature sensors, and I packed the readings into BLE packets that stream to a phone app for live readout.",
+    what: "I write Zephyr firmware for a 10-sensor mouthguard telemetry node on the nRF52840, in the USF SHIELD Lab with Dr. Templeton.",
+    why: "I did it because a mouthguard sensor has a small battery and a slow BLE link. Sending every tiny reading in its own packet wastes 89 percent on overhead, and an impact spike should not wait for a batch window.",
+    how: "I wrote drivers for 2 high-G accelerometers, 2 6-axis IMUs, 2 molar force sensors, heart rate and SpO2, and 2 temperature sensors, and I packed them into a 10-sensor TLV superframe, 138 bytes in a 244 byte BLE notification, with impact data flushed immediately and other data prioritized, for about 21 hours on a 40 mAh mouthguard battery.",
     headline: { value: "nRF52840", label: "Zephyr firmware, BLE to a phone app" },
     spec: [
       { label: "Board", value: "nRF52840 DK (PCA10056)" },
       { label: "Firmware", value: "Zephyr RTOS" },
-      { label: "Sensors", value: "IMU, pulse-ox, force, temperature" },
-      { label: "Link", value: "packed BLE packets to a phone app" },
-      { label: "Research", value: "knee and head-injury outcome prediction" },
+      { label: "Sensors", value: "10: 2 high-G accel, 2 IMU, 2 molar FSR, HR plus SpO2, 2 temperature" },
+      { label: "Link", value: "10-sensor TLV superframe, 138 bytes in a 244 byte BLE notification, 2M PHY" },
+      { label: "Battery", value: "about 21 hours on a 40 mAh mouthguard battery" },
       { label: "Lab", value: "USF SHIELD Lab, Dr. Templeton" },
     ],
     stack: ["Zephyr", "C", "nRF52840", "BLE", "IMU", "Python"],
@@ -100,7 +101,7 @@ export const FLAGSHIPS: Flagship[] = [
     discipline: "Applied AI",
     tagline: "Campus AI tutor with long-term memory",
     what: "I built long-term memory for the campus AI tutor at USF, in the AICC Lab with Dr. Topsakal.",
-    why: "I did it because the tutor only kept the last 10 turns, so it forgot a student's earlier questions and gaps.",
+    why: "I did it because a tutor that only remembers the last 10 turns cannot help a student build on earlier questions and gaps.",
     how: "I compared compiled-note and search-old-chat methods for cost and accuracy, I cut Gemini prompt latency 40% with server-side batching and MySQL caching, and I deployed Gemini mind-maps to 20,000+ USF students.",
     headline: { value: "20,000+", label: "USF students on the production tutor" },
     spec: [
@@ -126,7 +127,7 @@ export const FLAGSHIPS: Flagship[] = [
     discipline: "Applied AI",
     tagline: "GenAI dealership platform",
     what: "I work on a GenAI dealership platform at AeroLot.ai, as a software engineering intern.",
-    why: "I did it because a dealership assistant should answer from live store data, in CRM, inventory, and financing, not from a separate chatbot that guesses.",
+    why: "I did it because a dealership assistant that guesses from old data is worse than no assistant. It should answer from live CRM, inventory, and financing data.",
     how: "I wired RAG, LLM tool use, and REST APIs into Ask Aero, across 3 chat surfaces with approval-gated writes, and I built evaluation harnesses for task completion, regression, and drift, with latency and cost telemetry.",
     headline: { value: "12+", label: "agents, 33 Autopilot rules, one platform" },
     spec: [
@@ -152,7 +153,7 @@ export const FLAGSHIPS: Flagship[] = [
     discipline: "Music",
     tagline: "Automatic beat-matched mixing",
     what: "I built AutoMix, a tool that blends tracks into one continuous mix.",
-    why: "I did it because a good transition stays beat-matched and musically sensible without someone hand-tuning every EQ move.",
+    why: "I did it because an automatic mix should sound like a human DJ made it, tempo-matched, phrase-locked, loudness-matched, with bass swapped on a downbeat, not a simple volume fade.",
     how: "I built a dual-stage model, DecisionNN to pick one of 18 mix techniques and CurveLSTM to generate the automation curve, using 100+ spectral and harmonic features per pair and Demucs stem separation.",
     headline: { value: "18", label: "mix techniques, DecisionNN + CurveLSTM" },
     spec: [
@@ -180,7 +181,7 @@ export const FLAGSHIPS: Flagship[] = [
     discipline: "Systems",
     tagline: "Native iOS app for newcomer families in Miami",
     what: "I built myMiami, a native iOS app that guides newcomer families through verified civic services, rights disclosures, and emergency workflows in Miami-Dade, at ShellHacks 2026.",
-    why: "I did it because newcomers often rely on one family member to translate, and they need a trusted next step in their own language, not a guessed phone number or fee.",
+    why: "I did it because in Miami many families rely on one kid to translate everything, the leak, the fender bender, the county office. When something goes wrong, newcomers need the next right step, in their language, from a source they can trust, not a chatbot.",
     how: "I built it in SwiftUI with 10 languages, 5 Siri App Intents, Gemini photo classification, and ElevenLabs voice, and I used a verified local ledger with refusal-first guardrails, so it refuses instead of inventing a number, fee, or ordinance.",
     headline: { value: "10", label: "languages, 5 Siri App Intents" },
     spec: [
@@ -206,7 +207,7 @@ export const FLAGSHIPS: Flagship[] = [
     discipline: "ML",
     tagline: "Facial-emotion recognition, quantized for the edge",
     what: "I built MoodScope, a facial-emotion app that runs on a Raspberry Pi 4, at Health Hacks at USF 2025.",
-    why: "I did it because emotion data should not have to leave the device to be useful.",
+    why: "I did it because people want to understand their own emotions in real time, for wellness and self-awareness, and that should not require sending their face video to a server.",
     how: "I quantized TensorFlow Lite models to INT8, about 30 ms per frame, about 33 FPS, I used threaded dual backends to cut frame stalls about 45%, and I ran a local Llama 3.2 on device for plain-language insight.",
     headline: { value: "~33 FPS", label: "on-device on a Raspberry Pi 4" },
     spec: [
@@ -233,7 +234,7 @@ export const FLAGSHIPS: Flagship[] = [
     discipline: "Graphics",
     tagline: "Audio-reactive graphics from live sound",
     what: "I built Visualizzer, a web app that turns live audio into reactive graphics.",
-    why: "I did it because I had a slower Python prototype and I wanted the same idea to run in real time in a browser.",
+    why: "I did it because music is usually only heard, not seen. A visual that reacts to frequency and amplitude, and picks itself based on the audio, lets people watch the music change instead of watching a fixed animation loop.",
     how: "I built a 44.1 kHz Web Audio ingestion pipeline, 12+ visual styles on a 2-D canvas with GLSL and Three.js, and a quality controller that scales pixel density to hold 60 FPS at 1080p.",
     headline: { value: "12+", label: "audio-reactive styles" },
     spec: [
@@ -243,9 +244,15 @@ export const FLAGSHIPS: Flagship[] = [
       { label: "Perf", value: "adaptive pixel density, 60 FPS @ 1080p" },
     ],
     stack: ["Web Audio API", "GLSL", "Three.js", "WebGL2", "TypeScript"],
-    imageLabel: "Diagram · audio to canvas",
-    imageKind: "diagram",
-    flow: ["Live audio", "Analyzer", "Styles", "Canvas"],
+    image: "/projects/shots/visualizzer-sphere-1.jpg",
+    imageLabel: "Screenshot · Visualizzer, live render",
+    imageKind: "screenshot",
+    gallery: [
+      { src: "/projects/shots/visualizzer-sphere-1.jpg", label: "Live render" },
+      { src: "/projects/shots/visualizzer-sphere-2.jpg", label: "Live render" },
+      { src: "/projects/shots/visualizzer-app-ui.jpg", label: "App controls, Liquid Geometry selected" },
+      { src: "/projects/shots/visualizzer-fullscreen.jpg", label: "Fullscreen render, from my video" },
+    ],
     demo: "https://visualizzer.vercel.app/",
     demoLabel: "Live demo",
     repo: "https://github.com/saksham-45/visualizzer",
@@ -260,7 +267,7 @@ export const FLAGSHIPS: Flagship[] = [
     discipline: "Systems",
     tagline: "Live ICU-bed and oxygen availability, 2021",
     what: "I founded COVID-HELP during India's second COVID wave in 2021, and I led it.",
-    why: "I did it because people could not find a live ICU bed or oxygen supply, and a stale list was useless.",
+    why: "I did it because during India's second COVID wave, people could not find a live ICU bed or oxygen supply, and a stale list was useless when hours mattered.",
     how: "I built a Node.js and Firebase backend that aggregated 50+ live sources in real time, I led a 15+ person volunteer team, and the site served 40,000+ users at about 99.9% uptime.",
     headline: { value: "40,000+", label: "users · ~99.9% uptime" },
     spec: [
