@@ -17,7 +17,7 @@ export function Navigation() {
   const pathname = usePathname();
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-[var(--color-bone)]/90 backdrop-blur-md border-b-2 border-[var(--color-rule)]">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-[var(--color-bone)] border-b-2 border-[var(--color-rule)]">
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-10">
         <div className="flex items-center justify-between h-14">
           {/* name / logo */}

@@ -24,13 +24,13 @@ export function ProjectPlate({ p }: { p: Flagship }) {
         <h3 className="display-plate text-[clamp(1.6rem,3.5vw,2.25rem)] mt-3 leading-none">{p.name}</h3>
         <p className="mt-1 text-[1rem] text-[var(--color-ink)]/70">{p.tagline}</p>
 
-        <div className="mt-4 border-t border-[var(--color-rule)] pt-4 flex items-baseline gap-3">
-          <span className="display-plate text-[clamp(1.8rem,4vw,2.5rem)] leading-none text-[var(--color-oxide)]">
+        <div className="mt-4 border-t border-[var(--color-rule)] pt-4 min-w-0">
+          <div className="display-plate text-[clamp(1.6rem,7vw,2.5rem)] leading-none text-[var(--color-oxide)] break-words">
             {p.headline.value}
-          </span>
-          <span className="font-mono text-[0.75rem] uppercase tracking-[0.06em] leading-snug text-[var(--color-ink)]/60">
+          </div>
+          <div className="mt-1 font-mono text-[0.75rem] uppercase tracking-[0.06em] leading-snug text-[var(--color-ink)]/60">
             {p.headline.label}
-          </span>
+          </div>
         </div>
 
         <div className="mt-4 space-y-2 text-[1.05rem] leading-relaxed text-[var(--color-ink)]/85">

@@ -113,13 +113,13 @@ function ProjectDetail({ p }: { p: Flagship }) {
               </div>
 
               {/* headline metric */}
-              <div className="mt-8 inline-flex items-end gap-3 bg-[var(--color-ink)] text-[var(--color-bone)] px-5 py-4">
-                <span className="display-plate text-[clamp(2rem,5vw,3rem)] leading-none">
+              <div className="mt-8 bg-[var(--color-ink)] text-[var(--color-bone)] px-5 py-4 max-w-full">
+                <div className="display-plate text-[clamp(1.8rem,8vw,3rem)] leading-none break-words">
                   {p.headline.value}
-                </span>
-                <span className="font-mono text-[0.78rem] uppercase tracking-[0.12em] text-[var(--color-bone)]/70 max-w-[16ch] leading-snug pb-1">
+                </div>
+                <div className="mt-2 font-mono text-[0.78rem] uppercase tracking-[0.12em] text-[var(--color-bone)]/70 leading-snug">
                   {p.headline.label}
-                </span>
+                </div>
               </div>
 
               <div className="mt-8 max-w-2xl space-y-4 text-[1.25rem] leading-relaxed text-[var(--color-ink)]">

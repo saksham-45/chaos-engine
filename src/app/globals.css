@@ -9,20 +9,6 @@
    ========================================================================= */
 
 @theme {
-  --color-bone: #f5f0e6;
-  --color-ink: #121210;
-  --color-oxide: #8a5a0a;
-  --color-oxide-dark: #6b4a08;
-  --color-concrete: #e6ddc9;
-  --color-navy: #f5f0e6;
-  --color-cyan: #6b4a08;
-  --color-charcoal: #d9cfb8;
-  --color-paper: #f5f0e6;
-  --color-rule: #c4b99e;
-  --color-muted: #6b6558;
-}
-
-:root[data-theme="dark"] {
   --color-bone: #0b0b0c;
   --color-ink: #f4efe6;
   --color-oxide: #e0963a;
@@ -34,6 +20,20 @@
   --color-paper: #0b0b0c;
   --color-rule: #26262a;
   --color-muted: #97907f;
+}
+
+:root[data-theme="light"] {
+  --color-bone: #f5f0e6;
+  --color-ink: #121210;
+  --color-oxide: #8a5a0a;
+  --color-oxide-dark: #6b4a08;
+  --color-concrete: #e6ddc9;
+  --color-navy: #f5f0e6;
+  --color-cyan: #6b4a08;
+  --color-charcoal: #d9cfb8;
+  --color-paper: #f5f0e6;
+  --color-rule: #c4b99e;
+  --color-muted: #6b6558;
 }
 
 /* Map Tailwind's font-* utilities DIRECTLY to the next/font variables (defined
@@ -80,8 +80,8 @@ body {
 
 .kb-grid {
   background-image:
-    linear-gradient(to right, rgba(0, 0, 0, 0.06) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(0, 0, 0, 0.06) 1px, transparent 1px);
+    linear-gradient(to right, rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
   background-size: 48px 48px;
   background-position: center top;
 }
@@ -227,12 +227,12 @@ body {
   }
 }
 
-:root[data-theme="dark"] .kb-grid {
+:root[data-theme="light"] .kb-grid {
   background-image:
-    linear-gradient(to right, rgba(255, 255, 255, 0.045) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+    linear-gradient(to right, rgba(0, 0, 0, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.06) 1px, transparent 1px);
 }
-:root[data-theme="dark"] .kb-spotlight {
+:root[data-theme="light"] .kb-spotlight {
   background:
     radial-gradient(680px 420px at 72% 8%, rgba(138, 90, 10, 0.08), transparent 62%),
     radial-gradient(420px 320px at 18% 88%, rgba(138, 90, 10, 0.04), transparent 70%);
