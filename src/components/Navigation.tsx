@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ThemeToggle } from "@/components/kb/Micro";
+import { ThemeIconButton } from "@/components/kb/Micro";
 
 const navItems = [
   { name: "Home", path: "/" },
@@ -21,12 +21,12 @@ export function Navigation() {
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-10">
         <div className="flex items-center justify-between h-14">
           {/* name / logo */}
-          <Link href="/" className="flex items-center gap-2.5 group min-w-0 mr-3" aria-label="Home">
-            <span className="w-4 h-4 shrink-0 bg-[var(--color-oxide)] transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:rotate-90" />
-            <span className="font-display uppercase tracking-tight text-[var(--color-ink)] text-[0.95rem] sm:text-[1.05rem] leading-none truncate">
+          <div className="flex items-center gap-2.5 min-w-0 mr-3">
+            <ThemeIconButton />
+            <Link href="/" className="font-display uppercase tracking-tight text-[var(--color-ink)] text-[0.95rem] sm:text-[1.05rem] leading-none truncate" aria-label="Home">
               Saksham Srivastava
-            </span>
-          </Link>
+            </Link>
+          </div>
 
           {/* desktop nav */}
           <nav className="hidden md:flex items-stretch h-full">
@@ -48,10 +48,6 @@ export function Navigation() {
               );
             })}
           </nav>
-
-          <div className="hidden md:flex items-center ml-3">
-            <ThemeToggle />
-          </div>
 
           {/* mobile toggle */}
           <button
@@ -85,9 +81,6 @@ export function Navigation() {
               </Link>
             );
           })}
-          <div className="px-5 py-3">
-            <ThemeToggle />
-          </div>
         </nav>
       )}
     </header>

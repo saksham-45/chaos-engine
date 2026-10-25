@@ -2,7 +2,7 @@
 
 /* =========================================================================
    Clean professional engineering portfolio.
-   Default is warm paper, near-black ink, one copper accent. Dark is
+   Default is near-black, warm white ink, one teal accent. Dark is
    available from the nav toggle and persists in localStorage.
    No dossier numbering, no novelty art, no lab gimmicks. The accent is
    used sparingly: active states, one metric, one rule, one button.
@@ -11,11 +11,11 @@
 @theme {
   --color-bone: #0b0b0c;
   --color-ink: #f4efe6;
-  --color-oxide: #e0963a;
-  --color-oxide-dark: #e8a85a;
+  --color-oxide: #2fb5a8;
+  --color-oxide-dark: #7de8dc;
   --color-concrete: #161614;
   --color-navy: #0c0c0e;
-  --color-cyan: #e8b877;
+  --color-cyan: #7de8dc;
   --color-charcoal: #121210;
   --color-paper: #0b0b0c;
   --color-rule: #26262a;
@@ -25,11 +25,11 @@
 :root[data-theme="light"] {
   --color-bone: #f5f0e6;
   --color-ink: #121210;
-  --color-oxide: #8a5a0a;
-  --color-oxide-dark: #6b4a08;
+  --color-oxide: #0e7a70;
+  --color-oxide-dark: #0a5c54;
   --color-concrete: #e6ddc9;
   --color-navy: #f5f0e6;
-  --color-cyan: #6b4a08;
+  --color-cyan: #0e7a70;
   --color-charcoal: #d9cfb8;
   --color-paper: #f5f0e6;
   --color-rule: #c4b99e;
@@ -92,8 +92,8 @@ body {
 .kb-spotlight {
   pointer-events: none;
   background:
-    radial-gradient(680px 420px at 72% 8%, rgba(224, 150, 58, 0.10), transparent 62%),
-    radial-gradient(420px 320px at 18% 88%, rgba(224, 150, 58, 0.04), transparent 70%);
+    radial-gradient(680px 420px at 72% 8%, rgba(47, 181, 168, 0.10), transparent 62%),
+    radial-gradient(420px 320px at 18% 88%, rgba(47, 181, 168, 0.04), transparent 70%);
 }
 
 /* Subtle spring micro-interactions. One easing, used everywhere, so motion
@@ -234,6 +234,6 @@ body {
 }
 :root[data-theme="light"] .kb-spotlight {
   background:
-    radial-gradient(680px 420px at 72% 8%, rgba(138, 90, 10, 0.08), transparent 62%),
-    radial-gradient(420px 320px at 18% 88%, rgba(138, 90, 10, 0.04), transparent 70%);
+    radial-gradient(680px 420px at 72% 8%, rgba(14, 122, 112, 0.08), transparent 62%),
+    radial-gradient(420px 320px at 18% 88%, rgba(14, 122, 112, 0.04), transparent 70%);
 }

@@ -66,10 +66,10 @@ export default function Home() {
                     <img
                       src="/saksham.webp"
                       alt="Saksham Srivastava on the Tampa riverwalk"
-                      className="absolute inset-0 h-full w-full object-cover object-top"
+                      className="absolute inset-0 h-full w-full object-cover object-bottom"
                     />
                   </div>
-                  <figcaption className="absolute bottom-0 inset-x-0 bg-[var(--color-bone)]/85 px-3 py-1.5 font-mono text-[0.72rem] uppercase tracking-[0.18em] text-[var(--color-ink)]/70">
+                  <figcaption className="relative bg-[var(--color-concrete)] px-3 py-1.5 font-mono text-[0.72rem] uppercase tracking-[0.18em] text-[var(--color-ink)]/70 border-t border-[var(--color-rule)]">
                     Tampa, FL
                   </figcaption>
                 </figure>

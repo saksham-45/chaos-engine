@@ -16,4 +16,4 @@ export { ProjectStage } from "./ProjectStage";
 export { GitHubLedger } from "./GitHubLedger";
 export { ContactColophon } from "./ContactColophon";
 export { ProjectPlate } from "./ProjectPlate";
-export { ScrollProgress, CopyEmailButton, ThemeToggle, CopyLinkButton } from "./Micro";
+export { ScrollProgress, CopyEmailButton, ThemeToggle, ThemeIconButton, CopyLinkButton } from "./Micro";
