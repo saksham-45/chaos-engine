@@ -1,22 +1,24 @@
 @import "tailwindcss";
 
 /* =========================================================================
-   Bureau of One — dark zinc dossier.
-   Black / dark-grey (Dark Mode Design). Accent is white, never orange.
-   Aceternity-style grid + spotlight live on the canvas.
+   Clean professional engineering portfolio.
+   Warm near-black, warm white ink, one copper accent (Helion's die mark).
+   No dossier numbering, no novelty art, no lab gimmicks. The accent is
+   used sparingly: active states, one metric, one rule, one button.
    ========================================================================= */
 
 @theme {
-  --color-bone: #09090b;
-  --color-ink: #f4f4f5;
-  --color-oxide: #fafafa;
-  --color-oxide-dark: #a1a1aa;
-  --color-concrete: #18181b;
+  --color-bone: #0b0b0c;
+  --color-ink: #f4efe6;
+  --color-oxide: #e0963a;
+  --color-oxide-dark: #e8a85a;
+  --color-concrete: #161614;
   --color-navy: #0c0c0e;
-  --color-cyan: #d4d4d8;
-  --color-charcoal: #111113;
-  --color-paper: #09090b;
-  --color-rule: #3f3f46;
+  --color-cyan: #e8b877;
+  --color-charcoal: #121210;
+  --color-paper: #0b0b0c;
+  --color-rule: #26262a;
+  --color-muted: #97907f;
 }
 
 /* Map Tailwind's font-* utilities DIRECTLY to the next/font variables (defined
@@ -75,8 +77,37 @@ body {
 .kb-spotlight {
   pointer-events: none;
   background:
-    radial-gradient(680px 420px at 72% 8%, rgba(255, 255, 255, 0.09), transparent 62%),
-    radial-gradient(420px 320px at 18% 88%, rgba(255, 255, 255, 0.04), transparent 70%);
+    radial-gradient(680px 420px at 72% 8%, rgba(224, 150, 58, 0.10), transparent 62%),
+    radial-gradient(420px 320px at 18% 88%, rgba(224, 150, 58, 0.04), transparent 70%);
+}
+
+/* Subtle spring micro-interactions. One easing, used everywhere, so motion
+   feels designed instead of random. Reduced motion is handled below. */
+.micro-card {
+  transition:
+    transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
+    border-color 0.2s ease;
+}
+.micro-card:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 10px 10px 0 var(--color-rule);
+}
+.micro-lift {
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.micro-lift:hover {
+  transform: translateY(-2px);
+}
+.micro-fade {
+  transition: opacity 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+}
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.45; transform: scale(0.8); }
+}
+.live-dot {
+  animation: pulse-dot 2.2s ease-in-out infinite;
 }
 
 .kb-plate {
@@ -195,4 +226,31 @@ body {
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* Light theme, borrowed from EasyUI's persisted toggle and Oyin's warm paper.
+   All site color comes from these variables, so flipping them flips the site.
+   Hardcoded photo frames stay dark on purpose. */
+:root[data-theme="light"] {
+  --color-bone: #f5f0e6;
+  --color-ink: #121210;
+  --color-oxide: #8a5a0a;
+  --color-oxide-dark: #6b4a08;
+  --color-concrete: #ede8dc;
+  --color-navy: #f5f0e6;
+  --color-cyan: #6b4a08;
+  --color-charcoal: #e9e3d6;
+  --color-paper: #f5f0e6;
+  --color-rule: #d8d2c4;
+  --color-muted: #6b6558;
+}
+:root[data-theme="light"] .kb-grid {
+  background-image:
+    linear-gradient(to right, rgba(0, 0, 0, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.06) 1px, transparent 1px);
+}
+:root[data-theme="light"] .kb-spotlight {
+  background:
+    radial-gradient(680px 420px at 72% 8%, rgba(138, 90, 10, 0.08), transparent 62%),
+    radial-gradient(420px 320px at 18% 88%, rgba(138, 90, 10, 0.04), transparent 70%);
 }

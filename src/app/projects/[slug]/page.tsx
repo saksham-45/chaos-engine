@@ -9,6 +9,7 @@ import {
   StampButton,
   SpecTable,
   ProjectStage,
+  CopyLinkButton,
   DiagonalBar,
   BlackSquareAnchor,
 } from "@/components/kb";
@@ -17,7 +18,7 @@ import type { ProcessedProject } from "@/types/github";
 import { formatRelativeTime } from "@/lib/utils";
 
 /* =========================================================================
-   /projects/[slug] - one project as a full assembly sheet.
+   /projects/[slug] - one project as a full detail page.
    Flagships (moodscope / automix / covid-help) render the full dossier from
    @/lib/projects; any other slug falls back to the live GitHub repo feed.
    ========================================================================= */
@@ -28,8 +29,8 @@ export default function ProjectDetailPage() {
   const slug = Array.isArray(raw) ? raw[0] : raw ?? "";
   const flagship = getFlagship(slug);
 
-  if (flagship) return <AssemblySheet p={flagship} />;
-  return <RepoDossier slug={slug} />;
+  if (flagship) return <ProjectDetail p={flagship} />;
+  return <RepoDetail slug={slug} />;
 }
 
 /* ---------- shared breadcrumb (mono, on bone) ---------- */
@@ -62,8 +63,8 @@ function Breadcrumb({ name }: { name: string }) {
   );
 }
 
-/* ========================= FLAGSHIP ASSEMBLY SHEET ========================= */
-function AssemblySheet({ p }: { p: Flagship }) {
+/* ========================= FLAGSHIP DETAIL ========================= */
+function ProjectDetail({ p }: { p: Flagship }) {
   const idx = FLAGSHIPS.findIndex((f) => f.slug === p.slug);
   const n = FLAGSHIPS.length;
   const prev = FLAGSHIPS[(idx - 1 + n) % n];
@@ -78,7 +79,7 @@ function AssemblySheet({ p }: { p: Flagship }) {
         </div>
       </section>
 
-      {/* ============ 00 · PLATE HEADER + SCHEMATIC ============ */}
+      {/* ============ HEADER ============ */}
       <section className="relative bg-[var(--color-bone)] overflow-hidden">
         <div className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 py-14 md:py-20">
           {/* plate tab row */}
@@ -159,6 +160,7 @@ function AssemblySheet({ p }: { p: Flagship }) {
                       Source ↗
                     </StampButton>
                   )}
+                  {p.repo && <CopyLinkButton url={p.repo} label="Copy repo link" />}
                 </div>
               )}
             </div>
@@ -183,7 +185,7 @@ function AssemblySheet({ p }: { p: Flagship }) {
         </div>
       </section>
 
-      {/* ============ 01 · SPECIFICATION + RESPONSIBILITIES ============ */}
+      {/* ============ SPECIFICATION + RESPONSIBILITIES ============ */}
       <SectionPlate
         ground="concrete"
         plateNo={p.no}
@@ -224,7 +226,7 @@ function AssemblySheet({ p }: { p: Flagship }) {
         </div>
       </SectionPlate>
 
-      {/* ============ 02 · PREV / NEXT NAV ============ */}
+      {/* ============ PREV / NEXT NAV ============ */}
       <SectionPlate
         ground="bone"
         title="More projects"
@@ -269,10 +271,10 @@ function PlateNavCard({ dir, p }: { dir: "prev" | "next"; p: Flagship }) {
   );
 }
 
-/* ========================= GITHUB FALLBACK DOSSIER ========================= */
+/* ========================= GITHUB FALLBACK ========================= */
 type FetchState = "loading" | "ok" | "notfound" | "error";
 
-function RepoDossier({ slug }: { slug: string }) {
+function RepoDetail({ slug }: { slug: string }) {
   const [repo, setRepo] = useState<ProcessedProject | null>(null);
   const [state, setState] = useState<FetchState>("loading");
 
@@ -312,7 +314,7 @@ function RepoDossier({ slug }: { slug: string }) {
         </div>
       </section>
 
-      {state !== "ok" && <DossierMessage state={state} slug={slug} />}
+      {state !== "ok" && <RepoMessage state={state} slug={slug} />}
 
       {state === "ok" && repo && (
         <section className="relative bg-[var(--color-bone)] overflow-hidden">
@@ -382,7 +384,7 @@ function RepoDossier({ slug }: { slug: string }) {
   );
 }
 
-function DossierMessage({ state, slug }: { state: Exclude<FetchState, "ok">; slug: string }) {
+function RepoMessage({ state, slug }: { state: Exclude<FetchState, "ok">; slug: string }) {
   return (
     <section className="bg-[var(--color-bone)]">
       <div className="mx-auto max-w-[1200px] px-5 sm:px-8 lg:px-12 py-16 md:py-24">

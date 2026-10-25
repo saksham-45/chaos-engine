@@ -1,146 +1,109 @@
 "use client";
 
 import React from "react";
-import {
-  SectionPlate,
-  StampButton,
-  SpecTable,
-  ArchCanvas,
-  BlackSquareAnchor,
-} from "@/components/kb";
+import { SectionPlate, StampButton, SpecTable } from "@/components/kb";
 import { PROFILE } from "@/lib/projects";
 
 const EDUCATION = [
   { label: "Institution", value: "University of South Florida · Tampa, FL" },
   { label: "Degree", value: "B.S. Computer Engineering · Aug 2023 - May 2027" },
+  { label: "GPA", value: "3.89" },
   { label: "Minor", value: "Mathematics" },
   { label: "Honors", value: "Green & Gold Presidential Scholar" },
   { label: "College", value: "USF Bellini College of AI, Cybersecurity & Computing" },
-  { label: "Coursework", value: "Algorithms, Linear Algebra, Diff. Equations, OS, Hardware for ML, Statistics" },
-  { label: "Research", value: "Undergrad researcher · Bellini College of AI & Math / Stats" },
+  { label: "Coursework", value: "Algorithms, Computer Architecture, CMOS VLSI Design, FPGA Design, Linear Algebra, Probability & Statistics" },
+  { label: "Research", value: "SHIELD Lab (Dr. Templeton) · AICC Lab (Dr. Topsakal)" },
+];
+
+const TIMELINE = [
+  {
+    year: "2021",
+    title: "COVID-HELP",
+    text: "During India's second COVID wave I founded a platform that connected 40,000+ users to live ICU beds and oxygen at ~99.9% uptime. I learned early that shipping under real load, with real people waiting, is a different standard than a class project.",
+  },
+  {
+    year: "2023 - 2025",
+    title: "USF, math, and open source",
+    text: "I came to USF for computer engineering and stayed for the math underneath it: combinatorics research, a compiler, on-device ML, and 50+ merged PRs across 20+ repos. I kept choosing projects where I had to understand the layer below the one I was working in.",
+  },
+  {
+    year: "2026",
+    title: "Hardware, firmware, and production AI",
+    text: "Helion became my main build, alongside SHIELD firmware on the nRF52840, long-term memory for the AICC tutor used by 20,000+ students, and a GenAI platform at AeroLot.ai. The thread is the same: build it, measure it, and do not hide what is unfinished.",
+  },
+  {
+    year: "2027",
+    title: "What is next",
+    text: "I graduate in May 2027 and I am looking for a new-grad role in FPGA and EDA tooling, hardware-software systems, or applied AI, at Nvidia, AMD, or a comparable top company. I want to work where correctness is the product, not a slide.",
+  },
 ];
 
 export default function About() {
   return (
     <main className="pt-14">
-      {/* ============ 00 · MASTHEAD ============ */}
-      <SectionPlate
-        id="s00"
-        ground="bone"
-        plateNo="00"
-        title="About me"
-      >
-        <div className="relative grid gap-8 lg:grid-cols-[1.5fr_1fr] lg:gap-14 items-start">
-          <div className="max-w-2xl">
-            <p className="text-[1.25rem] leading-relaxed text-[var(--color-ink)]">
-              I&rsquo;m a full-stack developer and computer engineering student at USF. I build
-              complete applications:{" "}
-              <span className="bg-[var(--color-oxide)] text-[var(--color-paper)] px-1.5">
-                backend, data, ML, and the interface
-              </span>
-              , and I work best where those layers meet.
-            </p>
-          </div>
-          <div className="flex items-start gap-3 self-center">
-            <span aria-hidden className="mt-1.5 w-3 h-3 shrink-0 bg-[var(--color-oxide)]" />
-            <p className="font-mono text-[0.85rem] uppercase tracking-[0.12em] text-[var(--color-ink)]/70 leading-relaxed">
-              {PROFILE.role}
-              <br />
-              {PROFILE.research}
-              <br />
-              {PROFILE.location}
-            </p>
-          </div>
-        </div>
-      </SectionPlate>
-
-      {/* ============ 01 · BIO BRIEF ============ */}
-      <SectionPlate
-        id="s01"
-        ground="bone"
-        plateNo="01"
-        title="How I work"
-      >
-        <div className="space-y-6 text-[1.25rem] leading-relaxed text-[var(--color-ink)]/85 max-w-[68ch]">
-          <p>
-            I&rsquo;m a computer engineering student at USF (B.S. &rsquo;27, {PROFILE.scholar})
-            with a {PROFILE.mathMinor}, and an undergraduate researcher at USF&rsquo;s Bellini
-            College of AI. I work full-stack: on most projects I&rsquo;ve built the backend, the
-            data pipeline, the model, and the UI myself.
-          </p>
-          <p>
-            MoodScope runs emotion detection on-device on a Raspberry Pi. AutoMix beat-matches and
-            mixes tracks with a learned model. Visualizzer turns live audio into real-time graphics.
-            Each one spans ML, systems, and a frontend, which is the kind of end-to-end build I like.
-          </p>
-          <p>
-            The one I&rsquo;m proudest of is the least flashy. During India&rsquo;s second COVID
-            wave I founded and led COVID-HELP, a platform that connected 10,000+ people to live ICU
-            beds and oxygen at ~99.9% uptime, aggregating 50+ live sources with a 15+ person volunteer
-            team. It held up under real load when it mattered.
+      <SectionPlate id="about" ground="bone" title="About me">
+        <div className="max-w-2xl">
+          <p className="text-[1.25rem] leading-relaxed text-[var(--color-ink)]">
+            I am a computer engineering student who builds across the stack because the interesting
+            problems live at the boundaries: between SystemVerilog and a bitstream, between a sensor
+            and a phone, between a model and a user who has to trust it.
           </p>
         </div>
       </SectionPlate>
 
-      {/* ============ 02 · EDUCATION & HONORS LEDGER ============ */}
-      <SectionPlate
-        id="s02"
-        ground="concrete"
-        plateNo="02"
-        title="Education"
-        intro="The facts, nothing invented."
-        texture
-      >
+      <SectionPlate id="story" ground="bone" title="How I got here">
+        <div className="space-y-0 border-2 border-[var(--color-ink)]">
+          {TIMELINE.map((t, i) => (
+            <div
+              key={t.year}
+              className={`grid gap-2 md:grid-cols-[160px_1fr] px-5 py-6 micro-fade hover:bg-[var(--color-concrete)] ${i > 0 ? "border-t-2 border-[var(--color-ink)]" : ""}`}
+            >
+              <span className="font-mono text-[0.85rem] tracking-[0.14em] text-[var(--color-oxide)]">{t.year}</span>
+              <div>
+                <h3 className="display-plate text-[1.5rem] text-[var(--color-ink)]">{t.title}</h3>
+                <p className="mt-2 max-w-2xl text-[1.125rem] leading-relaxed text-[var(--color-ink)]/85">{t.text}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </SectionPlate>
+
+      <SectionPlate id="method" ground="bone" title="How I work" titleRu="THE METHOD">
+        <div className="border-2 border-[var(--color-ink)]">
+          {[
+            ["01", "Measure first", "Find the number that matters before I build: timing, latency, users, or a gold value to check against."],
+            ["02", "Build the whole thing", "Compiler, firmware, model, or interface, whichever layer the problem actually lives in."],
+            ["03", "Verify against something real", "A corpus, a board, a production user, or a published result. Not a screenshot of a pass."],
+            ["04", "Ship to real users", "If it only works in a demo, it is not done. Production is where the constraints show up."],
+            ["05", "Say what is unfinished", "Every project page says what is not done yet. That is the part I trust most in other people's work, so I do it in mine."],
+          ].map(([no, title, text], i) => (
+            <div key={no} className={`grid gap-2 md:grid-cols-[64px_220px_1fr] px-5 py-5 micro-fade hover:bg-[var(--color-concrete)] ${i > 0 ? "border-t-2 border-[var(--color-ink)]" : ""}`}>
+              <span className="font-mono text-[0.85rem] text-[var(--color-oxide)]">{no}</span>
+              <span className="display-plate text-[1.25rem] text-[var(--color-ink)]">{title}</span>
+              <span className="text-[1.05rem] leading-relaxed text-[var(--color-ink)]/80">{text}</span>
+            </div>
+          ))}
+        </div>
+      </SectionPlate>
+
+      <SectionPlate id="education" ground="concrete" title="Education" intro="The facts, nothing invented." texture>
         <div className="max-w-3xl">
           <SpecTable rows={EDUCATION} caption="ACADEMIC RECORD" />
         </div>
       </SectionPlate>
 
-      {/* ============ 03 · DISCIPLINES ============ */}
-      <SectionPlate
-        id="s03"
-        ground="ink"
-        plateNo="03"
-        title="Across the stack"
-        intro="The layers I move between, from backend and data to models and graphics."
-      >
-        <div className="grid gap-8 lg:grid-cols-[1fr_1fr] lg:gap-12 items-center">
-          <div className="order-2 lg:order-1">
-            <figure className="relative overflow-hidden border-2 border-[var(--color-bone)]/25 bg-[var(--color-navy)]">
-              <div className="relative w-full min-h-[280px] md:min-h-[340px]" style={{ aspectRatio: "4 / 3" }}>
-                <ArchCanvas diagram="stack" className="absolute inset-0" />
-              </div>
-              <figcaption className="absolute bottom-0 inset-x-0 bg-[var(--color-bone)]/85 px-3 py-1.5 font-mono text-[0.72rem] uppercase tracking-[0.18em] text-[var(--color-ink)]/70">
-                Edge · audio · systems · UI
-              </figcaption>
-            </figure>
-          </div>
-          <div className="order-1 lg:order-2 relative">
-            <BlackSquareAnchor
-              size={36}
-              className="absolute -top-4 -right-2 hidden lg:block"
-              color="var(--color-oxide)"
-            />
-            <p className="text-[1.125rem] leading-relaxed text-[var(--color-ink)]/85 max-w-[46ch]">
-              Building the whole stack, from API and data to model and UI, means the constraints of
-              one layer keep the others honest: latency and memory from embedded, perception from
-              audio, and the math underneath all of it.
-            </p>
-          </div>
-        </div>
+      <SectionPlate id="outside" ground="bone" title="Outside the build">
+        <p className="max-w-2xl text-[1.125rem] leading-relaxed text-[var(--color-ink)]/85">
+          White Hatters Tech Lead, 2x HacktheBay CTF runner-up, and Globull author with 5,000+
+          readers. I also gave a USF Math Club talk on the math behind BitLocker and AES. The
+          through-line is the same as the work: explain the mechanism, not just the result.
+        </p>
       </SectionPlate>
 
-      {/* ============ 04 · CONTACT ROW ============ */}
-      <SectionPlate
-        id="s04"
-        ground="charcoal"
-        plateNo="04"
-        title="Get in touch"
-        intro="My contact details and availability are on the contact page. Start there, or browse the projects."
-      >
+      <SectionPlate id="contact" ground="charcoal" title="Get in touch" intro="My contact details are on the contact page. Start there, or browse the projects.">
         <div className="flex flex-wrap gap-4">
           <StampButton href="/contact" variant="primary">
-            Contact →
+            Contact
           </StampButton>
           <StampButton href="/projects" variant="ghost">
             View projects

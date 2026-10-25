@@ -2,6 +2,7 @@
 
 import React from "react";
 import { StampButton } from "./StampButton";
+import { CopyEmailButton } from "./Micro";
 import { PROFILE } from "@/lib/projects";
 
 export function ContactColophon({ heading = "LET'S BUILD" }: { heading?: string }) {
@@ -21,13 +22,14 @@ export function ContactColophon({ heading = "LET'S BUILD" }: { heading?: string 
           {heading}
         </h2>
         <p className="mt-5 max-w-md text-[1.125rem] leading-relaxed text-[var(--color-ink)]/85">
-          Building something, or hiring for a full-stack or ML role? I reply to everything. Based in{" "}
-          {PROFILE.location} · open to full-time software and ML engineering roles.
+          Hiring for a new-grad hardware, systems, or applied AI role, or building something in that
+          space? I reply to everything. Based in {PROFILE.location} · graduating May 2027.
         </p>
         <div className="mt-8 flex flex-wrap gap-4">
           <StampButton href={`mailto:${PROFILE.email}`} variant="primary">
             Compose message →
           </StampButton>
+          <CopyEmailButton />
           <StampButton href={PROFILE.github} variant="ghost">
             GitHub ↗
           </StampButton>
@@ -55,7 +57,7 @@ export function ContactColophon({ heading = "LET'S BUILD" }: { heading?: string 
         ))}
         <div className="border-t-2 border-[var(--color-rule)] bg-[var(--color-oxide)] px-4 py-3 text-center">
           <span className="font-mono text-[0.72rem] tracking-[0.24em] uppercase text-[var(--color-paper)]">
-            Open to full-time software &amp; ML roles · usually replies within a day
+            Open to new-grad hardware, systems &amp; applied AI roles · usually replies within a day
           </span>
         </div>
       </div>

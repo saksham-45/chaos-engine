@@ -2,8 +2,6 @@
 
 import React from "react";
 import {
-  IndexRail,
-  type RailItem,
   StampButton,
   Stamp,
   SectionPlate,
@@ -11,255 +9,200 @@ import {
   ProjectPlate,
   GitHubLedger,
   ContactColophon,
-  DiagonalBar,
-  SchematicPanel,
-  BlackSquareAnchor,
 } from "@/components/kb";
-import { FLAGSHIPS, STATS, STACK, PROFILE } from "@/lib/projects";
+import { FEATURED, STATS, STACK, PROFILE } from "@/lib/projects";
 
-const RAIL: RailItem[] = [
-  { id: "s00", no: "00", label: "Intro" },
-  { id: "s01", no: "01", label: "Numbers" },
-  { id: "s02", no: "02", label: "About" },
-  { id: "s03", no: "03", label: "Projects" },
-  { id: "s04", no: "04", label: "Tools" },
-  { id: "s05", no: "05", label: "Lab" },
-  { id: "s06", no: "06", label: "GitHub" },
-  { id: "s07", no: "07", label: "Contact" },
+const NOW = [
+  { label: "Helion", detail: "FPGA CAD in Rust, toward Vivado-level QoR" },
+  { label: "SHIELD Lab", detail: "nRF52840 / Zephyr injury-sensor firmware" },
+  { label: "AeroLot.ai", detail: "GenAI dealership platform, in production" },
 ];
 
 export default function Home() {
   return (
-    <>
-      <IndexRail items={RAIL} />
+    <main className="pt-14">
+      {/* ============ HERO ============ */}
+      <section className="relative bg-[var(--color-bone)] overflow-hidden">
+        <div aria-hidden className="kb-grid kb-grid-fade pointer-events-none absolute inset-0" />
+        <div aria-hidden className="kb-spotlight absolute inset-0" />
+        <div className="relative mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 py-14 md:py-20">
+          <div className="flex items-center gap-3 mb-8 flex-wrap">
+            <span className="font-mono text-[0.72rem] tracking-[0.22em] uppercase bg-[var(--color-oxide)] text-[var(--color-paper)] px-2 py-1">
+              Graduating May 2027 · open to new-grad roles
+            </span>
+            <span className="font-mono text-[0.72rem] tracking-[0.22em] uppercase text-[var(--color-ink)]/50">
+              Computer Engineering · Tampa, FL
+            </span>
+          </div>
 
-      <main className="pt-14">
-        {/* ============ 00 · MASTHEAD + GENERAL ASSEMBLY ============ */}
-        <section id="s00" className="relative bg-[var(--color-bone)] overflow-hidden">
-          <div aria-hidden className="kb-grid kb-grid-fade pointer-events-none absolute inset-0" />
-          <div aria-hidden className="kb-spotlight absolute inset-0" />
-          <div className="relative mx-auto max-w-[1400px] pl-5 sm:pl-8 lg:pl-12 xl:pl-[248px] pr-5 sm:pr-8 lg:pr-12 py-14 md:py-20">
-            <div className="flex items-center gap-3 mb-8 flex-wrap">
-              <span className="font-mono text-[0.72rem] tracking-[0.22em] uppercase bg-[var(--color-oxide)] text-[var(--color-paper)] px-2 py-1">
-                Open to full-time software or ML engineering roles
-              </span>
-              <span className="font-mono text-[0.72rem] tracking-[0.22em] uppercase text-[var(--color-ink)]/50">
-                Full-stack Developer · Tampa, FL
-              </span>
+          <div className="grid gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14 items-center">
+            <div className="order-2 lg:order-1">
+              <h1 className="display-hero text-[clamp(2.8rem,9vw,7rem)] text-[var(--color-ink)]">
+                Saksham
+                <br />
+                Srivastava
+              </h1>
+              <p className="mt-6 font-mono text-[0.72rem] uppercase tracking-[0.22em] text-[var(--color-ink)]/50">
+                OSWALD 700 · AA BB CC 0123 · USF &rsquo;27 · TAMPA, FL
+              </p>
+              <p className="mt-6 max-w-xl text-[1.25rem] leading-relaxed text-[var(--color-ink)]">
+                I build hardware-software systems end to end. Right now that means an FPGA toolchain
+                in Rust, firmware on a board that has to work on a body, and applied AI that has to
+                work in production. I care about the number behind the claim, and about the thing
+                still working when it matters.
+              </p>
+              <p className="mt-4 max-w-xl text-[1.125rem] leading-relaxed text-[var(--color-ink)]/75">
+                I started with a crisis platform in 2021, when getting it wrong was not an option.
+                That has stayed my standard: build it, measure it, ship it, and say plainly what it
+                does not do yet.
+              </p>
+              <div className="mt-8 flex flex-wrap gap-4">
+                <StampButton href="/projects" variant="primary">
+                  View projects
+                </StampButton>
+                <StampButton href="/about" variant="secondary">
+                  About me
+                </StampButton>
+                <StampButton href="/contact" variant="secondary">
+                  Contact
+                </StampButton>
+              </div>
             </div>
 
-            <div className="grid gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14 items-center">
-              <div className="order-2 lg:order-1 relative">
-                <DiagonalBar className="-left-12 top-6 hidden lg:block" length={200} thickness={26} />
-                <h1 className="display-hero text-[clamp(2.8rem,9vw,7rem)] text-[var(--color-ink)]">
-                  Saksham
-                  <br />
-                  Srivastava
-                </h1>
-                <div className="mt-6 flex items-start gap-3">
-                  <span aria-hidden className="mt-1.5 w-3 h-3 shrink-0 bg-[var(--color-oxide)]" />
-                  <p className="font-mono text-[0.85rem] uppercase tracking-[0.12em] text-[var(--color-ink)]/70 leading-relaxed">
-                    Computer Engineering B.S. &rsquo;27 · USF
-                    <br />
-                    Undergraduate researcher · Bellini College of AI
-                    <br />
+            <div className="order-1 lg:order-2">
+              <Stamp>
+                <figure className="relative w-full overflow-hidden border-2 border-[var(--color-rule)] bg-[#09090b] shadow-[6px_6px_0_var(--color-rule)] micro-card">
+                  <div className="relative w-full min-h-[420px] md:min-h-[560px]" style={{ aspectRatio: "3 / 4" }}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src="/saksham.webp"
+                      alt="Saksham Srivastava on the Tampa riverwalk"
+                      className="absolute inset-0 h-full w-full object-contain object-center"
+                    />
+                  </div>
+                  <figcaption className="absolute bottom-0 inset-x-0 bg-[var(--color-bone)]/85 px-3 py-1.5 font-mono text-[0.72rem] uppercase tracking-[0.18em] text-[var(--color-ink)]/70">
                     Tampa, FL
-                  </p>
-                </div>
-                <p className="mt-6 max-w-xl text-[1.25rem] leading-relaxed text-[var(--color-ink)]">
-                  Full-stack developer and researcher at USF. I build{" "}
-                  <span className="bg-[var(--color-oxide)] text-[var(--color-paper)] px-1.5">
-                    end to end: backend, data, ML, and the interface
-                  </span>
-                  , with a strong foundation in ML.
-                </p>
-                <div className="mt-8 flex flex-wrap gap-4">
-                  <StampButton href="/projects" variant="primary">
-                    View Projects →
-                  </StampButton>
-                  <StampButton href="/contact" variant="secondary">
-                    Contact
-                  </StampButton>
-                  <StampButton href="/lab" variant="secondary">
-                    Enter the Lab
-                  </StampButton>
-                </div>
-              </div>
-
-              <div className="order-1 lg:order-2 relative">
-                <Stamp>
-                  <figure className="relative w-full overflow-hidden border-2 border-[var(--color-rule)] bg-[#09090b] shadow-[6px_6px_0_var(--color-rule)]">
-                    <div className="relative w-full min-h-[420px] md:min-h-[560px]" style={{ aspectRatio: "3 / 4" }}>
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src="/saksham.webp"
-                        alt="Saksham Srivastava on the Tampa riverwalk"
-                        className="absolute inset-0 h-full w-full object-contain object-center"
-                      />
-                    </div>
-                    <figcaption className="absolute bottom-0 inset-x-0 bg-[var(--color-bone)]/85 px-3 py-1.5 font-mono text-[0.72rem] uppercase tracking-[0.18em] text-[var(--color-ink)]/70">
-                      Tampa, FL
-                    </figcaption>
-                  </figure>
-                </Stamp>
-                <BlackSquareAnchor size={40} className="absolute -bottom-4 -right-4 hidden md:block" color="var(--color-oxide)" />
-              </div>
+                  </figcaption>
+                </figure>
+              </Stamp>
             </div>
           </div>
-        </section>
 
-        {/* ============ 01 · LEDGER (stats) ============ */}
-        <SectionPlate
-          railGutter
-          id="s01"
-          ground="concrete"
-          plateNo="01"
-          title="By the numbers"
-          texture
-        >
-          <StatLedger items={STATS} />
-        </SectionPlate>
-
-        {/* ============ 02 · BRIEF (identity) ============ */}
-        <SectionPlate
-          railGutter
-          id="s02"
-          ground="bone"
-          plateNo="02"
-          title="About me"
-        >
-          <div className="grid gap-8 lg:grid-cols-[1.4fr_1fr]">
-            <div className="space-y-5 text-[1.25rem] leading-relaxed text-[var(--color-ink)]/85 max-w-2xl">
-              <p>
-                I&rsquo;m a computer engineering student at the University of South Florida (B.S. &rsquo;27,
-                {" "}{PROFILE.scholar}) with a {PROFILE.mathMinor}, and an undergraduate researcher at
-                USF&rsquo;s Bellini College of AI.
-              </p>
-              <p>
-                I work end to end, from the backend and data layer to the model and the interface.
-                I&rsquo;ve shipped on-device ML on a $35 board, an automatic DJ, and a crisis platform
-                that stayed up at ~99.9% for over ten thousand people. The math behind the work is in the Lab.
-              </p>
+          <div className="mt-14 border-2 border-[var(--color-rule)] bg-[var(--color-concrete)]">
+            <div className="px-4 py-2 border-b-2 border-[var(--color-rule)] font-mono text-[0.72rem] uppercase tracking-[0.2em] text-[var(--color-ink)]/60">
+              Right now
             </div>
-            <div className="border-2 border-[var(--color-ink)] divide-y-2 divide-[var(--color-ink)] self-start w-full font-mono">
-              {[
-                ["Discipline", "ML · Embedded · Music · Systems"],
-                ["Education", "USF · CompEng B.S. '27 · Math minor"],
-                ["Honors", "Green & Gold Presidential Scholar"],
-                ["Research", "USF Bellini College of AI"],
-                ["Based", "Tampa, FL"],
-              ].map(([k, v]) => (
-                <div key={k} className="grid grid-cols-[minmax(84px,0.4fr)_1fr]">
-                  <span className="px-3 py-2.5 text-[0.68rem] uppercase tracking-[0.1em] text-[var(--color-ink)]/55 border-r-2 border-[var(--color-ink)]">
-                    {k}
-                  </span>
-                  <span className="px-3 py-2.5 text-[0.82rem] text-[var(--color-ink)]">{v}</span>
+            <div className="grid md:grid-cols-3">
+              {NOW.map((n, i) => (
+                <div key={n.label} className={`px-4 py-4 ${i > 0 ? "border-t-2 md:border-t-0 md:border-l-2 border-[var(--color-rule)]" : ""}`}>
+                  <div className="flex items-center gap-2">
+                    <span aria-hidden className="live-dot w-2 h-2 bg-[var(--color-oxide)]" />
+                    <span className="font-mono text-[0.8rem] uppercase tracking-[0.14em] text-[var(--color-ink)]">{n.label}</span>
+                  </div>
+                  <p className="mt-1 text-[1rem] leading-snug text-[var(--color-ink)]/70">{n.detail}</p>
                 </div>
               ))}
             </div>
           </div>
-        </SectionPlate>
+        </div>
+      </section>
 
-        {/* ============ 03 · PROJECTS ============ */}
-        <SectionPlate
-          railGutter
-          id="s03"
-          ground="bone"
-          plateNo="03"
-          title="Featured projects"
-          intro="Four builds, each with a live demo or source. The full list and my GitHub are on the projects page."
-          wide
-        >
-          <div className="space-y-8">
-            {FLAGSHIPS.map((p, i) => (
-              <Stamp key={p.slug}>
-                <ProjectPlate
-                  p={p}
-                  ground={i % 2 === 1 ? "concrete" : "bone"}
-                />
-              </Stamp>
-            ))}
-          </div>
-          <div className="mt-10">
-            <StampButton href="/projects" variant="secondary">
-              Full index of works →
-            </StampButton>
-          </div>
-        </SectionPlate>
+      {/* ============ NUMBERS ============ */}
+      <SectionPlate id="numbers" ground="concrete" title="By the numbers" titleRu="THE RECORD" texture>
+        <StatLedger items={STATS} />
+      </SectionPlate>
 
-        {/* ============ 04 · SPEC (stack) ============ */}
-        <SectionPlate
-          railGutter
-          id="s04"
-          ground="bone"
-          plateNo="04"
-          title="What I build with"
-          intro="The stack I work in day to day."
-        >
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {STACK.map((grp) => (
-              <div key={grp.group} className="border-2 border-[var(--color-ink)]">
-                <div className="bg-[var(--color-ink)] text-[var(--color-bone)] px-4 py-2 font-mono text-[0.72rem] uppercase tracking-[0.16em]">
-                  {grp.group}
-                </div>
-                <ul className="divide-y divide-[var(--color-ink)]/15">
-                  {grp.items.map((it) => (
-                    <li key={it} className="px-4 py-2.5 font-mono text-[0.9rem] text-[var(--color-ink)]/85">
-                      {it}
-                    </li>
-                  ))}
-                </ul>
+      {/* ============ ABOUT, IN FIRST PERSON ============ */}
+      <SectionPlate id="about" ground="bone" title="Who I am, in one page" titleRu="THE PERSON">
+        <div className="grid gap-8 lg:grid-cols-[1.4fr_1fr]">
+          <div className="space-y-5 text-[1.25rem] leading-relaxed text-[var(--color-ink)]/85 max-w-2xl">
+            <p>
+              I am a computer engineering student at the University of South Florida (B.S. May 2027,
+              GPA 3.89, {PROFILE.scholar}) with a {PROFILE.mathMinor}, and an undergraduate researcher
+              in the Bellini College of AI.
+            </p>
+            <p>
+              I do not think of myself as a front-end person or a back-end person. I have built the
+              compiler, the firmware, the model, and the interface on different projects, and I like
+              the projects where those layers have to agree with each other. Helion is the clearest
+              example: a tool where a wrong timing number is not a UI bug, it is a wrong answer.
+            </p>
+            <p>
+              What I am looking for next is a new-grad role in hardware and software: FPGA and EDA
+              tooling, systems, or applied AI, at Nvidia, AMD, or a comparable top company. If you
+              are hiring for that, the projects below are the honest version of what I can do.
+            </p>
+          </div>
+          <div className="border-2 border-[var(--color-ink)] divide-y-2 divide-[var(--color-ink)] self-start w-full font-mono">
+            {[
+              ["Discipline", "FPGA · Embedded · Applied AI · Systems"],
+              ["Education", "USF · CompEng B.S. May 2027 · Math minor"],
+              ["Honors", "Green & Gold Presidential Scholar · GPA 3.89"],
+              ["Research", "SHIELD Lab · AICC Lab, Bellini College of AI"],
+              ["Based", "Tampa, FL"],
+            ].map(([k, v]) => (
+              <div key={k} className="grid grid-cols-[minmax(84px,0.4fr)_1fr]">
+                <span className="px-3 py-2.5 text-[0.68rem] uppercase tracking-[0.1em] text-[var(--color-ink)]/55 border-r-2 border-[var(--color-ink)]">
+                  {k}
+                </span>
+                <span className="px-3 py-2.5 text-[0.82rem] text-[var(--color-ink)]">{v}</span>
               </div>
             ))}
           </div>
-        </SectionPlate>
+        </div>
+      </SectionPlate>
 
-        {/* ============ 05 · FIGURES (lab teaser) ============ */}
-        <SectionPlate
-          railGutter
-          id="s05"
-          ground="ink"
-          plateNo="05"
-          title="Math, drawn live"
-          intro={
-            <>
-              Eight equations pulled from the work, rendered live in the Lab.
-            </>
-          }
-          wide
-        >
-          <div className="grid gap-4 md:grid-cols-4">
-            {["lorenz", "lissajous", "butterfly", "heart"].map((id, i) => (
-              <Stamp key={id} delay={i * 0.04}>
-                <SchematicPanel curveId={id} figNo={String(i + 1).padStart(2, "0")} minH="min-h-[180px]" />
-              </Stamp>
-            ))}
-          </div>
-          <div className="mt-10">
-            <StampButton href="/lab" variant="ghost">
-              Enter the Lab →
-            </StampButton>
-          </div>
-        </SectionPlate>
+      {/* ============ PROJECTS ============ */}
+      <SectionPlate
+        id="projects"
+        ground="bone"
+        title="Featured projects" titleRu="THE WORK"
+        intro="Four builds first: an FPGA toolchain, embedded firmware, a production AI tutor, and a production GenAI platform. The full list, with source or a live demo for each, is on the projects page."
+        wide
+      >
+        <div className="space-y-8">
+          {FEATURED.map((p, i) => (
+            <Stamp key={p.slug}>
+              <ProjectPlate p={p} ground={i % 2 === 1 ? "concrete" : "bone"} />
+            </Stamp>
+          ))}
+        </div>
+        <div className="mt-10">
+          <StampButton href="/projects" variant="secondary">
+            Full index of works
+          </StampButton>
+        </div>
+      </SectionPlate>
 
-        {/* ============ 06 · GITHUB (live ledger) ============ */}
-        <SectionPlate
-          railGutter
-          id="s06"
-          ground="charcoal"
-          plateNo="06"
-          title="Live from GitHub"
-          intro="Pulled live from github.com/saksham-45."
-          wide
-        >
-          <GitHubLedger />
-        </SectionPlate>
+      {/* ============ STACK ============ */}
+      <SectionPlate id="stack" ground="bone" title="What I build with" titleRu="THE TOOLS" intro="The stack I work in day to day.">
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+          {STACK.map((grp) => (
+            <div key={grp.group} className="border-2 border-[var(--color-ink)] micro-card">
+              <div className="bg-[var(--color-ink)] text-[var(--color-bone)] px-4 py-2 font-mono text-[0.72rem] uppercase tracking-[0.16em]">
+                {grp.group}
+              </div>
+              <ul className="divide-y divide-[var(--color-ink)]/15">
+                {grp.items.map((it) => (
+                  <li key={it} className="px-4 py-2.5 font-mono text-[0.9rem] text-[var(--color-ink)]/85">
+                    {it}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </SectionPlate>
 
-        {/* ============ 07 · CONTACT (colophon) ============ */}
-        <SectionPlate id="s07" railGutter ground="charcoal" className="border-t-2">
-          <ContactColophon />
-        </SectionPlate>
-      </main>
-    </>
+      {/* ============ GITHUB ============ */}
+      <SectionPlate id="github" ground="charcoal" title="Live from GitHub" titleRu="THE PROOF" intro="Pulled live from github.com/saksham-45." wide>
+        <GitHubLedger />
+      </SectionPlate>
+
+      {/* ============ CONTACT ============ */}
+      <SectionPlate id="contact" ground="charcoal" className="border-t-2">
+        <ContactColophon />
+      </SectionPlate>
+    </main>
   );
 }

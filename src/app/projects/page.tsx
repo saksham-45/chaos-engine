@@ -15,6 +15,9 @@ import { FLAGSHIPS, SELECTED, PROFILE, type Flagship } from "@/lib/projects";
    than a blank page. */
 const FILTERS: { key: "All" | Flagship["discipline"]; label: string }[] = [
   { key: "All", label: "All" },
+  { key: "FPGA", label: "FPGA" },
+  { key: "Embedded", label: "Embedded" },
+  { key: "Applied AI", label: "Applied AI" },
   { key: "ML", label: "ML" },
   { key: "Music", label: "Music" },
   { key: "Graphics", label: "Graphics" },
@@ -35,7 +38,7 @@ export default function ProjectsPage() {
       <SectionPlate
         ground="bone"
         title="Projects"
-        intro="Four flagship builds up top, each with a live demo or source. Below, smaller builds, then everything on GitHub."
+        intro="Every featured build, with source or a live demo. Below, smaller builds, then everything on GitHub."
         wide
       >
         {/* discipline filter strip */}
@@ -103,7 +106,7 @@ export default function ProjectsPage() {
       <SectionPlate
         ground="concrete"
         title="Selected work"
-        intro="Smaller builds across the stack: an LMMS MCP plugin, a compiler, combinatorics research, graphics, an RL agent, and everyday math tooling."
+        intro="Smaller builds across the stack: a resume-site builder, an LMMS MCP plugin, a compiler, combinatorics research, graphics, an RL agent, and everyday math tooling."
         texture
         wide
       >

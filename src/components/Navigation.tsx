@@ -3,12 +3,12 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { ThemeToggle } from "@/components/kb/Micro";
 
 const navItems = [
   { name: "Home", path: "/" },
   { name: "About", path: "/about" },
   { name: "Projects", path: "/projects" },
-  { name: "Lab", path: "/lab" },
   { name: "Contact", path: "/contact" },
 ];
 
@@ -22,7 +22,7 @@ export function Navigation() {
         <div className="flex items-center justify-between h-14">
           {/* name / logo */}
           <Link href="/" className="flex items-center gap-2.5 group min-w-0 mr-3" aria-label="Home">
-            <span className="w-4 h-4 shrink-0 bg-[var(--color-oxide)] group-hover:bg-[var(--color-rule)] transition-colors" />
+            <span className="w-4 h-4 shrink-0 bg-[var(--color-oxide)] transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:rotate-90" />
             <span className="font-display uppercase tracking-tight text-[var(--color-ink)] text-[0.95rem] sm:text-[1.05rem] leading-none truncate">
               Saksham Srivastava
             </span>
@@ -48,6 +48,10 @@ export function Navigation() {
               );
             })}
           </nav>
+
+          <div className="hidden md:flex items-center ml-3">
+            <ThemeToggle />
+          </div>
 
           {/* mobile toggle */}
           <button
@@ -81,6 +85,9 @@ export function Navigation() {
               </Link>
             );
           })}
+          <div className="px-5 py-3">
+            <ThemeToggle />
+          </div>
         </nav>
       )}
     </header>

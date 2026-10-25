@@ -25,7 +25,7 @@ export function ProjectPlate({
 
   return (
     <article
-      className={`kb-plate ${
+      className={`kb-plate micro-card ${
         ground === "concrete" ? "bg-[var(--color-concrete)]" : "bg-[var(--color-bone)]"
       } ${text}`}
     >
@@ -56,6 +56,12 @@ export function ProjectPlate({
 
           <p className={`mt-5 text-[1.125rem] leading-relaxed ${sub}`}>{p.thesis}</p>
 
+          {p.story && (
+            <p className="mt-5 border-l-2 border-[var(--color-oxide)] pl-4 text-[1.05rem] leading-relaxed text-[var(--color-ink)]/90 italic">
+              {p.story}
+            </p>
+          )}
+
           <div className="mt-6 flex flex-wrap gap-1.5">
             {p.stack.map((s) => (
               <span
@@ -69,7 +75,7 @@ export function ProjectPlate({
 
           <div className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-3 font-mono text-[0.8rem] uppercase tracking-[0.16em]">
             <Link href={`/projects/${p.slug}`} className={`group inline-flex items-center gap-2 ${accent}`}>
-              <span className="border-b-2 border-current pb-0.5">Assembly sheet</span>
+              <span className="border-b-2 border-current pb-0.5">Details</span>
               <span className="transition-transform group-hover:translate-x-1">→</span>
             </Link>
             {p.demo && (
