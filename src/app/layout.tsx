@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://sakshamportfolioforeng.vercel.app"),
   title: "Saksham Srivastava | Computer Engineering · FPGA / Applied AI",
   description:
-    "Computer engineering student at USF, graduating May 2027. Helion FPGA CAD in Rust, nRF52840 firmware, a production AI tutor for 20,000+ students, and a crisis platform that served 40,000+ users.",
+    "Computer engineering student at USF, graduating May 2027. FPGA tooling, embedded firmware, and applied AI projects, with specs, measurements, and links.",
   keywords: [
     "Saksham Srivastava",
     "Computer Engineering",

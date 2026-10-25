@@ -46,15 +46,9 @@ export default function Home() {
                 OSWALD 700 · AA BB CC 0123 · USF &rsquo;27 · TAMPA, FL
               </p>
               <p className="mt-6 max-w-xl text-[1.25rem] leading-relaxed text-[var(--color-ink)]">
-                I build hardware-software systems end to end. Right now that means an FPGA toolchain
-                in Rust, firmware on a board that has to work on a body, and applied AI that has to
-                work in production. I care about the number behind the claim, and about the thing
-                still working when it matters.
-              </p>
-              <p className="mt-4 max-w-xl text-[1.125rem] leading-relaxed text-[var(--color-ink)]/75">
-                I started with a crisis platform in 2021, when getting it wrong was not an option.
-                That has stayed my standard: build it, measure it, ship it, and say plainly what it
-                does not do yet.
+                I am a computer engineering student at USF, graduating in May 2027. I work on FPGA
+                tooling, embedded firmware, and applied AI. This site lists what I built, how it
+                was built, and what was measured.
               </p>
               <div className="mt-8 flex flex-wrap gap-4">
                 <StampButton href="/projects" variant="primary">
@@ -119,18 +113,15 @@ export default function Home() {
             <p>
               I am a computer engineering student at the University of South Florida (B.S. May 2027,
               GPA 3.89, {PROFILE.scholar}) with a {PROFILE.mathMinor}, and an undergraduate researcher
-              in the Bellini College of AI.
+              in the Bellini College of AI, in the SHIELD Lab and the AICC Lab.
             </p>
             <p>
-              I do not think of myself as a front-end person or a back-end person. I have built the
-              compiler, the firmware, the model, and the interface on different projects, and I like
-              the projects where those layers have to agree with each other. Helion is the clearest
-              example: a tool where a wrong timing number is not a UI bug, it is a wrong answer.
+              My work spans FPGA tooling, embedded firmware, and applied AI. I have also worked as
+              a software engineering intern at AeroLot.ai, on a GenAI dealership platform.
             </p>
             <p>
-              What I am looking for next is a new-grad role in hardware and software: FPGA and EDA
-              tooling, systems, or applied AI, at Nvidia, AMD, or a comparable top company. If you
-              are hiring for that, the projects below are the honest version of what I can do.
+              After graduation, I am looking for a new-grad role in FPGA and EDA tooling, systems,
+              or applied AI, at Nvidia, AMD, or a similar hardware and software company.
             </p>
           </div>
           <div className="border-2 border-[var(--color-ink)] divide-y-2 divide-[var(--color-ink)] self-start w-full font-mono">
@@ -157,14 +148,12 @@ export default function Home() {
         id="projects"
         ground="bone"
         title="Featured projects" titleRu="THE WORK"
-        intro="Four builds first: an FPGA toolchain, embedded firmware, a production AI tutor, and a production GenAI platform. The full list, with source or a live demo for each, is on the projects page."
+        intro="Four builds first: an FPGA toolchain, embedded firmware, a production AI tutor, and a production GenAI platform. The full list is on the projects page."
         wide
       >
-        <div className="space-y-8">
-          {FEATURED.map((p, i) => (
-            <Stamp key={p.slug}>
-              <ProjectPlate p={p} ground={i % 2 === 1 ? "concrete" : "bone"} />
-            </Stamp>
+        <div className="grid gap-6 md:grid-cols-2">
+          {FEATURED.map((p) => (
+            <ProjectPlate key={p.slug} p={p} />
           ))}
         </div>
         <div className="mt-10">

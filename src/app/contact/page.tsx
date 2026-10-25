@@ -51,8 +51,8 @@ export default function ContactPage() {
               Let&rsquo;s build
             </h1>
             <p className="mt-5 max-w-md text-[1.125rem] leading-relaxed text-[var(--color-ink)]/85">
-              Hiring for a new-grad hardware, systems, or applied AI role, or building something in
-              that space? I reply to everything. Based in {PROFILE.location}, graduating May 2027.
+              Based in {PROFILE.location}, graduating May 2027. For new-grad roles in hardware,
+              systems, or applied AI, use the form or the links below.
             </p>
 
             <div className="mt-7 border-2 border-[var(--color-rule)]">

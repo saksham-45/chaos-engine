@@ -76,14 +76,9 @@ export default function ProjectsPage() {
         </p>
 
         {shown.length > 0 ? (
-          <div className="mt-8 space-y-8">
-            {shown.map((p, i) => (
-              <Stamp key={p.slug}>
-                <ProjectPlate
-                  p={p}
-                  ground={i % 2 === 1 ? "concrete" : "bone"}
-                />
-              </Stamp>
+          <div className="mt-8 grid gap-6 md:grid-cols-2">
+            {shown.map((p) => (
+              <ProjectPlate key={p.slug} p={p} />
             ))}
           </div>
         ) : (

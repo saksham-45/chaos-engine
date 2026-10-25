@@ -2,12 +2,27 @@
 
 /* =========================================================================
    Clean professional engineering portfolio.
-   Warm near-black, warm white ink, one copper accent (Helion's die mark).
+   Default is warm paper, near-black ink, one copper accent. Dark is
+   available from the nav toggle and persists in localStorage.
    No dossier numbering, no novelty art, no lab gimmicks. The accent is
    used sparingly: active states, one metric, one rule, one button.
    ========================================================================= */
 
 @theme {
+  --color-bone: #f5f0e6;
+  --color-ink: #121210;
+  --color-oxide: #8a5a0a;
+  --color-oxide-dark: #6b4a08;
+  --color-concrete: #ede8dc;
+  --color-navy: #f5f0e6;
+  --color-cyan: #6b4a08;
+  --color-charcoal: #e9e3d6;
+  --color-paper: #f5f0e6;
+  --color-rule: #d8d2c4;
+  --color-muted: #6b6558;
+}
+
+:root[data-theme="dark"] {
   --color-bone: #0b0b0c;
   --color-ink: #f4efe6;
   --color-oxide: #e0963a;
@@ -65,8 +80,8 @@ body {
 
 .kb-grid {
   background-image:
-    linear-gradient(to right, rgba(255, 255, 255, 0.045) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+    linear-gradient(to right, rgba(0, 0, 0, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.06) 1px, transparent 1px);
   background-size: 48px 48px;
   background-position: center top;
 }
@@ -228,28 +243,12 @@ body {
   }
 }
 
-/* Light theme, borrowed from EasyUI's persisted toggle and Oyin's warm paper.
-   All site color comes from these variables, so flipping them flips the site.
-   Hardcoded photo frames stay dark on purpose. */
-:root[data-theme="light"] {
-  --color-bone: #f5f0e6;
-  --color-ink: #121210;
-  --color-oxide: #8a5a0a;
-  --color-oxide-dark: #6b4a08;
-  --color-concrete: #ede8dc;
-  --color-navy: #f5f0e6;
-  --color-cyan: #6b4a08;
-  --color-charcoal: #e9e3d6;
-  --color-paper: #f5f0e6;
-  --color-rule: #d8d2c4;
-  --color-muted: #6b6558;
-}
-:root[data-theme="light"] .kb-grid {
+:root[data-theme="dark"] .kb-grid {
   background-image:
-    linear-gradient(to right, rgba(0, 0, 0, 0.06) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(0, 0, 0, 0.06) 1px, transparent 1px);
+    linear-gradient(to right, rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
 }
-:root[data-theme="light"] .kb-spotlight {
+:root[data-theme="dark"] .kb-spotlight {
   background:
     radial-gradient(680px 420px at 72% 8%, rgba(138, 90, 10, 0.08), transparent 62%),
     radial-gradient(420px 320px at 18% 88%, rgba(138, 90, 10, 0.04), transparent 70%);

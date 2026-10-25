@@ -1,59 +1,38 @@
 "use client";
 
 import React from "react";
-import { Visualizer } from "./Visualizer";
-import { ArchCanvas, type ArchId } from "./ArchCanvas";
 import type { Flagship } from "@/lib/projects";
-import type { VizMode } from "@/lib/visualizzer";
 
-const BY_SLUG: Record<
-  string,
-  | { kind: "viz"; mode: VizMode; label: string }
-  | { kind: "shot"; src: string; alt: string; label: string }
-  | { kind: "arch"; diagram: ArchId; label: string }
-> = {
-  visualizzer: { kind: "viz", mode: "particleField", label: "Live · Visualizzer · synth 44.1 kHz" },
-  moodscope: {
-    kind: "shot",
-    src: "/projects/moodscope-live.webp",
-    alt: "MoodScope live facial-emotion detection on device",
-    label: "On-device · ~33 FPS · Pi 4",
-  },
-  automix: { kind: "arch", diagram: "automix", label: "Architecture · DecisionNN + CurveLSTM" },
-  "covid-help": { kind: "arch", diagram: "covid", label: "Architecture · ingest → Firebase → clients" },
-};
+/* Project image area. No animated visualizer, no canvas demo in the card.
+   Either a real screenshot, or a static flow diagram that says what the
+   system does. The label states which one it is, so a diagram is never
+   presented as a screenshot. */
 
-function Frame({
-  label,
-  minH,
-  ratio,
-  className,
-  children,
-}: {
-  label: string;
-  minH: string;
-  ratio: string;
-  className: string;
-  children: React.ReactNode;
-}) {
+function Diagram({ p }: { p: Flagship }) {
+  const steps = p.flow ?? [p.name];
   return (
-    <figure
-      className={`relative overflow-hidden border-2 border-[var(--color-ink)] bg-[var(--color-navy)] shadow-[6px_6px_0_var(--color-ink)] ${className}`}
-    >
-      <div className={`relative w-full ${minH}`} style={{ aspectRatio: ratio }}>
-        {children}
+    <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-[var(--color-concrete)] px-6">
+      <div className="flex flex-wrap items-center justify-center gap-2">
+        {steps.map((s, i) => (
+          <React.Fragment key={s}>
+            {i > 0 && <span aria-hidden className="text-[var(--color-oxide)] font-mono">→</span>}
+            <span className="border border-[var(--color-rule)] bg-[var(--color-bone)] px-3 py-2 font-mono text-[0.8rem] text-[var(--color-ink)]">
+              {s}
+            </span>
+          </React.Fragment>
+        ))}
       </div>
-      <figcaption className="absolute bottom-0 inset-x-0 bg-[var(--color-bone)]/85 px-3 py-1.5 font-mono text-[0.72rem] uppercase tracking-[0.18em] text-[var(--color-ink)]/70">
-        {label}
-      </figcaption>
-    </figure>
+      <p className="font-mono text-[0.68rem] uppercase tracking-[0.18em] text-[var(--color-ink)]/50">
+        Diagram, not a screenshot
+      </p>
+    </div>
   );
 }
 
 export function ProjectStage({
   p,
   minH = "min-h-[240px]",
-  ratio = "4 / 3",
+  ratio = "16 / 9",
   className = "",
 }: {
   p: Flagship;
@@ -61,39 +40,27 @@ export function ProjectStage({
   ratio?: string;
   className?: string;
 }) {
-  const spec = BY_SLUG[p.slug] ?? { kind: "viz" as const, mode: p.viz, label: p.name };
-
-  if (spec.kind === "viz") {
-    return (
-      <Visualizer
-        mode={spec.mode}
-        minH={minH}
-        ratio={ratio}
-        label={spec.label}
-        href={p.demo}
-        className={className}
-      />
-    );
-  }
-
-  if (spec.kind === "shot") {
-    return (
-      <Frame label={spec.label} minH={minH} ratio={ratio} className={className}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={spec.src}
-          alt={spec.alt}
-          className="absolute inset-0 h-full w-full object-cover object-top"
-        />
-      </Frame>
-    );
-  }
-
   return (
-    <Frame label={spec.label} minH={minH} ratio={ratio} className={className}>
-      <ArchCanvas diagram={spec.diagram} className="absolute inset-0" />
-    </Frame>
+    <figure
+      className={`relative overflow-hidden border border-[var(--color-rule)] bg-[var(--color-concrete)] ${className}`}
+    >
+      <div className={`relative w-full ${minH}`} style={{ aspectRatio: ratio }}>
+        {p.image ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={p.image}
+            alt={p.imageLabel ?? p.name}
+            className="absolute inset-0 h-full w-full object-cover object-top"
+          />
+        ) : (
+          <Diagram p={p} />
+        )}
+      </div>
+      {p.imageLabel && (
+        <figcaption className="absolute bottom-0 inset-x-0 bg-[var(--color-bone)]/90 px-3 py-1.5 font-mono text-[0.68rem] uppercase tracking-[0.16em] text-[var(--color-ink)]/70">
+          {p.imageKind === "screenshot" ? "Screenshot" : "Diagram"} · {p.imageLabel.replace(/^(Screenshot|Diagram) · /, "")}
+        </figcaption>
+      )}
+    </figure>
   );
 }
-
-

@@ -39,16 +39,18 @@ export function ScrollProgress() {
 /* Dark / light toggle, persisted in localStorage. Default is dark, the
    site's settled look. One click flips it, and the choice sticks. */
 export function ThemeToggle({ className = "" }: { className?: string }) {
-  const [theme, setTheme] = useState<"dark" | "light">("dark");
+  const [theme, setTheme] = useState<"dark" | "light">("light");
   useEffect(() => {
     try {
       const saved = window.localStorage.getItem("portfolio-theme");
       if (saved === "light" || saved === "dark") {
         setTheme(saved);
         document.documentElement.dataset.theme = saved;
+      } else {
+        document.documentElement.dataset.theme = "light";
       }
     } catch {
-      // private mode or no storage: stay dark, no error surface
+      // private mode or no storage: stay light, no error surface
     }
   }, []);
   const toggle = () => {

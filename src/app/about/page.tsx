@@ -19,22 +19,22 @@ const TIMELINE = [
   {
     year: "2021",
     title: "COVID-HELP",
-    text: "During India's second COVID wave I founded a platform that connected 40,000+ users to live ICU beds and oxygen at ~99.9% uptime. I learned early that shipping under real load, with real people waiting, is a different standard than a class project.",
+    text: "During India's second COVID wave I founded a platform that connected 40,000+ users to live ICU beds and oxygen at ~99.9% uptime, aggregating data from 50+ sources with a 15+ person volunteer team.",
   },
   {
     year: "2023 - 2025",
     title: "USF, math, and open source",
-    text: "I came to USF for computer engineering and stayed for the math underneath it: combinatorics research, a compiler, on-device ML, and 50+ merged PRs across 20+ repos. I kept choosing projects where I had to understand the layer below the one I was working in.",
+    text: "At USF I worked on combinatorics research, a compiler, on-device ML, and open-source contributions: 50+ merged PRs across 20+ repos.",
   },
   {
     year: "2026",
     title: "Hardware, firmware, and production AI",
-    text: "Helion became my main build, alongside SHIELD firmware on the nRF52840, long-term memory for the AICC tutor used by 20,000+ students, and a GenAI platform at AeroLot.ai. The thread is the same: build it, measure it, and do not hide what is unfinished.",
+    text: "Helion became my main build, alongside SHIELD firmware on the nRF52840, long-term memory for the AICC tutor used by 20,000+ students, and a GenAI platform at AeroLot.ai.",
   },
   {
     year: "2027",
     title: "What is next",
-    text: "I graduate in May 2027 and I am looking for a new-grad role in FPGA and EDA tooling, hardware-software systems, or applied AI, at Nvidia, AMD, or a comparable top company. I want to work where correctness is the product, not a slide.",
+    text: "I graduate in May 2027. I am looking for a new-grad role in FPGA and EDA tooling, hardware-software systems, or applied AI, at Nvidia, AMD, or a similar hardware and software company.",
   },
 ];
 
@@ -71,11 +71,11 @@ export default function About() {
       <SectionPlate id="method" ground="bone" title="How I work" titleRu="THE METHOD">
         <div className="border-2 border-[var(--color-ink)]">
           {[
-            ["01", "Measure first", "Find the number that matters before I build: timing, latency, users, or a gold value to check against."],
-            ["02", "Build the whole thing", "Compiler, firmware, model, or interface, whichever layer the problem actually lives in."],
-            ["03", "Verify against something real", "A corpus, a board, a production user, or a published result. Not a screenshot of a pass."],
-            ["04", "Ship to real users", "If it only works in a demo, it is not done. Production is where the constraints show up."],
-            ["05", "Say what is unfinished", "Every project page says what is not done yet. That is the part I trust most in other people's work, so I do it in mine."],
+            ["01", "Measure first", "Define the metric before building: timing, latency, users, or a gold value to check against."],
+            ["02", "Build the layer the problem is in", "Compiler, firmware, model, or interface, depending on the project."],
+            ["03", "Verify against a reference", "A corpus, a board, a production deployment, or a published result."],
+            ["04", "Ship to real users", "A demo alone does not count as complete."],
+            ["05", "List what is unfinished", "Each project page includes its current limits."],
           ].map(([no, title, text], i) => (
             <div key={no} className={`grid gap-2 md:grid-cols-[64px_220px_1fr] px-5 py-5 micro-fade hover:bg-[var(--color-concrete)] ${i > 0 ? "border-t-2 border-[var(--color-ink)]" : ""}`}>
               <span className="font-mono text-[0.85rem] text-[var(--color-oxide)]">{no}</span>
@@ -95,8 +95,7 @@ export default function About() {
       <SectionPlate id="outside" ground="bone" title="Outside the build">
         <p className="max-w-2xl text-[1.125rem] leading-relaxed text-[var(--color-ink)]/85">
           White Hatters Tech Lead, 2x HacktheBay CTF runner-up, and Globull author with 5,000+
-          readers. I also gave a USF Math Club talk on the math behind BitLocker and AES. The
-          through-line is the same as the work: explain the mechanism, not just the result.
+          readers. I also gave a USF Math Club talk on the math behind BitLocker and AES.
         </p>
       </SectionPlate>
 

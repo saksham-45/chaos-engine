@@ -122,12 +122,8 @@ function ProjectDetail({ p }: { p: Flagship }) {
                 </span>
               </div>
 
-              {/* thesis + overview brief */}
               <p className="mt-8 max-w-2xl text-[1.25rem] leading-relaxed text-[var(--color-ink)]">
-                {p.thesis}
-              </p>
-              <p className="mt-5 max-w-2xl text-[1.125rem] leading-relaxed text-[var(--color-ink)]/85">
-                {p.overview}
+                {p.description}
               </p>
 
               {/* stack chip row */}
