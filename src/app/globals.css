@@ -11,11 +11,11 @@
 @theme {
   --color-bone: #0b1018;
   --color-ink: #f3f4f7;
-  --color-oxide: #7a9cc6;
-  --color-oxide-dark: #a8c0dc;
+  --color-oxide: #0284c7;
+  --color-oxide-dark: #7dd3fc;
   --color-concrete: #1f2733;
   --color-navy: #0b1018;
-  --color-cyan: #a8c0dc;
+  --color-cyan: #7dd3fc;
   --color-charcoal: #141b26;
   --color-paper: #0b1018;
   --color-rule: #3a4a63;
@@ -25,11 +25,11 @@
 :root[data-theme="light"] {
   --color-bone: #f1f5f9;
   --color-ink: #0f172a;
-  --color-oxide: #2f4a6b;
-  --color-oxide-dark: #1e334f;
+  --color-oxide: #0369a1;
+  --color-oxide-dark: #075985;
   --color-concrete: #e2e8f0;
   --color-navy: #f1f5f9;
-  --color-cyan: #2f4a6b;
+  --color-cyan: #0369a1;
   --color-charcoal: #dde3ea;
   --color-paper: #f1f5f9;
   --color-rule: #cbd5e1;
@@ -92,8 +92,8 @@ body {
 .kb-spotlight {
   pointer-events: none;
   background:
-    radial-gradient(680px 420px at 72% 8%, rgba(122, 156, 198, 0.12), transparent 62%),
-    radial-gradient(420px 320px at 18% 88%, rgba(122, 156, 198, 0.05), transparent 70%);
+    radial-gradient(680px 420px at 72% 8%, rgba(2, 132, 199, 0.16), transparent 62%),
+    radial-gradient(420px 320px at 18% 88%, rgba(2, 132, 199, 0.06), transparent 70%);
 }
 
 /* Subtle spring micro-interactions. One easing, used everywhere, so motion
@@ -234,6 +234,6 @@ body {
 }
 :root[data-theme="light"] .kb-spotlight {
   background:
-    radial-gradient(680px 420px at 72% 8%, rgba(47, 74, 107, 0.08), transparent 62%),
-    radial-gradient(420px 320px at 18% 88%, rgba(47, 74, 107, 0.04), transparent 70%);
+    radial-gradient(680px 420px at 72% 8%, rgba(3, 105, 161, 0.08), transparent 62%),
+    radial-gradient(420px 320px at 18% 88%, rgba(3, 105, 161, 0.04), transparent 70%);
 }
