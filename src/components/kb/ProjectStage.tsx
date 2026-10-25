@@ -22,9 +22,6 @@ function Diagram({ p }: { p: Flagship }) {
           </React.Fragment>
         ))}
       </div>
-      <p className="font-mono text-[0.68rem] uppercase tracking-[0.18em] text-[var(--color-ink)]/50">
-        Diagram, not a screenshot
-      </p>
     </div>
   );
 }
@@ -56,11 +53,6 @@ export function ProjectStage({
           <Diagram p={p} />
         )}
       </div>
-      {p.imageLabel && (
-        <figcaption className="absolute bottom-0 inset-x-0 bg-[var(--color-bone)]/90 px-3 py-1.5 font-mono text-[0.68rem] uppercase tracking-[0.16em] text-[var(--color-ink)]/70">
-          {p.imageKind === "screenshot" ? "Screenshot" : "Diagram"} · {p.imageLabel.replace(/^(Screenshot|Diagram) · /, "")}
-        </figcaption>
-      )}
     </figure>
   );
 }

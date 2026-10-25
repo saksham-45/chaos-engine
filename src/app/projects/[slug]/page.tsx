@@ -207,9 +207,6 @@ function ProjectDetail({ p }: { p: Flagship }) {
               <figure key={g.src} className="border border-[var(--color-rule)] bg-[var(--color-concrete)]">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={g.src} alt={g.label} className="w-full aspect-[3/4] object-cover object-top" />
-                <figcaption className="px-3 py-2 font-mono text-[0.7rem] uppercase tracking-[0.12em] text-[var(--color-ink)]/70">
-                  {g.label}
-                </figcaption>
               </figure>
             ))}
           </div>
