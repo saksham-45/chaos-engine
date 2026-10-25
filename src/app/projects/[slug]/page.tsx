@@ -122,9 +122,11 @@ function ProjectDetail({ p }: { p: Flagship }) {
                 </span>
               </div>
 
-              <p className="mt-8 max-w-2xl text-[1.25rem] leading-relaxed text-[var(--color-ink)]">
-                {p.description}
-              </p>
+              <div className="mt-8 max-w-2xl space-y-4 text-[1.25rem] leading-relaxed text-[var(--color-ink)]">
+                <p><span className="font-mono text-[0.78rem] uppercase tracking-[0.16em] text-[var(--color-oxide-dark)]">What </span>{p.what}</p>
+                <p><span className="font-mono text-[0.78rem] uppercase tracking-[0.16em] text-[var(--color-oxide-dark)]">Why </span>{p.why}</p>
+                <p><span className="font-mono text-[0.78rem] uppercase tracking-[0.16em] text-[var(--color-oxide-dark)]">How </span>{p.how}</p>
+              </div>
 
               {/* stack chip row */}
               <div className="mt-8">
@@ -185,40 +187,15 @@ function ProjectDetail({ p }: { p: Flagship }) {
       <SectionPlate
         ground="concrete"
         plateNo={p.no}
-        title="How it's built"
+        title="Specification"
         texture
         wide
       >
-        <div className="grid gap-8 lg:grid-cols-[1fr_1fr] items-start">
+        <div className="max-w-3xl">
           <Stamp>
             <SpecTable rows={p.spec} caption="SPECIFICATION" />
           </Stamp>
 
-          {/* responsibilities ledger */}
-          <Stamp delay={0.05}>
-            <div className="border-2 border-[var(--color-ink)] bg-[var(--color-bone)]">
-              <div className="font-mono text-[0.75rem] uppercase tracking-[0.2em] px-4 py-2 border-b-2 border-[var(--color-ink)] text-[var(--color-oxide-dark)]">
-                MY ROLE
-              </div>
-              <ul>
-                {p.responsibilities.map((r, i) => (
-                  <li
-                    key={i}
-                    className={`grid grid-cols-[auto_1fr] items-start gap-3 px-4 py-3 ${
-                      i > 0 ? "border-t border-[var(--color-ink)]/20" : ""
-                    }`}
-                  >
-                    <span className="font-mono text-[0.72rem] leading-relaxed bg-[var(--color-ink)] text-[var(--color-bone)] px-1.5 py-0.5 mt-0.5 tabular-nums">
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    <span className="text-[1.125rem] leading-relaxed text-[var(--color-ink)]">
-                      {r}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </Stamp>
         </div>
       </SectionPlate>
 

@@ -111,17 +111,16 @@ export default function Home() {
         <div className="grid gap-8 lg:grid-cols-[1.4fr_1fr]">
           <div className="space-y-5 text-[1.25rem] leading-relaxed text-[var(--color-ink)]/85 max-w-2xl">
             <p>
-              I am a computer engineering student at the University of South Florida (B.S. May 2027,
-              GPA 3.89, {PROFILE.scholar}) with a {PROFILE.mathMinor}, and an undergraduate researcher
-              in the Bellini College of AI, in the SHIELD Lab and the AICC Lab.
+              I am Saksham Srivastava. I am a computer engineering student at the University of
+              South Florida. I graduate in May 2027.
             </p>
             <p>
-              My work spans FPGA tooling, embedded firmware, and applied AI. I have also worked as
-              a software engineering intern at AeroLot.ai, on a GenAI dealership platform.
+              I am passionate and curiosity driven. I like to understand how things work, from
+              hardware to software, and then build them myself.
             </p>
             <p>
-              After graduation, I am looking for a new-grad role in FPGA and EDA tooling, systems,
-              or applied AI, at Nvidia, AMD, or a similar hardware and software company.
+              I am an undergraduate researcher in the Bellini College of AI, in the SHIELD Lab and
+              the AICC Lab. I also work as a software engineering intern at AeroLot.ai.
             </p>
           </div>
           <div className="border-2 border-[var(--color-ink)] divide-y-2 divide-[var(--color-ink)] self-start w-full font-mono">

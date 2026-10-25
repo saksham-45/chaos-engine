@@ -44,9 +44,9 @@ export default function About() {
       <SectionPlate id="about" ground="bone" title="About me">
         <div className="max-w-2xl">
           <p className="text-[1.25rem] leading-relaxed text-[var(--color-ink)]">
-            I am a computer engineering student who builds across the stack because the interesting
-            problems live at the boundaries: between SystemVerilog and a bitstream, between a sensor
-            and a phone, between a model and a user who has to trust it.
+            I am Saksham Srivastava. I am a computer engineering student at the University of
+            South Florida. I graduate in May 2027. I am passionate and curiosity driven. I like
+            to understand how things work, from hardware to software, and then build them myself.
           </p>
         </div>
       </SectionPlate>

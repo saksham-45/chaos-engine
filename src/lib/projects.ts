@@ -1,8 +1,8 @@
 /* Projects. Single source of copy for home, /projects, and /projects/[slug].
-   Tone rule, Oct 25: plain engineering description. No marketing language,
-   no claims without a number or a link, no story quotes. If a project has
-   no public screenshot, its card shows a static diagram of what it does,
-   labeled as a diagram, not a demo. */
+   Tone rule, Oct 25: first person, simple. Each project says only three
+   things: what I did, why I did it, and how I did it. No extra language.
+   If a project has no public screenshot, its card shows a static diagram
+   of what it does, labeled as a diagram, not a demo. */
 
 export interface SpecRow {
   label: string;
@@ -18,10 +18,11 @@ export interface Flagship {
   period: string;
   discipline: "Hardware" | "FPGA" | "Embedded" | "Applied AI" | "ML" | "Music" | "Graphics" | "Systems";
   tagline: string;
-  description: string;
+  what: string;
+  why: string;
+  how: string;
   headline: { value: string; label: string };
   spec: SpecRow[];
-  responsibilities: string[];
   stack: string[];
   image?: string;
   imageLabel?: string;
@@ -42,8 +43,9 @@ export const FLAGSHIPS: Flagship[] = [
     period: "2024 - Present",
     discipline: "FPGA",
     tagline: "Open-source FPGA toolchain in Rust",
-    description:
-      "I built Helion as a synthesis, packing, placement, routing, timing-analysis, and bitstream-generation toolchain. It includes a CLI, a Tcl session, and an IDE that drive the same engines. Targets include HL10T, Xilinx 7-series, iCE40, and ECP5, with Virtex UltraScale+ support in progress. The timing gold value is WNS_PS=9640, and the 1.0 corpus is 100/100. The project is AGPL-3.0-or-later.",
+    what: "I built Helion, an open-source FPGA toolchain in Rust. It does synthesis, packing, placement, routing, timing analysis, and bitstream generation, with a CLI, a Tcl session, and an IDE on the same engines.",
+    why: "I wanted to understand how a design goes from SystemVerilog to a working bitstream, and I wanted a tool I could read, change, and trust end to end instead of only using a vendor tool.",
+    how: "I wrote the pack, PathFinder placement and routing, and timing engines in Rust. I kept a gold timing value, WNS_PS=9640, and a corpus check, 100/100 on the 1.0 corpus, and I added HL10T, Xilinx 7-series, iCE40, and ECP5 targets, with UltraScale+ in progress.",
     headline: { value: "~30 ms", label: "empty-XDC counter, synth to bitstream" },
     spec: [
       { label: "Flow", value: "synth, pack, place, route, STA, bitstream" },
@@ -52,11 +54,6 @@ export const FLAGSHIPS: Flagship[] = [
       { label: "Corpus", value: "100/100 on the 1.0 corpus" },
       { label: "Targets", value: "HL10T, Xilinx 7-series, iCE40, ECP5" },
       { label: "Interface", value: "CLI, Tcl session, IDE" },
-    ],
-    responsibilities: [
-      "Implemented synthesis, placement, routing, and timing engines in Rust.",
-      "Maintained a gold timing value and a full corpus check for timing and bitstream output.",
-      "Wired the same engines to the CLI, a Tcl session, and the IDE.",
     ],
     stack: ["Rust", "SystemVerilog", "VHDL", "PathFinder", "STA", "Tcl"],
     image: "/projects/shots/helion-ide-device.png",
@@ -75,8 +72,9 @@ export const FLAGSHIPS: Flagship[] = [
     period: "Aug 2026 - Present",
     discipline: "Embedded",
     tagline: "Zephyr firmware for a mouth-worn injury sensor",
-    description:
-      "I write Zephyr firmware for a mouth-worn injury sensor on the nRF52840. The firmware reads IMU, pulse-ox, force, and temperature sensors and streams packed BLE packets to a phone app for live readout. Related research uses motion, video, joint-angle, EMG, and clinical data for knee and head-injury outcome prediction. Advisor: Dr. Templeton, USF SHIELD Lab.",
+    what: "I write Zephyr firmware for a mouth-worn injury sensor on the nRF52840, in the USF SHIELD Lab with Dr. Templeton.",
+    why: "I did it because injury research needs sensor data that is reliable on a real body, not only in a lab setup.",
+    how: "I wrote drivers for IMU, pulse-ox, force, and temperature sensors, and I packed the readings into BLE packets that stream to a phone app for live readout.",
     headline: { value: "nRF52840", label: "Zephyr firmware, BLE to a phone app" },
     spec: [
       { label: "Board", value: "nRF52840 DK (PCA10056)" },
@@ -85,11 +83,6 @@ export const FLAGSHIPS: Flagship[] = [
       { label: "Link", value: "packed BLE packets to a phone app" },
       { label: "Research", value: "knee and head-injury outcome prediction" },
       { label: "Lab", value: "USF SHIELD Lab, Dr. Templeton" },
-    ],
-    responsibilities: [
-      "Wrote Zephyr drivers and sensor fusion for the sensor node.",
-      "Packed sensor data into BLE packets for live phone readout.",
-      "Supported injury-outcome models on IRB motion, video, EMG, and clinical data.",
     ],
     stack: ["Zephyr", "C", "nRF52840", "BLE", "IMU", "Python"],
     imageLabel: "Diagram · sensor to phone",
@@ -106,8 +99,9 @@ export const FLAGSHIPS: Flagship[] = [
     period: "May 2026 - Present",
     discipline: "Applied AI",
     tagline: "Campus AI tutor with long-term memory",
-    description:
-      "I built long-term memory for a campus AI tutor at USF, so it retains prior questions and gaps instead of only the last 10 chat turns. I compared compiled-note and search-old-chat methods for cost and accuracy. I also cut Gemini prompt latency 40% with server-side batching and MySQL caching, and deployed Gemini mind-maps to 20,000+ USF students on the production tutor. Advisor: Dr. Topsakal, USF AICC Lab.",
+    what: "I built long-term memory for the campus AI tutor at USF, in the AICC Lab with Dr. Topsakal.",
+    why: "I did it because the tutor only kept the last 10 turns, so it forgot a student's earlier questions and gaps.",
+    how: "I compared compiled-note and search-old-chat methods for cost and accuracy, I cut Gemini prompt latency 40% with server-side batching and MySQL caching, and I deployed Gemini mind-maps to 20,000+ USF students.",
     headline: { value: "20,000+", label: "USF students on the production tutor" },
     spec: [
       { label: "Reach", value: "20,000+ USF students, production" },
@@ -116,11 +110,6 @@ export const FLAGSHIPS: Flagship[] = [
       { label: "Method", value: "server-side batching, MySQL caching" },
       { label: "Feature", value: "Gemini mind-maps" },
       { label: "Lab", value: "USF AICC Lab, Dr. Topsakal" },
-    ],
-    responsibilities: [
-      "Built long-term memory for the campus AI tutor.",
-      "Cut Gemini prompt latency 40% with batching and caching.",
-      "Deployed Gemini mind-maps to 20,000+ students in production.",
     ],
     stack: ["C++", "PHP", "JavaScript", "MySQL", "Gemini", "RAG"],
     imageLabel: "Diagram · student to tutor to memory",
@@ -136,8 +125,9 @@ export const FLAGSHIPS: Flagship[] = [
     period: "Aug 2026 - Present",
     discipline: "Applied AI",
     tagline: "GenAI dealership platform",
-    description:
-      "I work on a full-stack GenAI dealership platform with 12+ agents and 33 Autopilot rules covering CRM, inventory, and financing. I wired RAG, LLM tool use, and REST APIs so Ask Aero answers from live store data. The platform has 3 chat surfaces (retail site, DMs, staff co-pilot) with approval-gated writes, targeting site and SMS replies under 5 seconds. I also built evaluation harnesses for task completion, regression, and drift, with latency and cost telemetry.",
+    what: "I work on a GenAI dealership platform at AeroLot.ai, as a software engineering intern.",
+    why: "I did it because a dealership assistant should answer from live store data, in CRM, inventory, and financing, not from a separate chatbot that guesses.",
+    how: "I wired RAG, LLM tool use, and REST APIs into Ask Aero, across 3 chat surfaces with approval-gated writes, and I built evaluation harnesses for task completion, regression, and drift, with latency and cost telemetry.",
     headline: { value: "12+", label: "agents, 33 Autopilot rules, one platform" },
     spec: [
       { label: "Agents", value: "12+ agents, 33 Autopilot rules" },
@@ -146,11 +136,6 @@ export const FLAGSHIPS: Flagship[] = [
       { label: "Target", value: "site and SMS replies under 5 s" },
       { label: "Evals", value: "task completion, regression, drift" },
       { label: "Telemetry", value: "latency and cost" },
-    ],
-    responsibilities: [
-      "Built the GenAI dealership platform across CRM, inventory, and financing.",
-      "Wired RAG and LLM tool use to live store data for Ask Aero.",
-      "Built eval harnesses and latency and cost telemetry.",
     ],
     stack: ["TypeScript", "Python", "RAG", "LLMs", "REST APIs", "Evals"],
     imageLabel: "Diagram · store data to Ask Aero",
@@ -166,8 +151,9 @@ export const FLAGSHIPS: Flagship[] = [
     period: "2025",
     discipline: "Music",
     tagline: "Automatic beat-matched mixing",
-    description:
-      "AutoMix blends tracks into one continuous mix. A dual-stage model picks the mixing technique, then generates the automation curve for each transition, across 18 mix techniques. It uses 100+ spectral and harmonic features per pair, Demucs stem separation, and a data-analysis pipeline that tests transition logic against published mixing work. A demo is on Hugging Face Spaces.",
+    what: "I built AutoMix, a tool that blends tracks into one continuous mix.",
+    why: "I did it because a good transition stays beat-matched and musically sensible without someone hand-tuning every EQ move.",
+    how: "I built a dual-stage model, DecisionNN to pick one of 18 mix techniques and CurveLSTM to generate the automation curve, using 100+ spectral and harmonic features per pair and Demucs stem separation.",
     headline: { value: "18", label: "mix techniques, DecisionNN + CurveLSTM" },
     spec: [
       { label: "Model", value: "dual-stage: technique + automation curves" },
@@ -175,11 +161,6 @@ export const FLAGSHIPS: Flagship[] = [
       { label: "Features", value: "100+ spectral / harmonic per pair" },
       { label: "QA", value: "data-analysis pipeline, published work" },
       { label: "Audio", value: "Librosa, Demucs stem separation" },
-    ],
-    responsibilities: [
-      "Built the dual-stage model across 18 mix techniques.",
-      "Generated per-transition automation curves from the audio.",
-      "Validated transition logic against published mixing work.",
     ],
     stack: ["PyTorch", "LSTM", "scikit-learn", "Librosa", "Demucs", "NumPy", "Pandas"],
     imageLabel: "Diagram · audio to mix",
@@ -198,8 +179,9 @@ export const FLAGSHIPS: Flagship[] = [
     period: "2026",
     discipline: "Systems",
     tagline: "Native iOS app for newcomer families in Miami",
-    description:
-      "myMiami is a native iOS app that guides newcomer families through verified civic services, rights disclosures, and emergency workflows in Miami-Dade. It supports 10 languages, uses Siri App Intents (5 intents), Gemini photo classification, and ElevenLabs voice synthesis. Phone numbers and desks come from a verified local ledger, and the app uses refusal-first guardrails: it refuses to guess a number, fee, or ordinance instead of inventing one.",
+    what: "I built myMiami, a native iOS app that guides newcomer families through verified civic services, rights disclosures, and emergency workflows in Miami-Dade, at ShellHacks 2026.",
+    why: "I did it because newcomers often rely on one family member to translate, and they need a trusted next step in their own language, not a guessed phone number or fee.",
+    how: "I built it in SwiftUI with 10 languages, 5 Siri App Intents, Gemini photo classification, and ElevenLabs voice, and I used a verified local ledger with refusal-first guardrails, so it refuses instead of inventing a number, fee, or ordinance.",
     headline: { value: "10", label: "languages, 5 Siri App Intents" },
     spec: [
       { label: "Platform", value: "native iOS, SwiftUI" },
@@ -207,11 +189,6 @@ export const FLAGSHIPS: Flagship[] = [
       { label: "Voice", value: "multilingual voice UX, Siri App Intents" },
       { label: "Vision", value: "Gemini photo classification" },
       { label: "Safety", value: "refusal-first guardrails, verified ledger" },
-    ],
-    responsibilities: [
-      "Built the native iOS app for newcomer families.",
-      "Added multilingual voice UX and Siri shortcuts.",
-      "Added Gemini photo classification with refusal-first safety guardrails.",
     ],
     stack: ["Swift", "SwiftUI", "Gemini", "ElevenLabs", "Siri App Intents"],
     imageLabel: "Diagram · family to verified civic step",
@@ -228,8 +205,9 @@ export const FLAGSHIPS: Flagship[] = [
     period: "2025",
     discipline: "ML",
     tagline: "Facial-emotion recognition, quantized for the edge",
-    description:
-      "MoodScope reads facial emotion in real time on a Raspberry Pi 4. INT8-quantized TensorFlow Lite models run at about 30 ms per frame (about 33 FPS), and threaded dual detection backends cut frame stalls by about 45%. A local Llama 3.2 turns readings into plain-language insight without data leaving the device. Built at Health Hacks @ USF 2025.",
+    what: "I built MoodScope, a facial-emotion app that runs on a Raspberry Pi 4, at Health Hacks at USF 2025.",
+    why: "I did it because emotion data should not have to leave the device to be useful.",
+    how: "I quantized TensorFlow Lite models to INT8, about 30 ms per frame, about 33 FPS, I used threaded dual backends to cut frame stalls about 45%, and I ran a local Llama 3.2 on device for plain-language insight.",
     headline: { value: "~33 FPS", label: "on-device on a Raspberry Pi 4" },
     spec: [
       { label: "Device", value: "Raspberry Pi 4 (edge)" },
@@ -238,11 +216,6 @@ export const FLAGSHIPS: Flagship[] = [
       { label: "Latency", value: "~45% fewer frame stalls (threaded dual backends)" },
       { label: "Insight", value: "local Llama 3.2, on-device" },
       { label: "Vision", value: "OpenCV" },
-    ],
-    responsibilities: [
-      "Quantized the detection models to INT8 TFLite for real-time inference on a Pi 4.",
-      "Built threaded dual detection backends, cutting frame stalls about 45%.",
-      "Integrated a local Llama 3.2 for private, on-device insight.",
     ],
     stack: ["TensorFlow Lite (INT8)", "Llama 3.2", "OpenCV", "Raspberry Pi 4", "Python"],
     image: "/projects/shots/moodscope-live.webp",
@@ -259,19 +232,15 @@ export const FLAGSHIPS: Flagship[] = [
     period: "2026",
     discipline: "Graphics",
     tagline: "Audio-reactive graphics from live sound",
-    description:
-      "Visualizzer turns live audio into reactive graphics. A 44.1 kHz audio-ingestion pipeline drives 12+ visual styles on a 2-D canvas. A quality controller scales pixel density to hold 60 FPS at 1080p under load. It uses the Web Audio API, GLSL shaders, and Three.js / WebGL2. The live demo is linked below; the card image here is a diagram, not a live visualizer.",
+    what: "I built Visualizzer, a web app that turns live audio into reactive graphics.",
+    why: "I did it because I had a slower Python prototype and I wanted the same idea to run in real time in a browser.",
+    how: "I built a 44.1 kHz Web Audio ingestion pipeline, 12+ visual styles on a 2-D canvas with GLSL and Three.js, and a quality controller that scales pixel density to hold 60 FPS at 1080p.",
     headline: { value: "12+", label: "audio-reactive styles" },
     spec: [
       { label: "Ingestion", value: "44.1 kHz audio pipeline" },
       { label: "Styles", value: "12+ audio-reactive visualizers" },
       { label: "Canvas", value: "2-D canvas rendering" },
       { label: "Perf", value: "adaptive pixel density, 60 FPS @ 1080p" },
-    ],
-    responsibilities: [
-      "Built the 44.1 kHz audio-ingestion and analysis pipeline.",
-      "Designed 12+ audio-reactive visual styles.",
-      "Wrote a quality controller scaling pixel density to hold 60 FPS at 1080p.",
     ],
     stack: ["Web Audio API", "GLSL", "Three.js", "WebGL2", "TypeScript"],
     imageLabel: "Diagram · audio to canvas",
@@ -290,8 +259,9 @@ export const FLAGSHIPS: Flagship[] = [
     period: "2021",
     discipline: "Systems",
     tagline: "Live ICU-bed and oxygen availability, 2021",
-    description:
-      "I founded COVID-HELP during India's second COVID wave. It connected 40,000+ users to live ICU-bed and oxygen availability, aggregating data from 50+ sources at about 99.9% uptime through traffic spikes. The backend used Node.js and Firebase for real-time updates, and I led a 15+ person volunteer team.",
+    what: "I founded COVID-HELP during India's second COVID wave in 2021, and I led it.",
+    why: "I did it because people could not find a live ICU bed or oxygen supply, and a stale list was useless.",
+    how: "I built a Node.js and Firebase backend that aggregated 50+ live sources in real time, I led a 15+ person volunteer team, and the site served 40,000+ users at about 99.9% uptime.",
     headline: { value: "40,000+", label: "users · ~99.9% uptime" },
     spec: [
       { label: "Scale", value: "40,000+ users in production" },
@@ -299,11 +269,6 @@ export const FLAGSHIPS: Flagship[] = [
       { label: "Ingestion", value: "aggregated 50+ live sources" },
       { label: "Team", value: "15+ cross-functional volunteers" },
       { label: "Backend", value: "Node.js, Firebase, real-time" },
-    ],
-    responsibilities: [
-      "Founded the platform and led a 15+ person volunteer team.",
-      "Built the ingestion pipeline aggregating 50+ live sources.",
-      "Held about 99.9% uptime through unpredictable crisis traffic.",
     ],
     stack: ["Node.js", "Firebase", "REST APIs", "Real-time"],
     imageLabel: "Diagram · sources to users",

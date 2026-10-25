@@ -33,7 +33,11 @@ export function ProjectPlate({ p }: { p: Flagship }) {
           </span>
         </div>
 
-        <p className="mt-4 text-[1.05rem] leading-relaxed text-[var(--color-ink)]/85">{p.description}</p>
+        <div className="mt-4 space-y-2 text-[1.05rem] leading-relaxed text-[var(--color-ink)]/85">
+          <p><span className="font-mono text-[0.72rem] uppercase tracking-[0.16em] text-[var(--color-oxide-dark)]">What </span>{p.what}</p>
+          <p><span className="font-mono text-[0.72rem] uppercase tracking-[0.16em] text-[var(--color-oxide-dark)]">Why </span>{p.why}</p>
+          <p><span className="font-mono text-[0.72rem] uppercase tracking-[0.16em] text-[var(--color-oxide-dark)]">How </span>{p.how}</p>
+        </div>
 
         <div className="mt-4 flex flex-wrap gap-1.5">
           {p.stack.map((s) => (
