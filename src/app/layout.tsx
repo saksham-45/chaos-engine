@@ -14,7 +14,7 @@ const description =
   "I’m Saksham Srivastava, a computer engineering student at USF graduating in May 2027. I build software that sits close to the hardware, including Helion, an open-source FPGA toolchain written in Rust.";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://sakshamportfolioforeng.vercel.app"),
+  metadataBase: new URL("https://sakshamsri.vercel.app"),
   title: { default: title, template: "%s · Saksham Srivastava" },
   description,
   keywords: [
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     description,
     type: "website",
     locale: "en_US",
-    url: "https://sakshamportfolioforeng.vercel.app",
+    url: "https://sakshamsri.vercel.app",
   },
   twitter: { card: "summary_large_image", title, description },
 };
