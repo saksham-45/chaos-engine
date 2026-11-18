@@ -86,7 +86,7 @@ export default function About() {
         </div>
       </SectionPlate>
 
-      <SectionPlate id="education" ground="concrete" title="Education" intro="The facts, nothing invented." texture>
+      <SectionPlate id="education" ground="concrete" title="Education" texture>
         <div className="max-w-3xl">
           <SpecTable rows={EDUCATION} caption="ACADEMIC RECORD" />
         </div>
