@@ -29,7 +29,7 @@ const TIMELINE = [
   {
     year: "2026",
     title: "Hardware, firmware, and production AI",
-    text: "Helion became my main build, alongside SHIELD firmware on the nRF52840, long-term memory for the AICC tutor used by 20,000+ students, and a GenAI platform at AeroLot.ai.",
+    text: "Helion became my main build, alongside SHIELD firmware on the nRF52840 and long-term memory for the AICC tutor used by 20,000+ students.",
   },
   {
     year: "2027",

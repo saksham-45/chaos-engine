@@ -15,7 +15,6 @@ import { FEATURED, STATS, STACK, PROFILE } from "@/lib/projects";
 const NOW = [
   { label: "Helion", detail: "FPGA CAD in Rust, toward Vivado-level QoR" },
   { label: "SHIELD Lab", detail: "nRF52840 / Zephyr 10-sensor telemetry firmware" },
-  { label: "AeroLot.ai", detail: "GenAI dealership platform, in production" },
 ];
 
 export default function Home() {
@@ -134,7 +133,7 @@ export default function Home() {
             </p>
             <p>
               I am an undergraduate researcher in the Bellini College of AI, in the SHIELD Lab and
-              the AICC Lab. I also work as a software engineering intern at AeroLot.ai.
+              the AICC Lab.
             </p>
           </div>
           <div className="border-2 border-[var(--color-ink)] divide-y-2 divide-[var(--color-ink)] self-start w-full font-mono">
