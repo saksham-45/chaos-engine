@@ -1,6 +1,6 @@
 import { GitHubRepo, RepoLanguages, ProcessedProject } from '@/types/github';
 
-const GITHUB_USERNAME = 'saksham-45';
+export const GITHUB_USERNAME = 'saksham-45';
 const GITHUB_API_BASE = 'https://api.github.com';
 
 /**

@@ -1,187 +1,235 @@
 "use client";
 
-import React from "react";
-import {
-  StampButton,
-  Stamp,
-  SectionPlate,
-  StatLedger,
-  ProjectPlate,
-  GitHubLedger,
-  ContactColophon,
-} from "@/components/kb";
+import React, { useRef } from "react";
+import Link from "next/link";
+import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { Fabric } from "@/components/site/Fabric";
+import { Reveal, ScaleIn } from "@/components/site/motion";
+import { ProjectCard } from "@/components/site/ProjectCard";
+import { Stats } from "@/components/site/Stats";
+import { GitHubFeed } from "@/components/site/GitHubFeed";
+import { Contributions } from "@/components/site/Contributions";
+import { ContactBlock } from "@/components/site/Contact";
 import { FEATURED, STATS, STACK, PROFILE } from "@/lib/projects";
 
 const NOW = [
-  { label: "Helion", detail: "FPGA CAD in Rust, toward Vivado-level QoR" },
-  { label: "SHIELD Lab", detail: "nRF52840 / Zephyr 10-sensor telemetry firmware" },
+  { label: "Helion", detail: "Building an open-source FPGA toolchain in Rust.", hue: "#ff9f0a" },
+  { label: "SHIELD Lab", detail: "Writing firmware for a sensor that lives inside a mouthguard.", hue: "#30d158" },
 ];
+
+function Hero() {
+  const ref = useRef<HTMLElement>(null);
+  const hud = useRef<HTMLParagraphElement>(null);
+  const reduce = useReducedMotion();
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
+  const textOpacity = useTransform(scrollYProgress, [0, 0.55], [1, 0]);
+  const textY = useTransform(scrollYProgress, [0, 1], [0, -90]);
+  const artScale = useTransform(scrollYProgress, [0, 1], [1, 1.18]);
+  const artOpacity = useTransform(scrollYProgress, [0, 0.9], [1, 0.1]);
+
+  return (
+    <section ref={ref} className="relative h-[100svh] min-h-[640px] cursor-crosshair overflow-clip">
+      {/* the word is drawn by the canvas; this is the same thing for everyone else */}
+      <h1 className="sr-only">Hi, I&rsquo;m Saksham Srivastava.</h1>
+
+      <motion.div aria-hidden className="absolute inset-0" style={reduce ? undefined : { scale: artScale, opacity: artOpacity }}>
+        <Fabric text="SAKSHAM" centerY={0.44} hudRef={hud} className="h-full w-full" />
+        {/* text sits on --name-top / --name-bottom, which the canvas publishes here */}
+        <p className="t-lead absolute inset-x-0 text-center text-ink" style={{ top: "calc(var(--name-top, 30svh) - 2.6em)" }}>
+          Hi, I&rsquo;m
+        </p>
+      </motion.div>
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-bg" />
+
+      <motion.div className="pointer-events-none absolute inset-0 px-5 text-center sm:px-8" style={reduce ? undefined : { opacity: textOpacity, y: textY }}>
+        <Reveal now blur className="absolute inset-x-0 top-[max(5.5rem,11svh)] flex justify-center">
+          <span className="glass inline-flex min-h-[36px] items-center gap-2.5 rounded-full px-4 text-[0.9375rem] font-medium text-ink">
+            <span className="live-dot text-accent" />
+            Open to new-grad roles · May 2027
+          </span>
+        </Reveal>
+
+        <div className="pointer-events-auto absolute inset-x-5 sm:inset-x-8" style={{ top: "calc(var(--name-bottom, 54svh) + 2.6rem)" }}>
+          <Reveal now delay={0.9}>
+            <p className="t-lead mx-auto max-w-[36ch]">
+              I&rsquo;m a computer engineering student at USF, and I build <strong>software that sits close to the hardware</strong>.
+              Right now that&rsquo;s Helion, my own <strong>FPGA toolchain</strong>.
+            </p>
+          </Reveal>
+          <Reveal now delay={1.02} className="mt-8 flex flex-wrap items-center justify-center gap-3">
+            <Link href="/projects" className="btn btn-primary">
+              See my projects
+            </Link>
+            <Link href="/contact" className="btn btn-quiet">
+              Get in touch
+            </Link>
+          </Reveal>
+        </div>
+
+        <p ref={hud} aria-hidden className="t-mono absolute inset-x-0 bottom-5 whitespace-pre text-center leading-relaxed text-muted max-sm:text-[0.6875rem]" />
+      </motion.div>
+    </section>
+  );
+}
+
+function SectionHead({ title, lead }: { title: React.ReactNode; lead?: React.ReactNode }) {
+  return (
+    <div className="mb-12 md:mb-16">
+      <Reveal blur>
+        <h2 className="t-h2 max-w-[18ch]">{title}</h2>
+      </Reveal>
+      {lead && (
+        <Reveal delay={0.08}>
+          <p className="t-lead mt-5 max-w-[46ch]">{lead}</p>
+        </Reveal>
+      )}
+    </div>
+  );
+}
+
+const section = "mx-auto max-w-[1200px] px-5 sm:px-8 py-20 md:py-28";
+const CHIP_HUES = ["#3ddc84", "#ffb224", "#38bdf8"];
+
+/* A group of tools drawn as a chip: the group is the package, each tool is a pin. */
+function Chip({ name, pins, hue }: { name: string; pins: string[]; hue: string }) {
+  const half = Math.ceil(pins.length / 2);
+  const side = (items: string[], right: boolean) => (
+    <ul className="flex flex-col justify-around gap-1 py-3">
+      {items.map((p) => (
+        <li key={p} className={`flex min-h-9 items-center gap-2 text-[0.875rem] leading-tight [overflow-wrap:anywhere] ${right ? "" : "flex-row-reverse text-right"}`}>
+          <span aria-hidden className="h-[3px] w-3.5 shrink-0 rounded-full" style={{ background: hue }} />
+          <span>{p}</span>
+        </li>
+      ))}
+    </ul>
+  );
+  return (
+    <div className="card h-full p-5 sm:p-6">
+      <div className="grid h-full grid-cols-[1fr_auto_1fr] items-stretch">
+        {side(pins.slice(0, half), false)}
+        <div className="relative flex w-[6.75rem] items-center justify-center rounded-[14px] bg-raised px-2.5 text-center ring-1 ring-line">
+          <span aria-hidden className="absolute left-2.5 top-2.5 h-2 w-2 rounded-full" style={{ background: hue }} />
+          <h3 className="text-[1.0625rem] font-semibold leading-tight tracking-[-0.02em]">{name}</h3>
+        </div>
+        {side(pins.slice(half), true)}
+      </div>
+    </div>
+  );
+}
 
 export default function Home() {
   return (
-    <main className="pt-14">
-      {/* ============ HERO ============ */}
-      <section className="relative bg-[var(--color-bone)] overflow-hidden">
-        <div aria-hidden className="kb-grid kb-grid-fade pointer-events-none absolute inset-0" />
-        <div aria-hidden className="kb-spotlight absolute inset-0" />
-        <div className="relative mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 py-8 md:py-12">
-          <div className="flex items-center gap-3 mb-8 flex-wrap">
-            <span className="font-mono text-[0.72rem] tracking-[0.22em] uppercase bg-[var(--color-oxide)] text-[var(--color-paper)] px-2 py-1">
-              Graduating May 2027 · open to new-grad roles
-            </span>
-            <span className="font-mono text-[0.72rem] tracking-[0.22em] uppercase text-[var(--color-ink)]/50">
-              Computer Engineering · Tampa, FL
-            </span>
-          </div>
+    <main>
+      <Hero />
 
-          <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr] lg:gap-14 items-start">
-            <div className="order-1">
-              <h1 className="display-hero text-[clamp(2.6rem,8vw,5.5rem)] text-[var(--color-ink)]">
-                Saksham
-                <br />
-                Srivastava
-              </h1>
-              <p className="mt-6 max-w-xl text-[1.25rem] leading-relaxed text-[var(--color-ink)]">
-                I build FPGA tooling, embedded firmware, and applied AI.
+      {/* ============ NUMBERS ============ */}
+      <section className="mx-auto max-w-[1200px] px-5 pb-10 sm:px-8 md:pb-16">
+        <Reveal>
+          <Stats items={STATS} />
+        </Reveal>
+      </section>
+
+      {/* ============ WORK ============ */}
+      <section id="work" className={section}>
+        <SectionHead
+          title="My projects."
+          lead="The four I’m proudest of. Each one has its own page on what it does, why I built it, and how it works."
+        />
+        <div className="grid gap-5 md:grid-cols-2 md:gap-6">
+          {FEATURED.map((p, i) => {
+            const wide = i === 0;
+            return (
+              <ScaleIn key={p.slug} className={wide || i === 3 ? "md:col-span-2" : ""}>
+                <ProjectCard p={p} wide={wide || i === 3} />
+              </ScaleIn>
+            );
+          })}
+        </div>
+        <Reveal className="mt-10 text-center">
+          <Link href="/projects" className="link text-[1.25rem]">
+            See all my projects
+          </Link>
+        </Reveal>
+      </section>
+
+      {/* ============ ABOUT ============ */}
+      <section id="about" className={section}>
+        <div className="grid items-center gap-10 lg:grid-cols-[0.8fr_1fr] lg:gap-20">
+          <ScaleIn>
+            <figure className="card aspect-[4/5] max-h-[640px] w-full">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/saksham.webp" alt="Saksham Srivastava on the Tampa riverwalk at night" loading="lazy" className="h-full w-full object-cover object-bottom" />
+            </figure>
+          </ScaleIn>
+          <div>
+            <Reveal blur>
+              <h2 className="t-h2">About me.</h2>
+            </Reveal>
+            <Reveal delay={0.08}>
+              <p className="t-lead mt-6">
+                I&rsquo;m Saksham. I study computer engineering at USF, graduate in <strong>May 2027</strong>, and do research in
+                two labs on campus. I like understanding a system all the way down, from the chip up to the app, and then building
+                my own version of it.
               </p>
-              <div className="mt-6 flex flex-nowrap gap-2">
-                <StampButton href="/projects" variant="primary" compact>
-                  <span className="hidden sm:inline">View projects</span>
-                  <span className="sm:hidden">Projects</span>
-                </StampButton>
-                <StampButton href="/about" variant="secondary" compact>
-                  <span className="hidden sm:inline">About me</span>
-                  <span className="sm:hidden">About</span>
-                </StampButton>
-                <StampButton href="/contact" variant="secondary" compact>
-                  Contact
-                </StampButton>
-              </div>
-            </div>
+            </Reveal>
 
-            <div className="order-2">
-              <Stamp>
-                <figure className="relative w-full overflow-hidden border border-[var(--color-rule)] bg-[var(--color-concrete)]">
-                  <div className="relative w-full min-h-[320px] md:min-h-[420px]" style={{ aspectRatio: "3 / 4" }}>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src="/saksham.webp"
-                      alt="Saksham Srivastava on the Tampa riverwalk"
-                      className="absolute inset-0 h-full w-full object-cover object-bottom"
-                    />
-                  </div>
-                </figure>
-              </Stamp>
-            </div>
-          </div>
-
-          <div className="mt-8 border-2 border-[var(--color-rule)] bg-[var(--color-concrete)]">
-            <div className="px-4 py-2 border-b-2 border-[var(--color-rule)] font-mono text-[0.72rem] uppercase tracking-[0.2em] text-[var(--color-ink)]/60">
-              Right now
-            </div>
-            <div className="grid md:grid-cols-3">
-              {NOW.map((n, i) => (
-                <div key={n.label} className={`px-4 py-4 ${i > 0 ? "border-t-2 md:border-t-0 md:border-l-2 border-[var(--color-rule)]" : ""}`}>
-                  <div className="flex items-center gap-2">
-                    <span aria-hidden className="live-dot w-2 h-2 bg-[var(--color-oxide)]" />
-                    <span className="font-mono text-[0.8rem] uppercase tracking-[0.14em] text-[var(--color-ink)]">{n.label}</span>
-                  </div>
-                  <p className="mt-1 text-[1rem] leading-snug text-[var(--color-ink)]/70">{n.detail}</p>
-                </div>
-              ))}
-            </div>
+            <Reveal delay={0.14} className="mt-9">
+              <h3 className="text-[1.0625rem] font-semibold text-muted">What I&rsquo;m working on now</h3>
+              <ul className="mt-3 divide-y divide-line border-y border-line">
+                {NOW.map((n) => (
+                  <li key={n.label} className="flex items-baseline gap-3 py-4">
+                    <span className="live-dot translate-y-[-1px]" style={{ color: n.hue }} />
+                    <p className="text-[1.125rem] leading-snug">
+                      <span className="font-semibold">{n.label}.</span>
+                      <span className="text-muted"> {n.detail}</span>
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </Reveal>
+            <Reveal delay={0.2} className="mt-8">
+              <Link href="/about" className="link text-[1.25rem]">
+                More about me
+              </Link>
+            </Reveal>
           </div>
         </div>
       </section>
 
-      {/* ============ PROJECTS ============ */}
-      <SectionPlate
-        id="projects"
-        ground="bone"
-        title="Projects"
-        intro="The full list, with source or a live demo for each, is on the projects page."
-        wide
-      >
-        <div className="grid gap-6 md:grid-cols-2">
-          {FEATURED.map((p) => (
-            <ProjectPlate key={p.slug} p={p} />
+      {/* ============ TOOLKIT ============ */}
+      <section id="stack" className={section}>
+        <SectionHead title="Tools I use." />
+        <div className="grid gap-5 md:grid-cols-3 md:gap-6">
+          {STACK.map((grp, i) => (
+            <Reveal key={grp.group} delay={i * 0.07} className="h-full">
+              <Chip name={grp.group} pins={grp.items} hue={CHIP_HUES[i % CHIP_HUES.length]} />
+            </Reveal>
           ))}
         </div>
-        <div className="mt-10">
-          <StampButton href="/projects" variant="secondary">
-            Full index of works
-          </StampButton>
-        </div>
-      </SectionPlate>
-
-      {/* ============ NUMBERS ============ */}
-      <SectionPlate id="numbers" ground="concrete" title="By the numbers" texture>
-        <StatLedger items={STATS} />
-      </SectionPlate>
-
-      {/* ============ ABOUT, IN FIRST PERSON ============ */}
-      <SectionPlate id="about" ground="bone" title="About">
-        <div className="grid gap-8 lg:grid-cols-[1.4fr_1fr]">
-          <div className="space-y-5 text-[1.25rem] leading-relaxed text-[var(--color-ink)]/85 max-w-2xl">
-            <p>
-              I am Saksham Srivastava. I am a computer engineering student at the University of
-              South Florida. I graduate in May 2027.
-            </p>
-            <p>
-              I am passionate and curiosity driven. I like to understand how things work, from
-              hardware to software, and then build them myself.
-            </p>
-            <p>
-              I am an undergraduate researcher in the Bellini College of AI, in the SHIELD Lab and
-              the AICC Lab.
-            </p>
-          </div>
-          <div className="border-2 border-[var(--color-ink)] divide-y-2 divide-[var(--color-ink)] self-start w-full font-mono">
-            {[
-              ["Education", "USF · CompEng B.S. May 2027 · Math minor"],
-              ["Research", "SHIELD Lab · AICC Lab, Bellini College of AI"],
-              ["Based", "Tampa, FL"],
-            ].map(([k, v]) => (
-              <div key={k} className="grid grid-cols-[minmax(84px,0.4fr)_1fr]">
-                <span className="px-3 py-2.5 text-[0.68rem] uppercase tracking-[0.1em] text-[var(--color-ink)]/55 border-r-2 border-[var(--color-ink)]">
-                  {k}
-                </span>
-                <span className="px-3 py-2.5 text-[0.82rem] text-[var(--color-ink)]">{v}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </SectionPlate>
-
-      {/* ============ STACK ============ */}
-      <SectionPlate id="stack" ground="bone" title="What I build with" intro="The stack I work in day to day.">
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {STACK.map((grp) => (
-            <div key={grp.group} className="border-2 border-[var(--color-ink)] micro-card">
-              <div className="bg-[var(--color-ink)] text-[var(--color-bone)] px-4 py-2 font-mono text-[0.72rem] uppercase tracking-[0.16em]">
-                {grp.group}
-              </div>
-              <ul className="divide-y divide-[var(--color-ink)]/15">
-                {grp.items.map((it) => (
-                  <li key={it} className="px-4 py-2.5 font-mono text-[0.9rem] text-[var(--color-ink)]/85">
-                    {it}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-      </SectionPlate>
+      </section>
 
       {/* ============ GITHUB ============ */}
-      <SectionPlate id="github" ground="charcoal" title="Live from GitHub" intro="Pulled live from github.com/saksham-45." wide>
-        <GitHubLedger />
-      </SectionPlate>
+      <section id="github" className={section}>
+        <SectionHead
+          title="My GitHub."
+          lead={
+            <>
+              Most of what I build is public. This is my past year of work and my latest repositories, loaded live from{" "}
+              <a href={PROFILE.github} target="_blank" rel="noopener noreferrer" className="link link-ext">
+                {PROFILE.githubHandle}
+              </a>
+            </>
+          }
+        />
+        <Reveal>
+          <Contributions />
+        </Reveal>
+        <Reveal className="mt-6">
+          <GitHubFeed limit={5} />
+        </Reveal>
+      </section>
 
-      {/* ============ CONTACT ============ */}
-      <SectionPlate id="contact" ground="charcoal" className="border-t-2">
-        <ContactColophon />
-      </SectionPlate>
+      <ContactBlock />
     </main>
   );
 }

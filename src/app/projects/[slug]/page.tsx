@@ -1,260 +1,279 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import {
-  SectionPlate,
-  Stamp,
-  StampButton,
-  SpecTable,
-  ProjectStage,
-  CopyLinkButton,
-  DiagonalBar,
-  BlackSquareAnchor,
-} from "@/components/kb";
-import { FLAGSHIPS, getFlagship, type Flagship } from "@/lib/projects";
+import { Reveal, ScaleIn, SPRING, spotlight } from "@/components/site/motion";
+import { ProjectArt } from "@/components/site/ProjectArt";
+import { CopyButton } from "@/components/site/Contact";
+import { FlowScene } from "@/components/site/FlowScene";
+import { FLAGSHIPS, getFlagship, PROFILE, type Flagship } from "@/lib/projects";
 import type { ProcessedProject } from "@/types/github";
 import { formatRelativeTime } from "@/lib/utils";
 
-/* =========================================================================
-   /projects/[slug] - one project as a full detail page.
-   Flagships (moodscope / automix / covid-help) render the full dossier from
-   @/lib/projects; any other slug falls back to the live GitHub repo feed.
-   ========================================================================= */
+/* /projects/[slug]: a flagship renders its full write-up from
+   @/lib/projects; any other slug falls back to the live GitHub repo. */
 
 export default function ProjectDetailPage() {
   const params = useParams();
   const raw = params?.slug;
   const slug = Array.isArray(raw) ? raw[0] : raw ?? "";
   const flagship = getFlagship(slug);
-
-  if (flagship) return <ProjectDetail p={flagship} />;
-  return <RepoDetail slug={slug} />;
+  return flagship ? <ProjectDetail p={flagship} /> : <RepoDetail slug={slug} />;
 }
 
-/* ---------- shared breadcrumb (mono, on bone) ---------- */
-function Breadcrumb({ name }: { name: string }) {
+function BackLink() {
   return (
-    <nav
-      aria-label="Breadcrumb"
-      className="font-mono text-[0.78rem] tracking-[0.14em] uppercase text-[var(--color-ink)]/60 flex flex-wrap items-center gap-2"
-    >
-      <Link
-        href="/"
-        className="text-[var(--color-oxide-dark)] hover:underline underline-offset-4"
-      >
-        Home
-      </Link>
-      <span aria-hidden className="text-[var(--color-ink)]/35">
-        /
-      </span>
-      <Link
-        href="/projects"
-        className="text-[var(--color-oxide-dark)] hover:underline underline-offset-4"
-      >
-        Projects
-      </Link>
-      <span aria-hidden className="text-[var(--color-ink)]/35">
-        /
-      </span>
-      <span className="text-[var(--color-ink)]">{name}</span>
-    </nav>
+    <Link href="/projects" className="inline-flex items-center gap-1 text-[1.0625rem] font-medium text-muted transition-colors hover:text-ink">
+      <span aria-hidden>‹</span> All projects
+    </Link>
   );
 }
 
-/* ========================= FLAGSHIP DETAIL ========================= */
+const wrap = "mx-auto max-w-[1200px] px-5 sm:px-8";
+
+function Tile({ label, children, className = "" }: { label: string; children: React.ReactNode; className?: string }) {
+  return (
+    <div className={`card p-6 sm:p-7 ${className}`}>
+      <p className="t-mono uppercase tracking-[0.1em] text-muted">{label}</p>
+      <div className="mt-2 text-[1.1875rem] font-medium leading-snug tracking-[-0.015em]">{children}</div>
+    </div>
+  );
+}
+
+/* ========================= FLAGSHIP ========================= */
 function ProjectDetail({ p }: { p: Flagship }) {
   const idx = FLAGSHIPS.findIndex((f) => f.slug === p.slug);
-  const n = FLAGSHIPS.length;
-  const prev = FLAGSHIPS[(idx - 1 + n) % n];
-  const next = FLAGSHIPS[(idx + 1) % n];
+  const next = FLAGSHIPS[(idx + 1) % FLAGSHIPS.length];
+  const story = [
+    { label: "What it is", text: p.what },
+    { label: "Why I built it", text: p.why },
+    { label: "How I built it", text: p.how },
+  ].filter((r) => r.text);
 
   return (
-    <main className="pt-14">
-      {/* breadcrumb band */}
-      <section className="bg-[var(--color-bone)]">
-        <div className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 pt-10">
-          <Breadcrumb name={p.name} />
+    <main style={{ "--hue": p.hue } as React.CSSProperties}>
+      {/* ============ TITLE ============ */}
+      <section className={`${wrap} pt-32 text-center md:pt-40`}>
+        <Reveal now>
+          <BackLink />
+        </Reveal>
+        <Reveal now delay={0.05}>
+          <p className="eyebrow mt-8">{p.tag}</p>
+        </Reveal>
+        <Reveal now blur delay={0.1}>
+          <h1 className="t-hero mt-2">{p.name}</h1>
+        </Reveal>
+        <Reveal now delay={0.2}>
+          <p className="t-lead mx-auto mt-6 max-w-[30ch]">{p.tagline}</p>
+        </Reveal>
+        {(p.demo || p.repo) && (
+          <Reveal now delay={0.28} className="mt-8 flex flex-wrap justify-center gap-3">
+            {p.demo && (
+              <a href={p.demo} target="_blank" rel="noopener noreferrer" className="btn btn-primary">
+                {p.demoLabel ?? "Live demo"} <span aria-hidden>↗</span>
+              </a>
+            )}
+            {p.repo && (
+              <a href={p.repo} target="_blank" rel="noopener noreferrer" className={`btn ${p.demo ? "btn-quiet" : "btn-primary"}`}>
+                Source <span aria-hidden>↗</span>
+              </a>
+            )}
+            {p.repo && <CopyButton value={p.repo} label="Copy repo link" />}
+          </Reveal>
+        )}
+      </section>
+
+      {/* ============ THE VISUAL ============ */}
+      <section className={`${wrap} mt-14 md:mt-20`}>
+        <ScaleIn>
+          <figure className={`card card-glow ${p.video ? "aspect-video" : p.imageCover ? "aspect-[4/5] sm:aspect-[16/9]" : p.image ? "" : "aspect-[4/3] sm:aspect-[16/9]"}`}>
+            <div className={`relative z-[1] h-full ${p.image && !p.imageCover && !p.video ? "pt-4 sm:pt-10" : ""}`}>
+              <ProjectArt p={p} />
+            </div>
+          </figure>
+        </ScaleIn>
+      </section>
+
+      {/* ============ FACTS ============ */}
+      <section className={`${wrap} mt-5 grid gap-5 md:mt-6 md:grid-cols-[1.4fr_1fr_1fr] md:gap-6`}>
+        <Reveal className="h-full">
+          <div className="card card-glow h-full p-6 sm:p-7">
+            <p className="hue-text t-num relative z-[1] text-[clamp(3rem,6.4vw,5rem)] leading-none">{p.headline.value}</p>
+            <p className="relative z-[1] mt-3 text-[1.0625rem] leading-snug text-muted">{p.headline.label}</p>
+          </div>
+        </Reveal>
+        <Reveal delay={0.06} className="h-full">
+          <Tile label="My role" className="h-full">
+            {p.role}
+          </Tile>
+        </Reveal>
+        <Reveal delay={0.12} className="h-full">
+          <Tile label="When" className="h-full">
+            {p.period}
+          </Tile>
+        </Reveal>
+      </section>
+
+      {/* ============ THE STORY ============ */}
+      <section className={`${wrap} py-20 md:py-28`}>
+        <div className="divide-y divide-line border-y border-line">
+          {story.map((s) => (
+            <div key={s.label} className="grid gap-3 py-10 md:grid-cols-[260px_1fr] md:gap-10 md:py-14">
+              <Reveal>
+                <h2 className="eyebrow md:sticky md:top-24">{s.label}</h2>
+              </Reveal>
+              <Reveal delay={0.06}>
+                <p className="max-w-[38ch] text-[clamp(1.3rem,2.3vw,1.9rem)] font-medium leading-[1.3] tracking-[-0.022em] text-pretty">{s.text}</p>
+              </Reveal>
+            </div>
+          ))}
         </div>
       </section>
 
-      {/* ============ HEADER ============ */}
-      <section className="relative bg-[var(--color-bone)] overflow-hidden">
-        <div className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12 py-14 md:py-20">
-          {/* plate tab row */}
-          <div className="flex items-center gap-3 mb-7 flex-wrap">
-            <span className="font-mono text-[0.8rem] tracking-[0.2em] px-2 py-1 bg-[var(--color-ink)] text-[var(--color-bone)]">
-              {p.no}
-            </span>
-            <span className="font-mono text-[0.8rem] tracking-[0.22em] uppercase text-[var(--color-oxide-dark)]">
-              {p.tag}
-            </span>
-          </div>
+      {/* ============ HOW IT WORKS, SCROLLED ============ */}
+      {p.flow && <FlowScene title="From code to bitstream." steps={p.flow} />}
 
-          <div className="grid gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14 items-start">
-            {/* copy column (order-2 on mobile so art stacks above) */}
-            <div className="order-2 lg:order-1 relative">
-              <DiagonalBar className="-left-12 top-4 hidden lg:block" length={190} thickness={24} />
-              <h1 className="display-hero text-[clamp(2.6rem,7vw,5.5rem)] text-[var(--color-ink)] leading-[0.95]">
-                {p.name}
-              </h1>
-
-              <div className="mt-6 flex items-start gap-3">
-                <span aria-hidden className="mt-1.5 w-3 h-3 shrink-0 bg-[var(--color-oxide)]" />
-                <div>
-                  <p className="font-mono text-[0.85rem] uppercase tracking-[0.12em] text-[var(--color-ink)]/70 leading-relaxed">
-                    {p.role} · {p.period}
-                  </p>
-                  <p className="mt-2 text-[1.25rem] leading-snug text-[var(--color-ink)]">
-                    {p.tagline}
-                  </p>
+      {/* ============ HIGHLIGHTS ============ */}
+      {p.highlights && (
+        <section className={`${wrap} pb-20 md:pb-28 ${p.flow ? "pt-20 md:pt-28" : ""}`}>
+          <Reveal blur>
+            <h2 className="t-h2">What it can do.</h2>
+          </Reveal>
+          <ul className="mt-10 grid gap-5 sm:grid-cols-2 md:gap-6 lg:grid-cols-3">
+            {p.highlights.map((h, i) => (
+              <Reveal as="li" key={h.title} delay={(i % 3) * 0.06} className="h-full">
+                <div onPointerMove={spotlight} className="card card-glow h-full p-7 sm:p-8">
+                  <h3 className="hue-text relative z-[1] text-[1.625rem] font-semibold leading-tight tracking-[-0.028em]">{h.title}</h3>
+                  <p className="relative z-[1] mt-3 text-[1.125rem] leading-relaxed text-muted">{h.text}</p>
                 </div>
-              </div>
-
-              {/* headline metric */}
-              <div className="mt-8 bg-[var(--color-ink)] text-[var(--color-bone)] px-5 py-4 max-w-full">
-                <div className="display-plate text-[clamp(1.8rem,8vw,3rem)] leading-none break-words">
-                  {p.headline.value}
-                </div>
-                <div className="mt-2 font-mono text-[0.78rem] uppercase tracking-[0.12em] text-[var(--color-bone)]/70 leading-snug">
-                  {p.headline.label}
-                </div>
-              </div>
-
-              <div className="mt-8 max-w-2xl space-y-4 text-[1.25rem] leading-relaxed text-[var(--color-ink)]">
-                <p><span className="font-mono text-[0.78rem] uppercase tracking-[0.16em] text-[var(--color-oxide-dark)]">What </span>{p.what}</p>
-                <p><span className="font-mono text-[0.78rem] uppercase tracking-[0.16em] text-[var(--color-oxide-dark)]">Why </span>{p.why}</p>
-                <p><span className="font-mono text-[0.78rem] uppercase tracking-[0.16em] text-[var(--color-oxide-dark)]">How </span>{p.how}</p>
-              </div>
-
-              {/* stack chip row */}
-              <div className="mt-8">
-                <span className="font-mono text-[0.72rem] uppercase tracking-[0.2em] text-[var(--color-oxide-dark)] block mb-3">
-                  Stack
-                </span>
-                <ul className="flex flex-wrap gap-2">
-                  {p.stack.map((s) => (
-                    <li
-                      key={s}
-                      className="font-mono text-[0.82rem] px-3 py-1.5 border-2 border-[var(--color-ink)] bg-[var(--color-concrete)] text-[var(--color-ink)]"
-                    >
-                      {s}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {/* real links */}
-              {(p.demo || p.repo) && (
-                <div className="mt-8 flex flex-wrap gap-4">
-                  {p.demo && (
-                    <StampButton href={p.demo} variant="primary" external>
-                      {p.demoLabel ?? "Live demo"} ↗
-                    </StampButton>
-                  )}
-                  {p.repo && (
-                    <StampButton href={p.repo} variant="secondary" external>
-                      Source ↗
-                    </StampButton>
-                  )}
-                  {p.repo && <CopyLinkButton url={p.repo} label="Copy repo link" />}
-                </div>
-              )}
-            </div>
-
-            {/* live demo, screenshot, or architecture */}
-            <div className="order-1 lg:order-2 relative">
-              <Stamp>
-                <ProjectStage
-                  p={p}
-                  minH="min-h-[340px] md:min-h-[420px]"
-                  ratio="4 / 3"
-                  className="w-full"
-                />
-              </Stamp>
-              <BlackSquareAnchor
-                size={40}
-                className="absolute -bottom-4 -right-4 hidden md:block"
-                color="var(--color-ink)"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ============ SPECIFICATION + RESPONSIBILITIES ============ */}
-      <SectionPlate
-        ground="concrete"
-        plateNo={p.no}
-        title="Specification"
-        texture
-        wide
-      >
-        <div className="max-w-3xl">
-          <Stamp>
-            <SpecTable rows={p.spec} caption="SPECIFICATION" />
-          </Stamp>
-
-        </div>
-      </SectionPlate>
-
-      {/* ============ GALLERY, only if this project has real screenshots ============ */}
-      {p.gallery && (
-        <SectionPlate ground="bone" title="Screenshots" wide>
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {p.gallery.map((g) => (
-              <figure key={g.src} className="border border-[var(--color-rule)] bg-[var(--color-concrete)]">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={g.src} alt={g.label} className="w-full aspect-[3/4] object-cover object-top" />
-              </figure>
+              </Reveal>
             ))}
-          </div>
-        </SectionPlate>
+          </ul>
+        </section>
       )}
 
-      {/* ============ PREV / NEXT NAV ============ */}
-      <SectionPlate
-        ground="bone"
-        title="More projects"
-        wide
-      >
-        <div className="grid gap-6 md:grid-cols-2">
-          <PlateNavCard dir="prev" p={prev} />
-          <PlateNavCard dir="next" p={next} />
-        </div>
-        <div className="mt-10">
-          <StampButton href="/projects" variant="secondary">
-            ← Back to all projects
-          </StampButton>
-        </div>
-      </SectionPlate>
-    </main>
-  );
-}
+      {/* ============ BENCHMARKS ============ */}
+      {p.compare && (
+        <section className={`${wrap} pb-20 md:pb-28`}>
+          <Reveal blur>
+            <h2 className="t-h2">How fast it is.</h2>
+          </Reveal>
+          <div className="card mt-10 p-7 sm:p-10">
+            <ul className="space-y-9">
+              {p.compare.rows.map((r) => {
+                const max = Math.max(r.mine, r.other);
+                const bars = [
+                  { name: p.name, v: r.mine, mine: true },
+                  { name: r.otherName, v: r.other, mine: false },
+                ];
+                return (
+                  <li key={r.label}>
+                    <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
+                      <h3 className="text-[1.25rem] font-semibold tracking-[-0.02em]">{r.label}</h3>
+                      <p className="hue-text t-num text-[1.5rem] leading-none">{(r.other / r.mine).toFixed(r.other / r.mine < 10 ? 1 : 0)}× faster</p>
+                    </div>
+                    <div className="mt-4 space-y-2.5">
+                      {bars.map((b) => (
+                        <div key={b.name} className="grid grid-cols-[minmax(0,9.5rem)_1fr_auto] items-center gap-3 text-[0.9375rem]">
+                          <span className={`truncate ${b.mine ? "font-semibold text-ink" : "text-muted"}`}>{b.name}</span>
+                          <div className="h-3 overflow-hidden rounded-full bg-ink/[0.07]">
+                            {/* width is the real ratio; the bar grows in when it scrolls into view */}
+                            <motion.div
+                              className="h-full origin-left rounded-full"
+                              style={{ width: `${Math.max(0.8, (b.v / max) * 100)}%`, background: b.mine ? "var(--hue)" : "var(--color-muted)" }}
+                              initial={{ scaleX: 0 }}
+                              whileInView={{ scaleX: 1 }}
+                              viewport={{ once: true, margin: "-10% 0px" }}
+                              transition={{ ...SPRING, duration: 1.3 }}
+                            />
+                          </div>
+                          <span className="t-num w-[4.5rem] text-right text-[1.0625rem]">
+                            {b.v} {r.unit}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+            <p className="mt-9 max-w-[70ch] border-t border-line pt-6 text-[1rem] leading-relaxed text-muted">{p.compare.note}</p>
+          </div>
+        </section>
+      )}
 
-function PlateNavCard({ dir, p }: { dir: "prev" | "next"; p: Flagship }) {
-  const isPrev = dir === "prev";
-  return (
-    <Link
-      href={`/projects/${p.slug}`}
-      className={`group kb-plate kb-plate-hover bg-[var(--color-bone)] text-[var(--color-ink)] block px-6 py-6 ${
-        isPrev ? "text-left" : "md:text-right"
-      }`}
-    >
-      <span className="font-mono text-[0.72rem] uppercase tracking-[0.2em] text-[var(--color-oxide-dark)] block">
-        {isPrev ? "← Previous" : "Next →"}
-      </span>
-      <span className="font-mono text-[0.78rem] tracking-[0.14em] text-[var(--color-ink)]/55 block mt-3">
-        {p.tag}
-      </span>
-      <span className="display-plate text-[clamp(1.75rem,4vw,2.75rem)] block mt-1 leading-none">
-        {p.name}
-      </span>
-      <span className="text-[1.125rem] leading-relaxed text-[var(--color-ink)]/80 block mt-3">
-        {p.tagline}
-      </span>
-    </Link>
+      {/* ============ SPEC ============ */}
+      <section className={`${wrap} pb-20 md:pb-28`}>
+        <Reveal blur>
+          <h2 className="t-h2">Technical details.</h2>
+        </Reveal>
+        <dl className="mt-10 grid gap-5 sm:grid-cols-2 md:gap-6 lg:grid-cols-3">
+          {p.spec.map((r, i) => (
+            <Reveal key={r.label} delay={(i % 3) * 0.05} className="h-full">
+              <div className="card h-full p-6 sm:p-7">
+                <dt className="t-mono uppercase tracking-[0.1em] text-muted">{r.label}</dt>
+                <dd className="mt-2 text-[1.1875rem] font-medium leading-snug tracking-[-0.015em]">{r.value}</dd>
+              </div>
+            </Reveal>
+          ))}
+        </dl>
+        <Reveal className="mt-8">
+          <h3 className="t-mono uppercase tracking-[0.1em] text-muted">What I used</h3>
+          <ul className="mt-3 flex flex-wrap gap-2">
+            {p.stack.map((s) => (
+              <li key={s} className="chip">
+                {s}
+              </li>
+            ))}
+          </ul>
+        </Reveal>
+      </section>
+
+      {/* ============ GALLERY, only for projects with real screenshots ============ */}
+      {p.gallery && (
+        <section className="pb-20 md:pb-28">
+          <div className={wrap}>
+            <Reveal blur>
+              <h2 className="t-h2">Screenshots.</h2>
+            </Reveal>
+          </div>
+          <ul className="no-scrollbar mt-10 flex snap-x snap-mandatory gap-5 overflow-x-auto px-5 sm:px-8 xl:px-[max(2rem,calc((100vw-1200px)/2+2rem))]">
+            {p.gallery.map((g) => (
+              <li key={g.src} className={`shrink-0 snap-center ${p.galleryWide ? "w-[86vw] max-w-[880px]" : "w-[72vw] max-w-[340px]"}`}>
+                <figure>
+                  <div className="card">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={g.src} alt={g.label} loading="lazy" className={p.galleryWide ? "block w-full" : "aspect-[3/4] w-full object-cover object-top"} />
+                  </div>
+                  <figcaption className="mt-3 px-1 text-[1rem] text-muted">{g.label}</figcaption>
+                </figure>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {/* ============ NEXT ============ */}
+      <section className={`${wrap} pb-24 md:pb-32`}>
+        <ScaleIn>
+          <Link
+            href={`/projects/${next.slug}`}
+            onPointerMove={spotlight}
+            style={{ "--hue": next.hue } as React.CSSProperties}
+            className="card card-glow pressable group block p-8 text-center sm:p-14"
+          >
+            <p className="relative z-[1] text-[1.0625rem] font-medium text-muted">Next project</p>
+            <p className="t-h1 relative z-[1] mt-2">{next.name}</p>
+            <p className="t-lead relative z-[1] mx-auto mt-4 max-w-[32ch]">{next.tagline}</p>
+            <span aria-hidden className="link relative z-[1] mt-6 text-[1.25rem]">
+              Read more
+            </span>
+          </Link>
+        </ScaleIn>
+      </section>
+    </main>
   );
 }
 
@@ -274,15 +293,9 @@ function RepoDetail({ slug }: { slug: string }) {
         const data = await res.json();
         if (!alive) return;
         const list: ProcessedProject[] = data.projects || [];
-        const match = list.find(
-          (r) => r.slug === slug || r.name.toLowerCase() === slug.toLowerCase()
-        );
-        if (match) {
-          setRepo(match);
-          setState("ok");
-        } else {
-          setState("notfound");
-        }
+        const match = list.find((r) => r.slug === slug || r.name.toLowerCase() === slug.toLowerCase());
+        setRepo(match ?? null);
+        setState(match ? "ok" : "notfound");
       } catch {
         if (alive) setState("error");
       }
@@ -293,142 +306,58 @@ function RepoDetail({ slug }: { slug: string }) {
   }, [slug]);
 
   return (
-    <main className="pt-14">
-      {/* breadcrumb band */}
-      <section className="bg-[var(--color-bone)]">
-        <div className="mx-auto max-w-[1200px] px-5 sm:px-8 lg:px-12 pt-10">
-          <Breadcrumb name={repo?.name ?? slug} />
-        </div>
-      </section>
+    <main className={`${wrap} min-h-[80svh] pb-24 pt-32 md:pt-40`}>
+      <BackLink />
 
-      {state !== "ok" && <RepoMessage state={state} slug={slug} />}
+      {state === "loading" && <p className="t-lead mt-10 animate-pulse">Looking up {slug} on GitHub…</p>}
+
+      {state === "error" && (
+        <div className="mt-10">
+          <h1 className="t-h2">The GitHub feed is unavailable right now.</h1>
+          <p className="t-lead mt-5">
+            You can browse everything directly at{" "}
+            <a href={PROFILE.github} target="_blank" rel="noopener noreferrer" className="link link-ext">
+              {PROFILE.githubHandle}
+            </a>
+          </p>
+        </div>
+      )}
+
+      {state === "notfound" && (
+        <div className="mt-10">
+          <h1 className="t-h2">There&rsquo;s no project called &ldquo;{slug}&rdquo;.</h1>
+          <p className="t-lead mt-5 max-w-[40ch]">It may have been renamed or archived. All of my projects are on the projects page.</p>
+          <Link href="/projects" className="btn btn-primary mt-8">
+            See all projects
+          </Link>
+        </div>
+      )}
 
       {state === "ok" && repo && (
-        <section className="relative bg-[var(--color-bone)] overflow-hidden">
-          <div className="mx-auto max-w-[1200px] px-5 sm:px-8 lg:px-12 py-14 md:py-20">
-            <div className="flex items-center gap-3 mb-7 flex-wrap">
-              <span className="font-mono text-[0.8rem] tracking-[0.2em] px-2 py-1 bg-[var(--color-ink)] text-[var(--color-bone)]">
-                REPO
-              </span>
-              <span className="font-mono text-[0.8rem] tracking-[0.22em] uppercase text-[var(--color-oxide-dark)]">
-                Cross-reference · github.com/saksham-45
-              </span>
-            </div>
-
-            <div className="relative">
-              <DiagonalBar className="-left-12 top-4 hidden lg:block" length={180} thickness={22} />
-              <h1 className="display-hero text-[clamp(2.4rem,7vw,5rem)] text-[var(--color-ink)] leading-[0.95] break-words">
-                {repo.name}
-              </h1>
-            </div>
-
-            <p className="mt-7 max-w-2xl text-[1.25rem] leading-relaxed text-[var(--color-ink)]">
-              {repo.description}
-            </p>
-
-            <div className="mt-9 max-w-2xl">
-              <SpecTable
-                caption="REPOSITORY"
-                rows={[
-                  { label: "Language", value: repo.language || "-" },
-                  { label: "Stars", value: <span className="tabular-nums">{repo.stars}</span> },
-                  { label: "Forks", value: <span className="tabular-nums">{repo.forks}</span> },
-                  { label: "Updated", value: formatRelativeTime(repo.updatedAt) },
-                ]}
-              />
-            </div>
-
-            {repo.topics.length > 0 && (
-              <div className="mt-8">
-                <span className="font-mono text-[0.72rem] uppercase tracking-[0.2em] text-[var(--color-oxide-dark)] block mb-3">
-                  Topics
-                </span>
-                <ul className="flex flex-wrap gap-2">
-                  {repo.topics.map((t) => (
-                    <li
-                      key={t}
-                      className="font-mono text-[0.82rem] px-3 py-1.5 border-2 border-[var(--color-ink)] bg-[var(--color-concrete)] text-[var(--color-ink)]"
-                    >
-                      {t}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            <div className="mt-10 flex flex-wrap gap-4">
-              <StampButton href={repo.url} variant="primary" external>
-                View on GitHub →
-              </StampButton>
-              <StampButton href="/projects" variant="secondary">
-                ← Back to all projects
-              </StampButton>
-            </div>
+        <div className="mt-8">
+          <p className="eyebrow">GitHub repository</p>
+          <h1 className="t-h1 mt-2 break-words">{repo.name}</h1>
+          <p className="t-lead mt-6 max-w-[44ch]">{repo.description}</p>
+          <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            <Tile label="Language">{repo.language || "—"}</Tile>
+            <Tile label="Stars">{repo.stars}</Tile>
+            <Tile label="Forks">{repo.forks}</Tile>
+            <Tile label="Updated">{formatRelativeTime(repo.updatedAt)}</Tile>
           </div>
-        </section>
+          {repo.topics.length > 0 && (
+            <ul className="mt-8 flex flex-wrap gap-2">
+              {repo.topics.map((t) => (
+                <li key={t} className="chip">
+                  {t}
+                </li>
+              ))}
+            </ul>
+          )}
+          <a href={repo.url} target="_blank" rel="noopener noreferrer" className="btn btn-primary mt-10">
+            View on GitHub <span aria-hidden>↗</span>
+          </a>
+        </div>
       )}
     </main>
-  );
-}
-
-function RepoMessage({ state, slug }: { state: Exclude<FetchState, "ok">; slug: string }) {
-  return (
-    <section className="bg-[var(--color-bone)]">
-      <div className="mx-auto max-w-[1200px] px-5 sm:px-8 lg:px-12 py-16 md:py-24">
-        <div className="border-2 border-[var(--color-ink)] bg-[var(--color-charcoal)] text-[var(--color-bone)] px-6 py-10">
-          {state === "loading" && (
-            <p className="font-mono text-[0.9rem] text-[var(--color-bone)]/75">
-              <span className="inline-block h-3 w-3 border-2 border-[var(--color-cyan)] border-t-transparent animate-spin mr-3 align-middle" />
-              pulling <span className="text-[var(--color-cyan)]">{slug}</span> from
-              github.com/saksham-45 …
-            </p>
-          )}
-
-          {state === "error" && (
-            <div className="font-mono text-[0.9rem] text-[var(--color-bone)]/80 space-y-4">
-              <p>
-                <span className="text-[var(--color-cyan)]">ERR ·</span> the live repository feed is
-                unavailable right now.
-              </p>
-              <p>
-                Browse the source directly at{" "}
-                <a
-                  href="https://github.com/saksham-45"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[var(--color-cyan)] underline underline-offset-4"
-                >
-                  github.com/saksham-45
-                </a>
-                .
-              </p>
-              <div className="pt-2">
-                <StampButton href="/projects" variant="ghost">
-                  ← Back to all projects
-                </StampButton>
-              </div>
-            </div>
-          )}
-
-          {state === "notfound" && (
-            <div className="font-mono text-[0.9rem] text-[var(--color-bone)]/80 space-y-4">
-              <p>
-                <span className="text-[var(--color-cyan)]">404 ·</span> no plate or repository filed
-                under <span className="text-[var(--color-cyan)]">{slug}</span>.
-              </p>
-              <p className="text-[var(--color-bone)]/60">
-                It may have been renamed or archived. The flagship plates and the live repo
-                index are on the Projects page.
-              </p>
-              <div className="pt-2">
-                <StampButton href="/projects" variant="ghost">
-                  ← Back to all projects
-                </StampButton>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-    </section>
   );
 }

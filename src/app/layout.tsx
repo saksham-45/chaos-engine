@@ -1,81 +1,93 @@
-import type { Metadata } from "next";
-import { Oswald, IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import Link from "next/link";
+import { Doto } from "next/font/google";
 import "./globals.css";
-import { Navigation } from "@/components/Navigation";
-import { ScrollProgress } from "@/components/kb/Micro";
+import { Nav } from "@/components/site/Nav";
+import { BitProgress } from "@/components/site/motion";
+import { PROFILE } from "@/lib/projects";
 
-const oswald = Oswald({
-  variable: "--font-oswald",
-  subsets: ["latin", "cyrillic"],
-  weight: ["500", "600", "700"],
-  display: "swap",
-});
+// dot-matrix numerals for every measured number on the site
+const doto = Doto({ variable: "--font-doto", subsets: ["latin"], display: "swap" });
 
-const plexSans = IBM_Plex_Sans({
-  variable: "--font-plex-sans",
-  subsets: ["latin", "cyrillic"],
-  weight: ["400", "500", "600"],
-  display: "swap",
-});
-
-const plexMono = IBM_Plex_Mono({
-  variable: "--font-plex-mono",
-  subsets: ["latin", "cyrillic"],
-  weight: ["400", "500", "600"],
-  display: "swap",
-});
+const title = "Saksham Srivastava · Computer engineering student";
+const description =
+  "I’m Saksham Srivastava, a computer engineering student at USF graduating in May 2027. I build software that sits close to the hardware, including Helion, an open-source FPGA toolchain written in Rust.";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://sakshamportfolioforeng.vercel.app"),
-  title: "Saksham Srivastava | Computer Engineering · FPGA / Applied AI",
-  description:
-    "Computer engineering student at USF, graduating May 2027. FPGA tooling, embedded firmware, and applied AI projects, with specs, measurements, and links.",
+  title: { default: title, template: "%s · Saksham Srivastava" },
+  description,
   keywords: [
     "Saksham Srivastava",
     "Computer Engineering",
     "FPGA",
-    "Software Engineer",
+    "Rust",
+    "Embedded firmware",
+    "Zephyr",
+    "Applied AI",
     "Machine Learning",
-    "Computer Engineering",
-    "On-device ML",
     "USF",
-    "Python",
-    "TypeScript",
-    "Node.js",
-    "PyTorch",
-    "React",
-    "Next.js",
+    "New grad 2027",
   ],
   authors: [{ name: "Saksham Srivastava" }],
   openGraph: {
-    title: "Saksham Srivastava | Computer Engineering · FPGA / Applied AI",
-    description:
-      "Computer engineering student building FPGA tooling, embedded firmware, and production applied AI.",
+    title,
+    description,
     type: "website",
     locale: "en_US",
     url: "https://sakshamportfolioforeng.vercel.app",
   },
-  twitter: {
-    card: "summary_large_image",
-    title: "Saksham Srivastava | Computer Engineering · FPGA / Applied AI",
-    description:
-      "FPGA tooling, embedded firmware, and production applied AI, built and measured end to end.",
-  },
+  twitter: { card: "summary_large_image", title, description },
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export const viewport: Viewport = { themeColor: "#000000" };
+
+// Runs before first paint so a saved light theme never flashes dark.
+const themeScript =
+  "try{var t=localStorage.getItem('portfolio-theme');document.documentElement.dataset.theme=t==='light'?'light':'dark'}catch(e){document.documentElement.dataset.theme='dark'}";
+
+const footerLinks = [
+  { name: "Projects", href: "/projects" },
+  { name: "About", href: "/about" },
+  { name: "Contact", href: "/contact" },
+];
+
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${oswald.variable} ${plexSans.variable} ${plexMono.variable} antialiased`}
-      >
-        <ScrollProgress />
-        <Navigation />
-        {children}
+    <html lang="en" data-theme="dark" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
+      <body className={doto.variable}>
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-ink focus:px-4 focus:py-2 focus:text-bg"
+        >
+          Skip to content
+        </a>
+        <BitProgress />
+        <Nav />
+        <div id="main">{children}</div>
+        <footer className="border-t border-line">
+          <div className="mx-auto flex max-w-[1200px] flex-col gap-4 px-5 py-8 text-[0.9375rem] text-muted sm:flex-row sm:items-center sm:justify-between sm:px-8">
+            <p>
+              © {new Date().getFullYear()} {PROFILE.name} · {PROFILE.location}
+            </p>
+            <nav aria-label="Footer" className="flex flex-wrap gap-x-6 gap-y-2">
+              {footerLinks.map((l) => (
+                <Link key={l.href} href={l.href} className="transition-colors hover:text-ink">
+                  {l.name}
+                </Link>
+              ))}
+              <a href={PROFILE.github} target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-ink">
+                GitHub
+              </a>
+              <a href={PROFILE.linkedin} target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-ink">
+                LinkedIn
+              </a>
+            </nav>
+          </div>
+        </footer>
       </body>
     </html>
   );
