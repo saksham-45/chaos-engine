@@ -547,3 +547,16 @@ export const PROFILE = {
   research: "Undergraduate researcher, USF Bellini College of AI",
   mathMinor: "Math minor",
 };
+
+/* The repos and sites the GitHub section points to, hand-picked so the FPGA work
+   (which lives under the helion-fpga org) and the web work both show up. */
+export const REPOS: { name: string; owner: string; text: string; lang: string; href: string; live?: boolean }[] = [
+  { name: "helion", owner: "helion-fpga", text: "My FPGA toolchain: synthesis through bitstream, plus a full IDE.", lang: "Rust", href: "https://github.com/helion-fpga/helion" },
+  { name: "chaos-engine", owner: "saksham-45", text: "This website. Next.js, with the hero drawn on a canvas.", lang: "TypeScript", href: "https://github.com/saksham-45/chaos-engine" },
+  { name: "createadigitalresume.com", owner: "live site", text: "An AI pipeline that designs, reviews, and fixes personal websites.", lang: "Next.js", href: "https://createadigitalresume.com/", live: true },
+  { name: "automix", owner: "saksham-45", text: "An AI that mixes songs together the way a DJ would.", lang: "Python", href: "https://github.com/saksham-45/automix" },
+  { name: "visualizzer", owner: "saksham-45", text: "Live music visuals in the browser, 20 modes.", lang: "JavaScript", href: "https://github.com/saksham-45/visualizzer" },
+  { name: "showonce", owner: "saksham-45", text: "An AI coach that learns a skill from one video.", lang: "TypeScript", href: "https://github.com/saksham-45/showonce" },
+  { name: "streammm", owner: "saksham-45", text: "Screen streaming to any browser with about half a second of delay.", lang: "Rust", href: "https://github.com/saksham-45/streammm" },
+  { name: "humane", owner: "saksham-45", text: "A daily game: spot which of two texts a human wrote.", lang: "TypeScript", href: "https://github.com/saksham-45/humane" },
+];

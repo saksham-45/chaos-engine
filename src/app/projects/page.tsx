@@ -4,7 +4,7 @@ import React, { useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Reveal, SPRING, spotlight } from "@/components/site/motion";
 import { ProjectCard } from "@/components/site/ProjectCard";
-import { GitHubFeed } from "@/components/site/GitHubFeed";
+import { Repos } from "@/components/site/Repos";
 import { Contributions } from "@/components/site/Contributions";
 import { FLAGSHIPS, SELECTED, PROFILE, type Flagship } from "@/lib/projects";
 
@@ -163,7 +163,7 @@ export default function ProjectsPage() {
         </Reveal>
         <Reveal delay={0.08}>
           <p className="t-lead mt-5">
-            Most of what I build is public. This is my past year of work and my latest repositories, loaded live from{" "}
+            Most of what I build is public. Here’s my past year of commits, and the repos I’d start with. Everything else is on{" "}
             <a href={PROFILE.github} target="_blank" rel="noopener noreferrer" className="link link-ext">
               {PROFILE.githubHandle}
             </a>
@@ -173,7 +173,7 @@ export default function ProjectsPage() {
           <Contributions />
         </Reveal>
         <Reveal className="mt-6">
-          <GitHubFeed limit={8} />
+          <Repos />
         </Reveal>
       </section>
     </main>

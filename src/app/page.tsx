@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useCallback, useRef } from "react";
 import Link from "next/link";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { Fabric } from "@/components/site/Fabric";
 import { Reveal, ScaleIn } from "@/components/site/motion";
 import { ProjectCard } from "@/components/site/ProjectCard";
 import { Stats } from "@/components/site/Stats";
-import { GitHubFeed } from "@/components/site/GitHubFeed";
+import { Repos } from "@/components/site/Repos";
 import { Contributions } from "@/components/site/Contributions";
 import { ContactBlock } from "@/components/site/Contact";
 import { FEATURED, STATS, STACK, PROFILE } from "@/lib/projects";
@@ -26,14 +26,18 @@ function Hero() {
   const textY = useTransform(scrollYProgress, [0, 1], [0, -90]);
   const artScale = useTransform(scrollYProgress, [0, 1], [1, 1.18]);
   const artOpacity = useTransform(scrollYProgress, [0, 0.9], [1, 0.1]);
+  // clicking the name blows it apart; let the cells get going, then bring the projects up
+  const toProjects = useCallback(() => {
+    window.setTimeout(() => document.getElementById("work")?.scrollIntoView({ behavior: reduce ? "auto" : "smooth" }), reduce ? 0 : 650);
+  }, [reduce]);
 
   return (
-    <section ref={ref} className="relative h-[100svh] min-h-[640px] cursor-crosshair overflow-clip">
+    <section ref={ref} className="relative h-[100svh] min-h-[640px] overflow-clip">
       {/* the word is drawn by the canvas; this is the same thing for everyone else */}
       <h1 className="sr-only">Hi, I&rsquo;m Saksham Srivastava.</h1>
 
       <motion.div aria-hidden className="absolute inset-0" style={reduce ? undefined : { scale: artScale, opacity: artOpacity }}>
-        <Fabric text="SAKSHAM" centerY={0.44} hudRef={hud} className="h-full w-full" />
+        <Fabric text="SAKSHAM" centerY={0.44} hudRef={hud} onShatter={toProjects} className="h-full w-full" />
         {/* text sits on --name-top / --name-bottom, which the canvas publishes here */}
         <p className="t-lead absolute inset-x-0 text-center text-ink" style={{ top: "calc(var(--name-top, 30svh) - 2.6em)" }}>
           Hi, I&rsquo;m
@@ -214,7 +218,7 @@ export default function Home() {
           title="My GitHub."
           lead={
             <>
-              Most of what I build is public. This is my past year of work and my latest repositories, loaded live from{" "}
+              Most of what I build is public. Here’s my past year of commits, and the repos I’d start with. Everything else is on{" "}
               <a href={PROFILE.github} target="_blank" rel="noopener noreferrer" className="link link-ext">
                 {PROFILE.githubHandle}
               </a>
@@ -225,7 +229,7 @@ export default function Home() {
           <Contributions />
         </Reveal>
         <Reveal className="mt-6">
-          <GitHubFeed limit={5} />
+          <Repos limit={6} />
         </Reveal>
       </section>
 

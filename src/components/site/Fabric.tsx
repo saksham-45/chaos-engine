@@ -6,7 +6,9 @@ import React, { useEffect, useRef } from "react";
    Helion's own device screen shows a design. Each cell starts on a random
    tile and travels along the lattice by a shortest route to the tile it
    belongs on, then nets route between them and signals run along the wires. Move the pointer through it to shove cells off their
-   sites; click to rip the whole thing up and watch it place again.
+   sites. Click the word and the cells shoot back out along the lattice, away from
+   the click, and `onShatter` fires (the page scrolls on). When the canvas comes
+   back into view they route home again from wherever they ended up.
 
    The counts in the HUD are this animation's real numbers, not decoration.
    It publishes --name-top / --name-bottom (px) on its section so the page
@@ -46,14 +48,20 @@ export function Fabric({
   text,
   centerY = 0.4,
   hudRef,
+  onShatter,
   className = "",
 }: {
   text: string;
   centerY?: number;
   hudRef?: React.RefObject<HTMLElement | null>;
+  onShatter?: () => void;
   className?: string;
 }) {
   const ref = useRef<HTMLCanvasElement>(null);
+  const shatterCb = useRef(onShatter);
+  useEffect(() => {
+    shatterCb.current = onShatter;
+  }, [onShatter]);
 
   useEffect(() => {
     const canvas = ref.current;
@@ -77,7 +85,11 @@ export function Fabric({
     let px = -9999;
     let py = -9999;
     let stir = 0; // 0..1, how much the pointer is moving; decays when it rests
+    let ux = 1; // direction the pointer is travelling (unit vector), so the cut follows the stroke
+    let uy = 0;
     let hud = "";
+    let out = false; // true while the word is blown apart (after a click, until it is seen again)
+    let away = false; // the reader has scrolled the word mostly off screen since it blew apart
     let at = new Map<number, Cell>(); // tile index -> cell, so signals can light what they cross
     const verb = window.matchMedia("(pointer: coarse)").matches ? "tap" : "click";
     const pulses: { net: number; d: number }[] = [];
@@ -193,13 +205,14 @@ export function Fabric({
     // Put every cell on a random tile and give it a shortest lattice route home.
     // No search: on an open grid every shortest route is a staircase, so one
     // random jog column between start and target is all it takes.
-    const scatter = () => {
+    const scatter = (fromHere = false) => {
       const cols = Math.ceil(w / c);
       const rows = Math.ceil(h / c);
       let done = 0;
+      out = false;
       for (const p of cells) {
-        const sx = Math.floor(Math.random() * cols) * c;
-        const sy = Math.floor(Math.random() * rows) * c;
+        const sx = fromHere ? Math.round(p.x / c) * c : Math.floor(Math.random() * cols) * c;
+        const sy = fromHere ? Math.round(p.y / c) * c : Math.floor(Math.random() * rows) * c;
         const mx = Math.round((sx + (p.tx - sx) * Math.random()) / c) * c;
         p.path = [[sx, sy], [mx, sy], [mx, p.ty], [p.tx, p.ty]];
         p.len = Math.abs(p.tx - sx) + Math.abs(p.ty - sy);
@@ -215,6 +228,46 @@ export function Fabric({
       t = 0;
       pulses.length = 0;
     };
+
+    // Blow the word apart: every cell takes a shortest lattice route from its
+    // site to a tile just off screen, heading away from the word's centre. The
+    // wave starts at the click, so cells nearest it leave first.
+    const shatter = (cx: number, cy: number) => {
+      const mx0 = (box.x0 + box.x1) / 2;
+      const my0 = (box.y0 + box.y1) / 2;
+      const snap = (v: number) => Math.round(v / c) * c;
+      out = true;
+      away = false;
+      for (const p of cells) {
+        const sx = snap(p.x);
+        const sy = snap(p.y);
+        let dx = p.tx - mx0 + (Math.random() - 0.5) * c * 4;
+        const dy = p.ty - my0 + (Math.random() - 0.5) * c * 4;
+        if (!dx && !dy) dx = 1;
+        let ex: number;
+        let ey: number;
+        if (Math.abs(dx) / w > Math.abs(dy) / h) {
+          ex = dx > 0 ? w + c * 2 : -c * 3;
+          ey = sy + (dy / Math.abs(dx)) * Math.abs(ex - sx) * 0.6;
+        } else {
+          ey = dy > 0 ? h + c * 2 : -c * 3;
+          ex = sx + (dx / Math.abs(dy)) * Math.abs(ey - sy) * 0.6;
+        }
+        ex = snap(ex);
+        ey = snap(ey);
+        const jog = snap(sx + (ex - sx) * Math.random());
+        p.path = [[sx, sy], [jog, sy], [jog, ey], [ex, ey]];
+        p.len = Math.abs(ex - sx) + Math.abs(ey - sy);
+        p.dur = 0.3 + p.len / 3200;
+        p.delay = Math.hypot(p.tx - cx, p.ty - cy) / 3000 + Math.random() * 0.06;
+        p.vx = p.vy = p.d = 0;
+        p.arrived = false;
+        p.glow = 0;
+      }
+      t = 0;
+      pulses.length = 0;
+    };
+    const onWord = (x: number, y: number) => x >= box.x0 && x <= box.x1 && y >= box.y0 && y <= box.y1 + c * 2;
 
     // draw the first `upto` px of a polyline
     const trace = (pts: number[][], upto: number) => {
@@ -261,7 +314,7 @@ export function Fabric({
       ctx.stroke();
 
       // clock regions around the word, like the device view draws them
-      ctx.globalAlpha = Math.min(1, t / 0.8) * 0.5;
+      ctx.globalAlpha = (out ? Math.max(0, 1 - t / 0.5) : Math.min(1, t / 0.8)) * 0.5;
       ctx.strokeStyle = pal.region;
       ctx.lineWidth = 1.25;
       const bw = box.x1 - box.x0;
@@ -274,24 +327,33 @@ export function Fabric({
 
       // cells: ride their route home, then sit on a spring the pointer can shove
       let placed = 0;
-      const R = 110;
+      // The pointer cuts like a blade: along the line it just swept, the cells on
+      // each side slide apart like cut paper. The edge at the line is hard; the
+      // shift fades with distance, so it reads as a clean slit, not a round dent.
+      const OPEN = c * 3.2; // how far each side slides at the cut (the slit is twice this)
+      const FALL = c * 3.8; // how quickly that shift fades away from the line
+      const TRAIL = 340; // how far behind the pointer the slit stays open
       const s = c - Math.max(1.5, c * 0.16);
       for (const p of cells) {
         if (!p.arrived) {
           const u = Math.min(1, Math.max(0, (t - p.delay) / p.dur));
-          p.d = p.len * (u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2);
+          // in: ease in and out onto the site; out: launch and keep speeding up
+          p.d = p.len * (out ? u * u : u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2);
           [p.x, p.y] = pointAt(p.path, p.d);
           p.arrived = u >= 1;
-        } else if (dt > 0) {
+        } else if (dt > 0 && !out) {
           let fx = (p.tx - p.x) * STIFF - p.vx * DAMP;
           let fy = (p.ty - p.y) * STIFF - p.vy * DAMP;
-          const dx = p.x + c / 2 - px;
-          const dy = p.y + c / 2 - py;
-          const d = Math.hypot(dx, dy);
-          if (d < R && d > 0.01) {
-            const push = (1 - d / R) * 5200 * stir;
-            fx += (dx / d) * push;
-            fy += (dy / d) * push;
+          const dx = p.tx + c / 2 - px;
+          const dy = p.ty + c / 2 - py;
+          const along = -(dx * ux + dy * uy); // > 0 behind the pointer
+          const side = dx * -uy + dy * ux; // signed distance from the cut line
+          if (along > -c && along < TRAIL && Math.abs(side) < FALL * 4) {
+            const s = side === 0 ? ((p.tx / c) % 2 ? 1 : -1) : Math.sign(side);
+            // spring force that holds the cell at the shifted spot
+            const push = STIFF * OPEN * Math.exp(-Math.abs(side) / FALL) * stir * (1 - (Math.max(0, along) / TRAIL) ** 2);
+            fx += -uy * s * push;
+            fy += ux * s * push;
           }
           p.vx += fx * dt;
           p.vy += fy * dt;
@@ -300,7 +362,7 @@ export function Fabric({
         }
         const settled = Math.abs(p.x - p.tx) < 0.6 && Math.abs(p.y - p.ty) < 0.6;
         if (settled) placed++;
-        ctx.globalAlpha = t < p.delay ? 0.22 : settled ? 1 : 0.7;
+        ctx.globalAlpha = out || p.arrived ? 1 : t < p.delay ? 0.22 : settled ? 1 : 0.7;
         ctx.fillStyle = p.alt ? pal.alt : pal.cell;
         ctx.fillRect(p.x + (c - s) / 2, p.y + (c - s) / 2, s, s);
         if (p.glow > 0.02) {
@@ -314,27 +376,28 @@ export function Fabric({
       // the route each travelling cell has covered so far
       ctx.save();
       ctx.translate(c / 2, c / 2);
-      ctx.globalAlpha = 0.3;
+      ctx.globalAlpha = out ? 0.6 : 0.3;
       ctx.strokeStyle = pal.cell;
       ctx.lineWidth = 1;
       for (const p of cells) if (!p.arrived && p.d > 0) trace(p.path, p.d);
       ctx.restore();
 
       // I/O pads
-      ctx.globalAlpha = Math.min(1, t / 1.2) * 0.9;
+      ctx.globalAlpha = (out ? Math.max(0, 1 - t / 0.4) : Math.min(1, t / 1.2)) * 0.9;
       ctx.fillStyle = pal.io;
       for (const [x, y] of pads) ctx.fillRect(x + (c - s) / 2, y + (c - s) / 2, s, s);
 
       // nets route once most cells are down, then carry signals
-      const rt = t - routeAt;
+      const rt = out ? 0 : t - routeAt;
+      const netFade = out ? Math.max(0, 1 - t / 0.35) : 1;
       let routed = 0;
       ctx.lineWidth = Math.max(1, c * 0.09);
       ctx.lineJoin = "round";
       for (const n of nets) {
-        const f = Math.min(1, Math.max(0, (rt - n.at) / 0.55));
-        if (f <= 0) continue;
-        if (f >= 1) routed++;
-        ctx.globalAlpha = 0.62;
+        const f = out ? 1 : Math.min(1, Math.max(0, (rt - n.at) / 0.55));
+        if (f <= 0 || netFade <= 0) continue;
+        if (f >= 1 && !out) routed++;
+        ctx.globalAlpha = 0.62 * netFade;
         ctx.strokeStyle = n.io ? pal.io : pal.net;
         trace(n.pts, n.len * (1 - Math.pow(1 - f, 3)));
       }
@@ -361,7 +424,7 @@ export function Fabric({
 
       const done = routed === nets.length && nets.length > 0;
       const sep = w < 640 ? "\n" : "   "; // phones stack the counts so nothing is cut off
-      const line = `place_design ${placed}/${cells.length} cells${sep}route_design ${routed}/${nets.length} nets${done ? `\n${verb} anywhere to place it again` : ""}`;
+      const line = `place_design ${placed}/${cells.length} cells${sep}route_design ${routed}/${nets.length} nets${done ? `\n${verb} my name to see my projects` : ""}`;
       if (line !== hud && hudRef?.current) hudRef.current.textContent = hud = line;
     };
 
@@ -386,25 +449,56 @@ export function Fabric({
       const r = canvas.getBoundingClientRect();
       const nx = e.clientX - r.left;
       const ny = e.clientY - r.top;
-      if (px > -9000) stir = Math.min(1, stir + Math.hypot(nx - px, ny - py) / 120);
+      if (px > -9000) {
+        const mx = nx - px;
+        const my = ny - py;
+        const m = Math.hypot(mx, my);
+        stir = Math.min(1, stir + m / 120);
+        if (m > 0.5) {
+          // ease the heading so a jittery hand still cuts a clean line
+          ux += (mx / m - ux) * 0.5;
+          uy += (my / m - uy) * 0.5;
+          const u = Math.hypot(ux, uy) || 1;
+          ux /= u;
+          uy /= u;
+        }
+      }
       px = nx;
       py = ny;
+      const over = !out && onWord(nx, ny) && !(e.target as Element).closest?.("a,button");
+      host.style.cursor = over ? "pointer" : "";
     };
-    // click on the fabric (not on a link or button) rips the design up
+    // a click on the word (not on a link or button) blows it apart and moves the page on
     const onDown = (e: PointerEvent) => {
       const r = canvas.getBoundingClientRect();
-      if (reduce || e.clientY > r.bottom || (e.target as Element).closest("a,button")) return;
-      scatter();
+      const x = e.clientX - r.left;
+      const y = e.clientY - r.top;
+      if (out || e.clientY > r.bottom || (e.target as Element).closest("a,button") || !onWord(x, y)) return;
+      host.style.cursor = "";
+      if (!reduce) {
+        shatter(x, y);
+        start();
+      }
+      shatterCb.current?.();
     };
     const onLeave = () => {
       px = py = -9999;
     };
 
     build();
-    const io = new IntersectionObserver(([entry]) => {
-      visible = entry.isIntersecting;
-      start();
-    });
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        visible = entry.isIntersecting;
+        // re-form only after the reader has scrolled away and come back to the word
+        if (out && entry.intersectionRatio < 0.5) away = true;
+        if (out && away && entry.intersectionRatio >= 0.5) {
+          away = false;
+          scatter(true);
+        }
+        start();
+      },
+      { threshold: [0, 0.5] },
+    );
     io.observe(canvas);
     const ro = new ResizeObserver(() => {
       if (canvas.clientWidth !== w || canvas.clientHeight !== h) build();
