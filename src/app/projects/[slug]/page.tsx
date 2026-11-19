@@ -158,7 +158,7 @@ function ProjectDetail({ p }: { p: Flagship }) {
       {p.compare && (
         <section className={`${wrap} pb-20 md:pb-28`}>
           <Reveal blur>
-            <h2 className="t-h2">How fast it is.</h2>
+            <h2 className="t-h2">Benchmarks.</h2>
           </Reveal>
           <div className="card mt-10 p-7 sm:p-10">
             <ul className="space-y-9">
